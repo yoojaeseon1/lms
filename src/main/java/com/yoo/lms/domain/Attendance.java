@@ -1,13 +1,17 @@
 package com.yoo.lms.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor
 @Getter
 public class Attendance {
+
+
 
     @Id @GeneratedValue
     @Column(name="attendance_id")

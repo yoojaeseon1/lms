@@ -1,16 +1,23 @@
 package com.yoo.lms.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
+@Getter
+@NoArgsConstructor
 public class Board{
+
+    public Board(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
     @Id @GeneratedValue
     @Column(name="board_id")
@@ -19,9 +26,8 @@ public class Board{
     @OneToMany(mappedBy = "board")
     private List<CourseMaterial> courseMaterials = new ArrayList<>();
 
+    private int viewCount;
     private String title;
     private String content;
-
-
 
 }

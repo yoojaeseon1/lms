@@ -1,6 +1,7 @@
 
 package com.yoo.lms.domain;
 
+import com.yoo.lms.domain.valueType.Address;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -12,24 +13,20 @@ import java.util.List;
 @Getter
 public class Student extends Member{
 
+    public Student() {
+    }
 
-    public static Student createStudent(String id, String password, String name, int age) {
-        Student student = new Student();
-
-        student.setId(id);
-        student.setPassword(password);
-        student.setName(name);
-        student.setAge(age);
-
-        return student;
+    public Student(String id, String password, String name, int age, Address address) {
+        super(id, password, name, age, address);
     }
 
     @OneToMany(mappedBy = "student")
-    private List<StudentCourse> studentCourse = new ArrayList<>();
+    private List<StudentCourse> studentCourses = new ArrayList<>();
 
     @OneToMany(mappedBy="student")
     private List<Attendance> attendances = new ArrayList<>();
 
     @OneToMany(mappedBy = "counselee")
     private List<CounselBoard> counselBoards = new ArrayList<>();
+
 }

@@ -21,4 +21,13 @@ public class StudentCourse {
     @JoinColumn(name="course_id")
     private Course course;
 
+    public void enrollCourse(Student student, Course course) {
+
+        this.student = student;
+        this.course = course;
+
+        student.getStudentCourses().add(this);
+        course.getStudentCourses().add(this);
+
+    }
 }
