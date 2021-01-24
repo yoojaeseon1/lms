@@ -59,4 +59,32 @@ public class Course {
         teacher.getCourses().add(this);
     }
 
+    public void permitCourse() {
+        this.permission = true;
+    }
+
+    public void declineCourse() {
+        this.permission = false;
+    }
+
+    /**
+     * update name, teacher, startDate, endDate
+     * @param course
+     */
+    public void updateInfo(Course course){
+
+        if(!this.name.equals(course.getName()))
+            this.name = course.getName();
+
+        if(this.teacher.getId() != course.getTeacher().getId())
+            this.teacher = course.getTeacher();
+
+//        if(!this.startDate.toString().equals(course.getStartDate().toString()))
+//            this.startDate = course.getStartDate();
+//
+//        if(!this.endDate.toString().equals(course.getEndDate().toString()))
+//            this.endDate = course.getEndDate();
+
+    }
+
 }

@@ -1,11 +1,8 @@
-package com.yoo.lms.domain.service;
+package com.yoo.lms.repository;
 
-import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.Teacher;
 import com.yoo.lms.domain.valueType.Address;
-import com.yoo.lms.repository.MemberRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,13 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 
 @SpringBootTest
 @Transactional
 @Rollback(value = false)
-class MemberServiceTest {
+class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
@@ -29,18 +24,6 @@ class MemberServiceTest {
     EntityManager em;
 
 
-    @BeforeEach
-    public void before(){
-
-        Student student = new Student("yoo1", "1234", "name1", 12, new Address("1","2","3"));
-        Teacher teacher = new Teacher("yoo2", "1234", "name2", 12, new Address("1","2","3"));
-
-
-        memberRepository.save(student);
-        memberRepository.save(teacher);
-
-
-    }
 
     @Test
     public void joinTest(){

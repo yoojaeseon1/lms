@@ -1,16 +1,9 @@
-package com.yoo.lms.domain.service;
+package com.yoo.lms.repository;
 
 import com.yoo.lms.domain.Course;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.StudentCourse;
-import com.yoo.lms.domain.Teacher;
-import com.yoo.lms.domain.valueType.Address;
-import com.yoo.lms.repository.CourseRepository;
-import com.yoo.lms.repository.MemberRepository;
-import com.yoo.lms.repository.StudentCourseRepository;
-import com.yoo.lms.repository.StudentRepository;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import com.yoo.lms.service.CourseService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,12 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
 @Rollback(value = false)
-class StudentServiceTest {
+class StudentRepositoryTest {
 
     @Autowired
     EntityManager em;
@@ -40,24 +32,11 @@ class StudentServiceTest {
     StudentRepository studentRepository;
 
     @Autowired
-    StudentService studentService;
+    CourseService courseService;
 
     @Autowired
     StudentCourseRepository studentCourseRepository;
 
-    @BeforeEach
-    public void before(){
-
-        Student student = new Student("yoo1", "1234", "name1", 12, new Address("1","2","3"));
-        Teacher teacher = new Teacher("yoo2", "1234", "name2", 12, new Address("1","2","3"));
-        memberRepository.save(student);
-        memberRepository.save(teacher);
-
-        Course course = new Course("course1", teacher);
-
-        courseRepository.save(course);
-
-    }
 
     @Test
     public void enroll(){
@@ -69,7 +48,7 @@ class StudentServiceTest {
 
         Student student = studentRepository.findById("yoo1").get();
 
-        studentService.enrollCourse(student, course);
+        courseService.enrollCourse(student, course);
 
         em.flush();
         em.clear();

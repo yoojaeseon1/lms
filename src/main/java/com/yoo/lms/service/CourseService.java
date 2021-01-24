@@ -1,4 +1,4 @@
-package com.yoo.lms.domain.service;
+package com.yoo.lms.service;
 
 
 import com.yoo.lms.domain.Course;
@@ -11,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @Transactional(readOnly=true)
-public class StudentService {
+public class CourseService {
 
     @Autowired
     StudentRepository studentRepository;
@@ -23,6 +26,33 @@ public class StudentService {
 
     @Autowired
     StudentCourseRepository studentCourseRepository;
+
+    public Course findOne(Long courseId) {
+        return courseRepository.findById(courseId).get();
+    }
+
+    public List<Course> findAll(){
+        return courseRepository.findAll();
+    }
+
+    @Transactional
+    public boolean createCourse(Course course) {
+
+        List<Course> findCourse = courseRepository.findByName(course.getName());
+
+        if(findCourse.size() == 0) {
+            courseRepository.save(course);
+            return true;
+        }
+        else
+            return false;
+
+    }
+
+    public void deleteCourse(Course course) {
+        courseRepository.deleteById(course.getId());
+    }
+
 
     @Transactional
     public void enrollCourse(Student student, Course course){
@@ -43,4 +73,24 @@ public class StudentService {
 
     }
 
+    @Transactional
+    public void permitCourse(Course course) {
+        Course findCourse = courseRepository.findById(course.getId()).get();
+
+        findCourse.permitCourse();
+
+    }
+
+    @Transactional
+    public void updateCourse(Long courseId, Course updatedCourse) {
+
+        Course findCourse = courseRepository.findById(courseId).get();
+
+        findCourse.updateInfo(updatedCourse);
+
+    }
+
+
+
 }
+
