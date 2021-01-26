@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -157,14 +159,37 @@ class CourseRepositoryTest {
     public void findByTeacherName(){
 
         //given
-
+        PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when
-        List<Course> courses = courseRepository.findByTeacherName("name2");
+        Page<Course> page = courseRepository.findByTeacherName("name2", pageRequest);
+
+        List<Course> courses = page.getContent();
+        
+        
 
         //then
+//        System.out.println("=================");
+//        System.out.println("courses.get(0).getTeacher().getClass() = " + courses.get(0).getTeacher().getName());
+//        System.out.println("=================");
+        assertThat(courses.get(0).getTeacher().getName()).isEqualTo("name2");
 
-        assertThat(courses.get(0).getName()).isEqualTo("course1");
+    }
+
+    @Test
+    public void findByName(){
+
+        //given
+        List<Course> course1 = courseRepository.findByNameContaining("course%");
+        System.out.println("course1.size() : " + course1.size());
+        for (Course course : course1) {
+            System.out.println("course = " + course);
+        }
+
+        //when
+
+
+        //then
 
     }
 
@@ -185,6 +210,28 @@ class CourseRepositoryTest {
         assertThat(courses.get(0).getName()).isEqualTo("course2");
 
     }
+
+//    @Test
+//    public void findByJoin(){
+//
+//        //given
+//
+//        PageRequest pageRequest = PageRequest.of(0, 10);
+//
+//        //when
+//
+//        Page<Course> byJoin = courseRepository.findByJoin(pageRequest);
+//
+//        List<Course> content = byJoin.getContent();
+//
+////        for (Course course : content) {
+////            System.out.println("course = " + course);
+////        }
+//
+//
+//        //then
+//
+//    }
 
 
 

@@ -2,8 +2,12 @@ package com.yoo.lms.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +16,7 @@ import java.util.List;
 @DiscriminatorColumn
 @Getter
 @NoArgsConstructor
-public class Board{
-
-    public Board(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
+public abstract class Board{
 
     @Id @GeneratedValue
     @Column(name="board_id")

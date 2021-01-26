@@ -2,6 +2,7 @@ package com.yoo.lms.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -48,6 +49,7 @@ public class Course {
     @OneToMany(mappedBy="course")
     private List<CourseSchedule> courseSchedules = new ArrayList<>();
 
+    @CreatedDate
     private LocalDateTime createdDate;
 
     private LocalDate startDate;

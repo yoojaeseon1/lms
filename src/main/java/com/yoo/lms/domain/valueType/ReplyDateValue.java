@@ -1,24 +1,25 @@
 package com.yoo.lms.domain.valueType;
 
+import com.yoo.lms.domain.Member;
 import lombok.Getter;
+import org.springframework.data.annotation.CreatedDate;
 
-import javax.persistence.Embeddable;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Embeddable
 @Getter
 public class ReplyDateValue {
 
-    private String contentCreatedBy;
+    @CreatedDate
     private LocalDateTime contentCreatedDate;
-    private String contentLastModifiedBy;
     private LocalDateTime contentLastModifiedDate;
 
-    private String replyCreatedBy;
     private LocalDateTime replyCreatedDate;
-    private String replyLastModifiedBy;
     private LocalDateTime replyLastModifiedDate;
+
+
+
 
 
 }

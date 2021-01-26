@@ -5,11 +5,13 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -39,8 +41,26 @@ class CourseServiceTest {
 
         //then
 
-        Assertions.assertThat(updatedCourse.getName()).isEqualTo("newCourse");
+        assertThat(updatedCourse.getName()).isEqualTo("newCourse");
 
+    }
+
+    @Test
+    public void findByTeacherName(){
+
+        //given
+
+
+        //when
+
+        Page<Course> courses = courseService.findByTeacherName("name50", 0);
+
+
+        //then
+
+        assertThat(courses.getContent().get(0).getName()).isEqualTo("course50");
+
+        assertThat(courses.getTotalElements()).isEqualTo(1);
     }
 
 }

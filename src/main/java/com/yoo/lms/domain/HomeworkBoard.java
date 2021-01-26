@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @DiscriminatorValue("H")
 @Getter
-
 public class HomeworkBoard extends Board{
 
     @Id @GeneratedValue
@@ -18,6 +17,10 @@ public class HomeworkBoard extends Board{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="course_id")
     private Course course;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="member_id")
+    private Member createdBy;
 
     @Embedded
     private DateValue dateValue;

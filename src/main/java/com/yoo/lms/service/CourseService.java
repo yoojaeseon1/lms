@@ -7,25 +7,29 @@ import com.yoo.lms.domain.StudentCourse;
 import com.yoo.lms.repository.CourseRepository;
 import com.yoo.lms.repository.StudentCourseRepository;
 import com.yoo.lms.repository.StudentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly=true)
 public class CourseService {
 
-    @Autowired
-    StudentRepository studentRepository;
+    private final StudentRepository studentRepository;
 
-    @Autowired
-    CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
 
-    @Autowired
-    StudentCourseRepository studentCourseRepository;
+    private final StudentCourseRepository studentCourseRepository;
+
+    private final int pageSize = 10;
 
     public Course findOne(Long courseId) {
         return courseRepository.findById(courseId).get();
@@ -38,7 +42,7 @@ public class CourseService {
     @Transactional
     public boolean createCourse(Course course) {
 
-        List<Course> findCourse = courseRepository.findByName(course.getName());
+        List<Course> findCourse = courseRepository.findByNameContaining(course.getName());
 
         if(findCourse.size() == 0) {
             courseRepository.save(course);
@@ -61,9 +65,9 @@ public class CourseService {
 
         Course findCourse = courseRepository.findById(course.getId()).get();
 
-        System.out.println("===================");
-        System.out.println("findCourse = " + findCourse.getTeacher().getName());
-        System.out.println("===================");
+//        System.out.println("===================");
+//        System.out.println("findCourse = " + findCourse.getTeacher().getName());
+//        System.out.println("===================");
 
         StudentCourse studentCourse = new StudentCourse();
 
@@ -90,7 +94,13 @@ public class CourseService {
 
     }
 
+    public Page<Course> findByTeacherName(String teacherName, int currentPage) {
 
+        PageRequest pageRequest = PageRequest.of(currentPage, pageSize);
 
+        Page<Course> page = courseRepository.findByTeacherName(teacherName, pageRequest);
+
+        return page;
+
+    }
 }
-
