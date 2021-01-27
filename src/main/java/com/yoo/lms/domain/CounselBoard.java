@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
+@DiscriminatorValue("Counsel")
 @Getter
-public class CounselBoard {
+public class CounselBoard extends Board{
 
     public CounselBoard(String title, String content, Member contentCreatedBy) {
-        this.title = title;
-        this.content = content;
+        super(title, content);
         this.contentCreatedBy = contentCreatedBy;
     }
 
@@ -25,8 +25,6 @@ public class CounselBoard {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="content_member_id")
     private Member contentCreatedBy;
-    private String title;
-    private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="reply_member_id")

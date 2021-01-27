@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@DiscriminatorValue("C")
+@DiscriminatorValue("Course")
 @Getter
 @NoArgsConstructor
 public class CourseBoard extends Board{

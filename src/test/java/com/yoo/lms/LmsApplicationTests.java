@@ -2,6 +2,7 @@ package com.yoo.lms;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.*;
+import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.domain.valueType.Address;
 import com.yoo.lms.repository.MemberRepository;
 import org.assertj.core.api.Assertions;
@@ -91,7 +92,7 @@ class LmsApplicationTests {
 	@Test
 	public void insertTest2(){
 
-		Teacher teacher = new Teacher("teacherId", "1234", "name", 23, new Address("1","2","3"));
+		Teacher teacher = new Teacher("teacherId", "1234", "name", 23, new Address("1","2","3"), LocalDate.now(), MemberType.TEACHER);
 		em.persist(teacher);
 
 		Course course = new Course("courseName", teacher);

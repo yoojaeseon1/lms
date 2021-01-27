@@ -2,6 +2,7 @@ package com.yoo.lms.repository;
 
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.Teacher;
+import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.domain.valueType.Address;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 
 
 @SpringBootTest
@@ -28,8 +30,8 @@ class MemberRepositoryTest {
     @Test
     public void joinTest(){
 
-        Student student1 = new Student("yoo1", "1234", "name1", 12, new Address("1","2","3"));
-        Teacher teacher = new Teacher("yoo2", "1234", "name2", 12, new Address("1","2","3"));
+        Student student1 = new Student("yoo1", "1234", "name1", 12, new Address("1","2","3"), LocalDate.now(), MemberType.STUDENT);
+        Teacher teacher = new Teacher("yoo2", "1234", "name2", 12, new Address("1","2","3"), LocalDate.now(), MemberType.TEACHER);
 
         memberRepository.save(student1);
         memberRepository.save(teacher);

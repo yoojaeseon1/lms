@@ -15,6 +15,7 @@ import com.yoo.lms.repository.custom.CourseRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
@@ -38,64 +39,128 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
     }
 
     @Override
-    public List<BoardListDto> searchByAllCriteria(String keyword, Pageable pageable) {
+    public List<BoardListDto> searchAll(int page, int size) {
+
+        BooleanExpression condition = null;
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return createSearchQuery(condition, pageRequest);
+    }
+
+    @Override
+    public long countTotalAll(int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
+        BooleanExpression condition = null;
+
+        return createTotalCountQuery(null);
+    }
+
+    @Override
+    public List<BoardListDto> searchByAllCriteria(String keyword, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
 
         BooleanExpression condition = courseBoard.title.contains(keyword)
                 .or(courseBoard.content.contains(keyword))
-                .or(courseBoard.createdBy.name.contains(keyword));
+                .or(courseBoard.createdBy.id.contains(keyword));
 
-        return createSearchQuery(condition, pageable);
+        return createSearchQuery(condition, pageRequest);
 
     }
 
     @Override
-    public long countTotalByAllCriteria(String keyword) {
+    public long countTotalByAllCriteria(String keyword, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if (page == 0)
+                return (long) numCurrentPageContent;
+            else
+                return (long) (page * size) + numCurrentPageContent;
+        }
 
         BooleanExpression condition = courseBoard.title.contains(keyword)
                 .or(courseBoard.content.contains(keyword))
-                .or(courseBoard.createdBy.name.contains(keyword));
+                .or(courseBoard.createdBy.id.contains(keyword));
 
         return createTotalCountQuery(condition);
     }
 
     @Override
-    public List<BoardListDto> searchByTitle(String title, Pageable pageable) {
+    public List<BoardListDto> searchByTitle(String title, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        BooleanExpression condition = courseBoard.title.contains(title);
+
+        return createSearchQuery(condition, pageRequest);
+    }
+
+    @Override
+    public long countTotalByTitle(String title, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if (page == 0)
+                return (long) numCurrentPageContent;
+            else
+                return (long) (page * size) + numCurrentPageContent;
+        }
 
         BooleanExpression condition = courseBoard.title.contains(title);
 
-        return createSearchQuery(condition, pageable);
+        return createTotalCountQuery(condition);
     }
 
     @Override
-    public long countTotalByTitle(String title) {
+    public List<BoardListDto> searchByContent(String content, int page, int size) {
 
-        BooleanExpression condition = courseBoard.title.contains(title);
+        PageRequest pageRequest = PageRequest.of(page, size);
+        BooleanExpression condition = courseBoard.content.contains(content);
+
+        return createSearchQuery(condition, pageRequest);
+    }
+
+    @Override
+    public long countTotalByContent(String content, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if (page == 0)
+                return (long) numCurrentPageContent;
+            else
+                return (long) (page * size) + numCurrentPageContent;
+        }
+
+        BooleanExpression condition = courseBoard.content.contains(content);
 
         return createTotalCountQuery(condition);
     }
 
     @Override
-    public List<BoardListDto> searchByContent(String content, Pageable pageable) {
+    public List<BoardListDto> searchByWriter(String writer, int page, int size) {
 
-        BooleanExpression condition = courseBoard.content.contains(content);
-        return createSearchQuery(condition, pageable);
+        PageRequest pageRequest = PageRequest.of(page, size);
+        BooleanExpression condition = courseBoard.createdBy.id.contains(writer);
+
+        return createSearchQuery(condition, pageRequest);
     }
 
     @Override
-    public long countTotalByContent(String content) {
-        BooleanExpression condition = courseBoard.content.contains(content);
-        return createTotalCountQuery(condition);
-    }
+    public long countTotalByWriter(String writer, int page, int size, int numCurrentPageContent) {
 
-    @Override
-    public List<BoardListDto> searchByWriter(String writer, Pageable pageable) {
-        BooleanExpression condition = courseBoard.createdBy.name.contains(writer);
-        return createSearchQuery(condition, pageable);
-    }
+        if(numCurrentPageContent < size) {
+            if (page == 0)
+                return (long) numCurrentPageContent;
+            else
+                return (long) (page * size) + numCurrentPageContent;
+        }
 
-    @Override
-    public long countTotalByWriter(String writer) {
-        BooleanExpression condition = courseBoard.createdBy.name.contains(writer);
+        BooleanExpression condition = courseBoard.createdBy.id.contains(writer);
+
         return createTotalCountQuery(condition);
     }
 
@@ -108,11 +173,11 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
                         courseBoard.id,
                         courseBoard.title,
                         courseBoard.dateValue.createdDate,
-                        courseBoard.createdBy.name,
+                        courseBoard.createdBy.id,
                         courseBoard.viewCount
                 ))
                 .from(courseBoard)
-                .join(courseBoard.createdBy, member)
+//                .join(courseBoard.createdBy, member)
                 .where(condition)
                 .orderBy(courseBoard.id.desc())
                 .offset(pageable.getOffset())
@@ -125,7 +190,7 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
 
         return queryFactory
                 .selectFrom(courseBoard)
-                .join(courseBoard.createdBy, member)
+//                .join(courseBoard.createdBy, member)
                 .where(condition)
                 .fetchCount();
     }

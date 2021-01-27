@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -28,15 +27,16 @@ class CourseBoardRepositoryTest {
 
         //given
 
-        String text = "name1";
+        String keyword = "teacher1";
+        int page = 0;
+        int size = 10;
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when
 
-        List<BoardListDto> content = courseBoardRepository.searchByAllCriteria(text, pageRequest);
-        long totalCount = courseBoardRepository.countTotalByAllCriteria(text);
+        List<BoardListDto> content = courseBoardRepository.searchByAllCriteria(keyword, page, size);
+        long totalCount = courseBoardRepository.countTotalByAllCriteria(keyword, page, size, content.size());
 
-//        List<BoardListDto> content = boardListDtos.getContent();
 
         System.out.println("==========");
         for (BoardListDto boardListDto : content) {

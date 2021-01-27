@@ -1,5 +1,6 @@
 package com.yoo.lms.domain;
 
+import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.domain.valueType.Address;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,12 +19,13 @@ import java.util.List;
 @Getter @Setter
 public class Member {
 
-    public Member(String id, String password, String name, int age, Address address) {
+    public Member(String id, String password, String name, int age, Address address, LocalDate birthDate, MemberType memberType) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.age = age;
         this.address = address;
+        this.memberType = memberType;
     }
 
     @Id
@@ -32,6 +35,12 @@ public class Member {
     private String password;
     private String name;
     private int age;
+
+    @Enumerated(EnumType.STRING)
+    private MemberType memberType;
+
+    private LocalDate birthDate;
+
 
     @Embedded
     private Address address;

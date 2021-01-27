@@ -10,6 +10,12 @@ import javax.persistence.*;
 @Getter
 public class HomeworkBoard extends Board{
 
+    public HomeworkBoard(String title, String content, Course course, Member createdBy) {
+        super(title, content);
+        this.course = course;
+        this.createdBy = createdBy;
+    }
+
     @Id @GeneratedValue
     @Column(name="homeword_board_id")
     private Long id;

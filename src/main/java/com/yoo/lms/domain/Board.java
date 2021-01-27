@@ -18,6 +18,11 @@ import java.util.List;
 @NoArgsConstructor
 public abstract class Board{
 
+    public Board(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
     @Id @GeneratedValue
     @Column(name="board_id")
     private Long id;

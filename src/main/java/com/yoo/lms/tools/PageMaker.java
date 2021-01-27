@@ -12,16 +12,19 @@ public class PageMaker {
     private int endPage;
     private boolean prev;
     private boolean next;
-    private int totalCount;
+    private int numTotalContent;
+    private int numTotalPage;
 
     private int pageSize; // 한 페이지 당 데이터 개수
     private int displayPageNum; // 페이지 번호의 개수(밑에 10개의 페이지를 이동가능한 버튼의 개수)
 
     public PageMaker(int currentPage, int totalCount) {
         this.currentPage = currentPage;
-        this.totalCount = totalCount;
+        this.numTotalContent = totalCount;
         this.pageSize = 10;
         this.displayPageNum = 10;
+        this.numTotalPage = (int) (Math.ceil(totalCount / (double) pageSize));
+        calcData();
     }
 
     private void calcData() {
@@ -30,14 +33,12 @@ public class PageMaker {
 
         startPage = (endPage - displayPageNum) + 1;
 
-        int tempEndPage = (int) (Math.ceil(totalCount / (double) pageSize));
-
-        if (endPage > tempEndPage)
-            endPage = tempEndPage;
+        if (endPage > numTotalPage)
+            endPage = numTotalPage;
 
         prev = startPage == 1 ? false : true;
 
-        next = endPage * pageSize >= totalCount ? false : true;
+        next = endPage * pageSize >= numTotalContent ? false : true;
     }
 
 
@@ -60,5 +61,4 @@ public class PageMaker {
             return "";
         }
     }
-
 }

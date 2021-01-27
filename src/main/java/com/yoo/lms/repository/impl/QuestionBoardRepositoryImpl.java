@@ -6,6 +6,7 @@ import com.yoo.lms.domain.QQuestionBoard;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.dto.QBoardListDto;
 import com.yoo.lms.repository.custom.QBoardRepositoryCustom;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
@@ -27,63 +28,128 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
 
 
     @Override
-    public List<BoardListDto> searchByAllCriteria(String keyword, Pageable pageable) {
+    public List<BoardListDto> searchAll(int page, int size) {
+
+        BooleanExpression condition = null;
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return createSearchQuery(condition, pageRequest);
+    }
+
+    @Override
+    public long countTotalAll(int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
+        BooleanExpression condition = null;
+
+        return createTotalCountQuery(null);
+    }
+
+    @Override
+    public List<BoardListDto> searchByAllCriteria(String keyword, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
         BooleanExpression condition = questionBoard
                 .title.contains(keyword)
                 .or(questionBoard.content.contains(keyword))
-                .or(questionBoard.contentCreatedBy.name.contains(keyword));
+                .or(questionBoard.contentCreatedBy.id.contains(keyword));
 
-        return createSearchQuery(condition, pageable);
+        return createSearchQuery(condition, pageRequest);
     }
 
     @Override
-    public long countTotalByAllCriteria(String keyword) {
+    public long countTotalByAllCriteria(String keyword, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
         BooleanExpression condition = questionBoard
                 .title.contains(keyword)
                 .or(questionBoard.content.contains(keyword))
-                .or(questionBoard.contentCreatedBy.name.contains(keyword));
+                .or(questionBoard.contentCreatedBy.id.contains(keyword));
 
         return createTotalCountQuery(condition);
     }
 
     @Override
-    public List<BoardListDto> searchByTitle(String title, Pageable pageable) {
+    public List<BoardListDto> searchByTitle(String title, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
         BooleanExpression condition = questionBoard.title.contains(title);
 
-        return createSearchQuery(condition, pageable);
+        return createSearchQuery(condition, pageRequest);
     }
 
     @Override
-    public long countTotalByTitle(String title) {
+    public long countTotalByTitle(String title, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
         BooleanExpression condition = questionBoard.title.contains(title);
 
         return createTotalCountQuery(condition);
     }
 
     @Override
-    public List<BoardListDto> searchByContent(String content, Pageable pageable) {
+    public List<BoardListDto> searchByContent(String content, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
         BooleanExpression condition = questionBoard.content.contains(content);
 
-        return createSearchQuery(condition, pageable);
+        return createSearchQuery(condition, pageRequest);
     }
 
     @Override
-    public long countTotalByContent(String content) {
+    public long countTotalByContent(String content, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
         BooleanExpression condition = questionBoard.content.contains(content);
 
         return createTotalCountQuery(condition);
     }
 
     @Override
-    public List<BoardListDto> searchByWriter(String writer, Pageable pageable) {
-        BooleanExpression condition = questionBoard.contentCreatedBy.name.contains(writer);
+    public List<BoardListDto> searchByWriter(String writer, int page, int size) {
 
-        return createSearchQuery(condition, pageable);
+        PageRequest pageRequest = PageRequest.of(page, size);
+        BooleanExpression condition = questionBoard.contentCreatedBy.id.contains(writer);
+
+        return createSearchQuery(condition, pageRequest);
     }
 
     @Override
-    public long countTotalByWriter(String writer) {
-        BooleanExpression condition = questionBoard.contentCreatedBy.name.contains(writer);
+    public long countTotalByWriter(String writer, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
+        BooleanExpression condition = questionBoard.contentCreatedBy.id.contains(writer);
 
         return createTotalCountQuery(condition);
     }
@@ -97,11 +163,10 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
                         questionBoard.id,
                         questionBoard.title,
                         questionBoard.replyDateValue.contentCreatedDate,
-                        questionBoard.contentCreatedBy.name,
+                        questionBoard.contentCreatedBy.id,
                         questionBoard.viewCount
                 ))
                 .from(questionBoard)
-                .join(questionBoard.contentCreatedBy, member)
                 .where(condition)
                 .orderBy(questionBoard.id.desc())
                 .offset(pageable.getOffset())
@@ -114,7 +179,6 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
 
         return queryFactory
                 .selectFrom(questionBoard)
-                .join(questionBoard.contentCreatedBy, member)
                 .where(condition)
                 .fetchCount();
 

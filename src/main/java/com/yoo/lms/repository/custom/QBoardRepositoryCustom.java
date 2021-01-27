@@ -8,17 +8,20 @@ import java.util.List;
 
 public interface QBoardRepositoryCustom {
 
-    List<BoardListDto> searchByAllCriteria(String keyword, Pageable pageable);
-    long countTotalByAllCriteria(String keyword);
+    List<BoardListDto> searchAll(int page, int size);
+    long countTotalAll(int page, int size, int numCurrentPageContent);
 
-    List<BoardListDto> searchByTitle(String title, Pageable pageable);
-    long countTotalByTitle(String title);
+    List<BoardListDto> searchByAllCriteria(String keyword, int page, int size);
+    long countTotalByAllCriteria(String keyword, int page, int size, int numCurrentPageContent);
 
-    List<BoardListDto> searchByContent(String content, Pageable pageable);
-    long countTotalByContent(String content);
+    List<BoardListDto> searchByTitle(String title, int page, int size);
+    long countTotalByTitle(String title, int page, int size, int numCurrentPageContent);
 
-    List<BoardListDto> searchByWriter(String writer, Pageable pageable);
-    long countTotalByWriter(String writer);
+    List<BoardListDto> searchByContent(String content, int page, int size);
+    long countTotalByContent(String content, int page, int size, int numCurrentPageContent);
+
+    List<BoardListDto> searchByWriter(String writer, int page, int size);
+    long countTotalByWriter(String writer, int page, int size, int numCurrentPageContent);
 
     List<BoardListDto> createSearchQuery(BooleanExpression condition, Pageable pageable);
     long createTotalCountQuery(BooleanExpression condition);
