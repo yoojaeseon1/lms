@@ -1,7 +1,7 @@
 package com.yoo.lms.repository.custom;
 
 import com.yoo.lms.dto.BoardListDto;
-import com.yoo.lms.tools.BoardSearchCondition;
+import com.yoo.lms.searchCondition.BoardSearchCondition;
 
 import java.util.List;
 

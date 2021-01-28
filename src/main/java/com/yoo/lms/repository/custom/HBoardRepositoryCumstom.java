@@ -1,11 +1,7 @@
 package com.yoo.lms.repository.custom;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.yoo.lms.domain.HomeworkBoard;
 import com.yoo.lms.dto.BoardListDto;
-import com.yoo.lms.tools.BoardSearchCondition;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.yoo.lms.searchCondition.BoardSearchCondition;
 
 import java.util.List;
 

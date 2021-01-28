@@ -2,7 +2,7 @@ package com.yoo.lms.repository;
 
 import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.dto.BoardListDto;
-import com.yoo.lms.tools.BoardSearchCondition;
+import com.yoo.lms.searchCondition.BoardSearchCondition;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

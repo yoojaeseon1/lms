@@ -4,15 +4,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 
 @Entity
 @NoArgsConstructor
 @Getter
 public class CourseSchedule {
-
-    public CourseSchedule(Course course) {
-        this.course = course;
-    }
 
     @Id @GeneratedValue
     @Column(name="course_schedule_id")
@@ -22,8 +20,10 @@ public class CourseSchedule {
     @JoinColumn(name="course_id")
     private Course course;
 
-    private String startTime;
-    private String endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
+
+    private DayOfWeek courseDay;
 
     public void addCourse(Course course) {
         course.getCourseSchedules().add(this);

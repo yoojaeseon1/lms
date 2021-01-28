@@ -1,26 +1,17 @@
 package com.yoo.lms.repository.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yoo.lms.domain.CourseBoard;
-import com.yoo.lms.domain.HomeworkBoard;
-import com.yoo.lms.domain.QHomeworkBoard;
 import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.dto.QBoardListDto;
 import com.yoo.lms.repository.custom.HBoardRepositoryCumstom;
-import com.yoo.lms.tools.BoardSearchCondition;
-import org.springframework.data.domain.Page;
+import com.yoo.lms.searchCondition.BoardSearchCondition;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.yoo.lms.domain.QCounselBoard.counselBoard;
-import static com.yoo.lms.domain.QCourseBoard.courseBoard;
 import static com.yoo.lms.domain.QHomeworkBoard.*;
 import static com.yoo.lms.domain.QMember.member;
 

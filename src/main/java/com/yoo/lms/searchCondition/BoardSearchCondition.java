@@ -1,4 +1,4 @@
-package com.yoo.lms.tools;
+package com.yoo.lms.searchCondition;
 
 import com.yoo.lms.domain.enumType.MemberType;
 import lombok.Getter;

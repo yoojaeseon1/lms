@@ -55,7 +55,6 @@ public class Course {
     private LocalDate startDate;
     private LocalDate endDate;
 
-
     public void addTeacher(Teacher teacher) {
         this.teacher = teacher;
         teacher.getCourses().add(this);

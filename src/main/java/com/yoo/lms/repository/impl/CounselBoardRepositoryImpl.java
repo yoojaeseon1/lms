@@ -6,7 +6,7 @@ import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.dto.QBoardListDto;
 import com.yoo.lms.repository.custom.CounselBoardRepositoryCustom;
-import com.yoo.lms.tools.BoardSearchCondition;
+import com.yoo.lms.searchCondition.BoardSearchCondition;
 import org.springframework.data.domain.PageRequest;
 
 import javax.persistence.EntityManager;

@@ -16,7 +16,7 @@ public class Attendance {
     public Attendance(Course course, Student student, LocalDate checkDate, AttendanceType attendanceType) {
         this.course = course;
         this.student = student;
-        this.checkDate = checkDate;
+        this.checkedDate = checkDate;
         this.attendanceType = attendanceType;
     }
 
@@ -32,7 +32,7 @@ public class Attendance {
     @JoinColumn(name="member_id")
     private Student student;
 
-    private LocalDate checkDate;
+    private LocalDate checkedDate;
 
     @Enumerated(EnumType.STRING)
     private AttendanceType attendanceType;

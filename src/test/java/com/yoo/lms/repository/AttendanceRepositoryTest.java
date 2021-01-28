@@ -1,14 +1,16 @@
 package com.yoo.lms.repository;
 
 
+import com.yoo.lms.domain.Attendance;
 import com.yoo.lms.dto.AttendanceListDto;
-import org.assertj.core.api.Assertions;
+import com.yoo.lms.searchCondition.AtSearchCondition;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -28,7 +30,7 @@ class AttendanceRepositoryTest {
 
 
         //when
-        List<AttendanceListDto> attendances = attendanceRepository.findAttendanceList(1L);
+        List<AttendanceListDto> attendances = attendanceRepository.searchStudentAttendList(1L);
 
 //        for (AttendanceListDto attendance : attendances) {
 //            System.out.println("attendance.getStudentName() = " + attendance.getStudentName());
@@ -48,6 +50,52 @@ class AttendanceRepositoryTest {
 
     }
 
+    @Test
+    public void findCourseAttendance(){
 
+        //given
+
+        long courseId = 1;
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = LocalDate.now();
+
+        AtSearchCondition atSearchCondition = new AtSearchCondition(1L, startDate, endDate);
+
+        //when
+        List<AttendanceListDto> courseAttendances = attendanceRepository.searchCourseAttendList(atSearchCondition);
+        System.out.println(" ============================== ");
+        for (AttendanceListDto attendanceListDto : courseAttendances) {
+            System.out.println("attendanceListDto.getNumAttendance() = " + attendanceListDto.getNumAttendance());
+            System.out.println("attendanceListDto.getNumAbsence() = " + attendanceListDto.getNumAbsence());
+            System.out.println("attendanceListDto.getNumLateness() = " + attendanceListDto.getNumLateness());
+            System.out.println(" ============================== ");
+        }
+
+        //then
+
+        assertThat(courseAttendances.size()).isEqualTo(1);
+        assertThat(courseAttendances.get(0).getNumLateness()).isEqualTo(11);
+
+    }
+
+    @Test
+    public void searchMyAttend(){
+
+        //given
+        AtSearchCondition atSearchCondition = new AtSearchCondition(1L, "student10", LocalDate.now(), LocalDate.now());
+
+        //when
+
+        List<Attendance> attendances = attendanceRepository.searchMyAttend(atSearchCondition);
+
+        for (Attendance attendance : attendances) {
+            System.out.println("attendance = " + attendance.getAttendanceType());
+        }
+
+        //then
+
+
+
+    }
 
 }
