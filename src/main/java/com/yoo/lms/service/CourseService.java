@@ -7,6 +7,7 @@ import com.yoo.lms.domain.StudentCourse;
 import com.yoo.lms.repository.CourseRepository;
 import com.yoo.lms.repository.StudentCourseRepository;
 import com.yoo.lms.repository.StudentRepository;
+import com.yoo.lms.searchCondition.CourseSearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -50,11 +51,11 @@ public class CourseService {
         }
         else
             return false;
-
     }
 
-    public void deleteCourse(Course course) {
-        courseRepository.deleteById(course.getId());
+    @Transactional
+    public List<Course> searchCourse(CourseSearchCondition condition) {
+        return courseRepository.searchCourse(condition);
     }
 
 
@@ -81,8 +82,7 @@ public class CourseService {
     public void permitCourse(Course course) {
         Course findCourse = courseRepository.findById(course.getId()).get();
 
-        findCourse.permitCourse();
-
+        findCourse.acceptCourse();
     }
 
     @Transactional
@@ -91,16 +91,15 @@ public class CourseService {
         Course findCourse = courseRepository.findById(courseId).get();
 
         findCourse.updateInfo(updatedCourse);
-
     }
 
-    public Page<Course> findByTeacherName(String teacherName, int currentPage) {
+    @Transactional
+    public void cancelEnrolledCourse(Long courseId, String studentId) {
+        studentCourseRepository.deleteStudentCourse(courseId, studentId);
+    }
 
-        PageRequest pageRequest = PageRequest.of(currentPage, pageSize);
-
-        Page<Course> page = courseRepository.findByTeacherName(teacherName, pageRequest);
-
-        return page;
-
+    @Transactional
+    public void deleteCourse(Course course) {
+        courseRepository.deleteById(course.getId());
     }
 }

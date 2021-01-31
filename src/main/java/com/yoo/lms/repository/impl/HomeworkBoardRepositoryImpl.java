@@ -26,7 +26,7 @@ public class HomeworkBoardRepositoryImpl implements HBoardRepositoryCumstom {
     }
 
     @Override
-    public List<BoardListDto> searchByDynamic(BoardSearchCondition condition, int page, int size) {
+    public List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
         return queryFactory
@@ -50,7 +50,16 @@ public class HomeworkBoardRepositoryImpl implements HBoardRepositoryCumstom {
     }
 
     @Override
-    public long countTotalByDinamic(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
+    public long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
+
         return queryFactory
                 .select(new QBoardListDto(
                         homeworkBoard.id,

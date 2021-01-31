@@ -34,4 +34,16 @@ public abstract class Board{
     private String title;
     private String content;
 
+    public void updateInfo(Board updated) {
+
+        if(!this.title.equals(updated.getTitle())){
+            this.title = updated.getTitle();
+        }
+
+        if(!this.content.equals(updated.getContent())) {
+            this.content = updated.getContent();
+        }
+
+    }
+
 }

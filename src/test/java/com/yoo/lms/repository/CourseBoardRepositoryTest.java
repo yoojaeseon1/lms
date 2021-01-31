@@ -1,6 +1,7 @@
 package com.yoo.lms.repository;
 
 import com.yoo.lms.dto.BoardListDto;
+import com.yoo.lms.searchCondition.BoardSearchCondition;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +28,22 @@ class CourseBoardRepositoryTest {
 
         //given
 
-        String keyword = "teacher1";
+        String title = "title1";
+        Long courseId = 1L;
+
+        BoardSearchCondition condition = new BoardSearchCondition(courseId, title, null, null, null);
+
         int page = 0;
         int size = 10;
         PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when
 
-        List<BoardListDto> content = courseBoardRepository.searchByAllCriteria(keyword, page, size);
-        long totalCount = courseBoardRepository.countTotalByAllCriteria(keyword, page, size, content.size());
+        List<BoardListDto> content = courseBoardRepository.searchPosting(condition, page, size);
+        long totalCount = courseBoardRepository.countTotalPosting(condition, page, size, content.size());
+
+//        List<BoardListDto> content = courseBoardRepository.searchByAllCriteria(keyword, page, size);
+//        long totalCount = courseBoardRepository.countTotalByAllCriteria(keyword, page, size, content.size());
 
 
         System.out.println("==========");

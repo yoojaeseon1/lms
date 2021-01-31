@@ -25,23 +25,23 @@ class AttendanceServiceTest {
     @Autowired
     EntityManager em;
 
-    @Test
-    public void updateAttendance(){
-
-        //given
-
-        //when
-        attendanceService.updateAttendance(90L, AttendanceType.ABSENCE);
-
-        em.flush();
-
-        Attendance findAttendance = attendanceService.findById(90L);
-
-        //then
-
-        assertThat(findAttendance.getAttendanceType()).isEqualTo(AttendanceType.ABSENCE);
-
-
-    }
+//    @Test
+//    public void updateAttendance(){
+//
+//        //given
+//
+//        //when
+//        attendanceService.updateAttendance(90L, AttendanceType.ABSENCE);
+//
+//        em.flush();
+//
+//        Attendance findAttendance = attendanceService.findById(90L);
+//
+//        //then
+//
+//        assertThat(findAttendance.getAttendanceType()).isEqualTo(AttendanceType.ABSENCE);
+//
+//
+//    }
 
 }

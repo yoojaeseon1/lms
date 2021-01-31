@@ -1,5 +1,6 @@
 package com.yoo.lms.domain;
 
+import com.yoo.lms.domain.enumType.CourseAcceptType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,11 +16,6 @@ import java.util.List;
 @Getter
 public class Course {
 
-    public Course(String name, Teacher teacher) {
-        this.name = name;
-        this.teacher = teacher;
-    }
-
     @Id @GeneratedValue
     private Long id;
 
@@ -29,7 +25,16 @@ public class Course {
     @JoinColumn(name="member_id")
     private Teacher teacher;
 
-    private boolean permission;
+    private int maxNumStudent;
+    private int currentNumStudent;
+
+    @Enumerated(EnumType.STRING)
+    private CourseAcceptType acceptType;
+
+    @CreatedDate
+    private LocalDate createdDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
 
     @OneToMany(mappedBy="course")
     private List<StudentCourse> studentCourses = new ArrayList<>();
@@ -49,23 +54,28 @@ public class Course {
     @OneToMany(mappedBy="course")
     private List<CourseSchedule> courseSchedules = new ArrayList<>();
 
-    @CreatedDate
-    private LocalDateTime createdDate;
 
-    private LocalDate startDate;
-    private LocalDate endDate;
+    public Course(String name, Teacher teacher, int maxNumStudent, int currentNumStudent, LocalDate startDate, LocalDate endDate) {
+        this.name = name;
+        this.teacher = teacher;
+        this.maxNumStudent = maxNumStudent;
+        this.currentNumStudent = currentNumStudent;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.acceptType = CourseAcceptType.WAITING;
+    }
 
     public void addTeacher(Teacher teacher) {
         this.teacher = teacher;
         teacher.getCourses().add(this);
     }
 
-    public void permitCourse() {
-        this.permission = true;
+    public void acceptCourse() {
+        this.acceptType = CourseAcceptType.ACCEPTED;
     }
 
-    public void declineCourse() {
-        this.permission = false;
+    public void rejectCourse() {
+        this.acceptType = CourseAcceptType.REJECTED;
     }
 
     /**
@@ -80,11 +90,14 @@ public class Course {
         if(this.teacher.getId() != course.getTeacher().getId())
             this.teacher = course.getTeacher();
 
-//        if(!this.startDate.toString().equals(course.getStartDate().toString()))
-//            this.startDate = course.getStartDate();
-//
-//        if(!this.endDate.toString().equals(course.getEndDate().toString()))
-//            this.endDate = course.getEndDate();
+        if(this.maxNumStudent != course.getMaxNumStudent())
+            this.maxNumStudent = course.getMaxNumStudent();
+
+        if(!this.startDate.toString().equals(course.getStartDate().toString()))
+            this.startDate = course.getStartDate();
+
+        if(!this.endDate.toString().equals(course.getEndDate().toString()))
+            this.endDate = course.getEndDate();
 
     }
 

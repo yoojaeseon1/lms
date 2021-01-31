@@ -27,7 +27,7 @@ public class CounselBoardRepositoryImpl implements CounselBoardRepositoryCustom 
     }
 
     @Override
-    public List<BoardListDto> searchByDynamic(BoardSearchCondition condition, int page, int size) {
+    public List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size) {
 
 
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -53,7 +53,14 @@ public class CounselBoardRepositoryImpl implements CounselBoardRepositoryCustom 
     }
 
     @Override
-    public long countTotalByDynamic(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
+    public long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
+
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
 
         return queryFactory
                 .select(new QBoardListDto(

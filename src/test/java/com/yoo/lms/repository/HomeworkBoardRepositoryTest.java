@@ -27,16 +27,17 @@ class HomeworkBoardRepositoryTest {
         //given
         String title = "homeworkBoardTitle1";
         String content = null;
+        Long courseId = 1L;
 
-        BoardSearchCondition condition = new BoardSearchCondition(title, content, null, null);
+        BoardSearchCondition condition = new BoardSearchCondition(courseId, title, content, null, null);
 
         int page = 0;
         int size = 10;
 
         //when
 
-        List<BoardListDto> contents = homeworkBoardRepository.searchByDynamic(condition, page, size);
-        long totalCount = homeworkBoardRepository.countTotalByDinamic(condition, page, size, contents.size());
+        List<BoardListDto> contents = homeworkBoardRepository.searchPosting(condition, page, size);
+        long totalCount = homeworkBoardRepository.countTotalPosting(condition, page, size, contents.size());
 
         //then
 

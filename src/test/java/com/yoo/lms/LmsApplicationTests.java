@@ -89,22 +89,22 @@ class LmsApplicationTests {
 		System.out.println("date123 = " + date);
 	}
 
-	@Test
-	public void insertTest2(){
-
-		Teacher teacher = new Teacher("teacherId", "1234", "name", 23, new Address("1","2","3"), LocalDate.now(), MemberType.TEACHER);
-		em.persist(teacher);
-
-		Course course = new Course("courseName", teacher);
-		course.addTeacher(teacher);
-
-		em.persist(course);
-
-		CourseSchedule courseSchedule = new CourseSchedule();
-		courseSchedule.addCourse(course);
-
-		em.persist(courseSchedule);
-
-	}
+//	@Test
+//	public void insertTest2(){
+//
+//		Teacher teacher = new Teacher("teacherId", "1234", "name", 23, new Address("1","2","3"), LocalDate.now(), MemberType.TEACHER);
+//		em.persist(teacher);
+//
+//		Course course = new Course("courseName", teacher);
+//		course.addTeacher(teacher);
+//
+//		em.persist(course);
+//
+//		CourseSchedule courseSchedule = new CourseSchedule();
+//		courseSchedule.addCourse(course);
+//
+//		em.persist(courseSchedule);
+//
+//	}
 
 }

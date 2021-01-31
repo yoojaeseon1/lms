@@ -40,13 +40,14 @@ class CounselBoardRepositoryTest {
 
         int page = 0;
         int size = 10;
+        Long courseId = 1L;
 
-        BoardSearchCondition condition = new BoardSearchCondition(title, content, memberId, memberType);
+        BoardSearchCondition condition = new BoardSearchCondition(courseId, title, content, memberId, memberType);
 
         //when
 
-        List<BoardListDto> contents = counselBoardRepository.searchByDynamic(condition, page, size);
-        long totalCount = counselBoardRepository.countTotalByDynamic(condition, page, size, contents.size());
+        List<BoardListDto> contents = counselBoardRepository.searchPosting(condition, page, size);
+        long totalCount = counselBoardRepository.countTotalPosting(condition, page, size, contents.size());
 
         //then
 

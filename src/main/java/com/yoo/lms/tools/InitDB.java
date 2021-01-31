@@ -42,30 +42,42 @@ public class InitDB {
 
         public void dbInit1() {
 
+            // create member(teacher)
+
             Teacher[] teachers = new Teacher[51];
 
             for(int i = 1; i <= 50; i++) {
-                Teacher teacher = new Teacher("teacher"+i, "1234", "name"+i, 12, new Address("1","2","3"), LocalDate.now(), MemberType.TEACHER);
+                Teacher teacher = new Teacher("teacherId"+i, "1234", "teacherName"+i, 12, new Address("1","2","3"), LocalDate.now(), MemberType.TEACHER);
                 memberRepository.save(teacher);
                 teachers[i] = teacher;
             }
 
+            // create member(student)
+
             Student[] students = new Student[51];
 
             for(int i = 1; i <= 50; i++) {
-                Student student = new Student("student"+i, "1234", "name"+i, 12, new Address("1","2","3"), LocalDate.now(), MemberType.STUDENT);
+                Student student = new Student("studentId"+i, "1234", "studentName"+i, 12, new Address("1","2","3"), LocalDate.now(), MemberType.STUDENT);
                 memberRepository.save(student);
                 students[i] = student;
             }
 
-
-
             em.flush();
+
+            // create course
 
             Course[] courses = new Course[51];
 
             for(int i = 1; i <= 50; i++) {
-                Course course = new Course("course"+i, teachers[i]);
+
+                Course course = new Course(
+                        "course"+i,
+                        teachers[i],
+                        50,
+                        0,
+                        LocalDate.of(2020,12,1),
+                        LocalDate.of(2021,3,1));
+
                 courseRepository.save(course);
                 courses[i] = course;
             }
@@ -85,32 +97,34 @@ public class InitDB {
 
             // create attendance
 
-            for(int i = 1; i <= 10; i++) {
-                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTEANDANCE);
-                attendanceRepository.save(attendance);
-            }
-
-            for(int i = 1; i <= 10; i++) {
-                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTEANDANCE);
-                attendanceRepository.save(attendance);
-            }
-
-            for(int i = 10; i <= 20; i++) {
-                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.LATENESS);
-                attendanceRepository.save(attendance);
-            }
+//            for(int i = 1; i <= 10; i++) {
+//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTEANDANCE);
+//                attendanceRepository.save(attendance);
+//            }
+//
+//            for(int i = 1; i <= 10; i++) {
+//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTEANDANCE);
+//                attendanceRepository.save(attendance);
+//            }
+//
+//            for(int i = 10; i <= 20; i++) {
+//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.LATENESS);
+//                attendanceRepository.save(attendance);
+//            }
 
             // create courseBoard
 
-            for(int i = 1; i <= 50; i++) {
+//            for(int i = 1; i <= 50; i++) {
+//
+//                CourseBoard courseBoard = new CourseBoard("title"+i, "content"+i, teachers[i], courses[i]);
+//                courseBoardRepository.save(courseBoard);
+//
+//            }
 
-                CourseBoard courseBoard = new CourseBoard("title"+i, "content"+i, teachers[i], courses[i]);
-                courseBoardRepository.save(courseBoard);
+            // create questionBoard
 
-            }
-
-            for (int i = 1; i <= 50; i++) {
-                QuestionBoard questionBoard = new QuestionBoard(courses[i], "QBoardTitle"+i, "QBoardContent"+i, students[i]);
+            for (int i = 1; i <= 46; i++) {
+                QuestionBoard questionBoard = new QuestionBoard(courses[2], "QBoardTitle"+i, "QBoardContent"+i, students[i]);
                 questionBoardRepository.save(questionBoard);
             }
 
@@ -118,19 +132,19 @@ public class InitDB {
              * create counselBoard
              */
 
-            for(int i = 1; i <= 50; i++) {
-                CounselBoard counselBoard = new CounselBoard("counselBoardTitle"+i, "counselBoardContent"+i, teachers[i]);
-                counselBoardRepository.save(counselBoard);
-            }
+//            for(int i = 1; i <= 50; i++) {
+//                CounselBoard counselBoard = new CounselBoard("counselBoardTitle"+i, "counselBoardContent"+i, teachers[i]);
+//                counselBoardRepository.save(counselBoard);
+//            }
 
             /**
              * create homeworkBoard
              */
 
-            for(int i = 1; i <= 50; i++) {
-                HomeworkBoard homeworkBoard = new HomeworkBoard("homeworkBoardTitle"+i, "homeworkBoardContent"+i, courses[i], teachers[i]);
-                homeworkBoardRepository.save(homeworkBoard);
-            }
+//            for(int i = 1; i <= 50; i++) {
+//                HomeworkBoard homeworkBoard = new HomeworkBoard("homeworkBoardTitle"+i, "homeworkBoardContent"+i, courses[i], teachers[i]);
+//                homeworkBoardRepository.save(homeworkBoard);
+//            }
 
         }
 

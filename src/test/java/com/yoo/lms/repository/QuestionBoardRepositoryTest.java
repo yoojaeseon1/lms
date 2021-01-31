@@ -23,51 +23,51 @@ class QuestionBoardRepositoryTest {
     @Autowired
     QuestionBoardRepository questionBoardRepository;
 
-    @Test
-    public void searchByAllCriteria(){
-
-        //given
-
-        int page = 0;
-        int size = 10;
-
-        String keyword = "student1";
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        //when
-
-        List<BoardListDto> content = questionBoardRepository.searchByAllCriteria(keyword, page, size);
-
-        long totalCount = questionBoardRepository.countTotalByAllCriteria(keyword, page, size, content.size());
-
-
-        //then
-
-        assertThat(content.get(0).getTitle()).isEqualTo("QBoardTitle19");
-        assertThat(totalCount).isEqualTo(11);
-
-    }
-
-    @Test
-    public void searchAll(){
-
-        //given
-        int page = 0;
-        int size = 10;
-
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        //when
-
-        List<BoardListDto> content = questionBoardRepository.searchAll(page, size);
-
-        long totalCount = questionBoardRepository.countTotalAll(page, size, content.size());
-
-        //then
-
-        assertThat(content.size()).isEqualTo(10);
-        assertThat(totalCount).isEqualTo(50);
-
-    }
+//    @Test
+//    public void searchByAllCriteria(){
+//
+//        //given
+//
+//        int page = 0;
+//        int size = 10;
+//
+//        String keyword = "student1";
+//        PageRequest pageRequest = PageRequest.of(page, size);
+//
+//        //when
+//
+//        List<BoardListDto> content = questionBoardRepository.searchByAllCriteria(keyword, page, size);
+//
+//        long totalCount = questionBoardRepository.countTotalByAllCriteria(keyword, page, size, content.size());
+//
+//
+//        //then
+//
+//        assertThat(content.get(0).getTitle()).isEqualTo("QBoardTitle19");
+//        assertThat(totalCount).isEqualTo(11);
+//
+//    }
+//
+//    @Test
+//    public void searchAll(){
+//
+//        //given
+//        int page = 0;
+//        int size = 10;
+//
+//        PageRequest pageRequest = PageRequest.of(page, size);
+//
+//        //when
+//
+//        List<BoardListDto> content = questionBoardRepository.searchAll(page, size);
+//
+//        long totalCount = questionBoardRepository.countTotalAll(page, size, content.size());
+//
+//        //then
+//
+//        assertThat(content.size()).isEqualTo(10);
+//        assertThat(totalCount).isEqualTo(50);
+//
+//    }
 
 }

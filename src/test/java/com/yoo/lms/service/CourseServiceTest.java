@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +33,7 @@ class CourseServiceTest {
         //given
         Course course = courseService.findOne(1L);
 
-        Course updateCourse = new Course("newCourse", course.getTeacher());
+        Course updateCourse = new Course("newCourse", course.getTeacher(), 50, 10, LocalDate.now(), LocalDate.now());
         courseService.updateCourse(course.getId(), updateCourse);
         em.flush();
 
@@ -43,24 +45,6 @@ class CourseServiceTest {
 
         assertThat(updatedCourse.getName()).isEqualTo("newCourse");
 
-    }
-
-    @Test
-    public void findByTeacherName(){
-
-        //given
-
-
-        //when
-
-        Page<Course> courses = courseService.findByTeacherName("name50", 0);
-
-
-        //then
-
-        assertThat(courses.getContent().get(0).getName()).isEqualTo("course50");
-
-        assertThat(courses.getTotalElements()).isEqualTo(1);
     }
 
 }

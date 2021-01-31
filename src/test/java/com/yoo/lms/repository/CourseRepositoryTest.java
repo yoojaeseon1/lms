@@ -5,6 +5,7 @@ import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.StudentCourse;
 import com.yoo.lms.domain.Teacher;
 import com.yoo.lms.domain.valueType.Address;
+import com.yoo.lms.searchCondition.CourseSearchCondition;
 import com.yoo.lms.service.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -96,7 +98,7 @@ class CourseRepositoryTest {
 
 //        System.out.println("course.getTeacher().getName() = " + course.getTeacher().getName());
 
-        Student student = studentRepository.findById("yoo1").get();
+        Student student = studentRepository.findById("studentId1").get();
 
         StudentCourse studentCourse = new StudentCourse();
 
@@ -112,11 +114,30 @@ class CourseRepositoryTest {
         em.clear();
 
         //when
-        StudentCourse findStudentCourse = studentCourseRepository.findById(2L).get();
+
+        Student findStudent = studentRepository.findById("studentId1").get();
 
 
         // then
-        assertThat(findStudentCourse.getStudent().getName()).isEqualTo("name1");
+
+        assertThat(findStudent.getStudentCourses().get(0).getCourse().getName()).isEqualTo("course1");
+    }
+
+    @Test
+    public void searchCourse(){
+
+        //given
+        CourseSearchCondition condition = new CourseSearchCondition(null, "teacherName1", null, null, null);
+
+        //when
+
+        List<Course> courses = courseRepository.searchCourse(condition);
+
+        //then
+
+        assertThat(courses.size()).isEqualTo(11);
+        assertThat(courses.get(0).getName()).isEqualTo("course1");
+
 
     }
 
@@ -125,7 +146,7 @@ class CourseRepositoryTest {
 
         //given
         Course findCourse = courseRepository.findById(1L).get();
-        Course updateCourse = new Course("updatedName", findCourse.getTeacher());
+        Course updateCourse = new Course("updatedName", findCourse.getTeacher(), 50, 10, LocalDate.now(), LocalDate.now());
 
         //when
         findCourse.updateInfo(updateCourse);
@@ -136,60 +157,6 @@ class CourseRepositoryTest {
         //then
 
         assertThat(updatedCourse.getName()).isEqualTo("updatedName");
-
-    }
-
-    @Test
-    public void findByPermission(){
-
-        //given
-
-
-        //when
-        List<Course> courses = courseRepository.findByPermission(false);
-
-
-        //then
-
-        assertThat(courses.get(0).getName()).isEqualTo("course1");
-
-    }
-
-    @Test
-    public void findByTeacherName(){
-
-        //given
-        PageRequest pageRequest = PageRequest.of(0, 10);
-
-        //when
-        Page<Course> page = courseRepository.findByTeacherName("name2", pageRequest);
-
-        List<Course> courses = page.getContent();
-        
-        
-
-        //then
-//        System.out.println("=================");
-//        System.out.println("courses.get(0).getTeacher().getClass() = " + courses.get(0).getTeacher().getName());
-//        System.out.println("=================");
-        assertThat(courses.get(0).getTeacher().getName()).isEqualTo("name2");
-
-    }
-
-    @Test
-    public void findByName(){
-
-        //given
-        List<Course> course1 = courseRepository.findByNameContaining("course%");
-        System.out.println("course1.size() : " + course1.size());
-        for (Course course : course1) {
-            System.out.println("course = " + course);
-        }
-
-        //when
-
-
-        //then
 
     }
 
@@ -210,29 +177,6 @@ class CourseRepositoryTest {
         assertThat(courses.get(0).getName()).isEqualTo("course2");
 
     }
-
-//    @Test
-//    public void findByJoin(){
-//
-//        //given
-//
-//        PageRequest pageRequest = PageRequest.of(0, 10);
-//
-//        //when
-//
-//        Page<Course> byJoin = courseRepository.findByJoin(pageRequest);
-//
-//        List<Course> content = byJoin.getContent();
-//
-////        for (Course course : content) {
-////            System.out.println("course = " + course);
-////        }
-//
-//
-//        //then
-//
-//    }
-
 
 
 }

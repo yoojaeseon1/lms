@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface CounselBoardRepositoryCustom {
 
-    List<BoardListDto> searchByDynamic(BoardSearchCondition condition, int page, int size);
+    List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size);
 
-    long countTotalByDynamic(BoardSearchCondition condition, int page, int size, int numCurrentPageContent);
+    long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent);
 
 
 }
