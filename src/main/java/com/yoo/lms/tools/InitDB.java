@@ -123,8 +123,8 @@ public class InitDB {
 
             // create questionBoard
 
-            for (int i = 1; i <= 46; i++) {
-                QuestionBoard questionBoard = new QuestionBoard(courses[2], "QBoardTitle"+i, "QBoardContent"+i, students[i]);
+            for (int i = 1; i <= 157; i++) {
+                QuestionBoard questionBoard = new QuestionBoard(courses[2], "질문 게시판"+i, "QBoardContent"+i, students[i % 50]);
                 questionBoardRepository.save(questionBoard);
             }
 

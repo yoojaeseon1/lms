@@ -11,4 +11,9 @@ public interface QBoardRepositoryCustom {
 
     List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size);
     long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent);
+
+    List<BoardListDto> searchPostingAllCriteria(BoardSearchCondition condition, int page, int size);
+    long countTotalAllCriteria(BoardSearchCondition condition, int page, int size, int numCurrentPageContent);
+
+
 }

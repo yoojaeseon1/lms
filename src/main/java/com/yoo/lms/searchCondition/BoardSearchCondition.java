@@ -36,12 +36,23 @@ public class BoardSearchCondition {
                 this.title = searchCriteria.getKeyword();
                 break;
 
+            case "content":
+                this.content = searchCriteria.getKeyword();
+                break;
+
+            case "titleAndContent":
+                this.title = searchCriteria.getKeyword();
+                this.content = searchCriteria.getKeyword();
+                break;
+
             case "writer":
                 this.memberId = searchCriteria.getKeyword();
                 break;
 
-            case "content":
-                this.content = searchCriteria.getContent();
+            default :
+                this.title = searchCriteria.getKeyword();
+                this.memberId = searchCriteria.getKeyword();
+                this.content = searchCriteria.getKeyword();
         }
 
     }

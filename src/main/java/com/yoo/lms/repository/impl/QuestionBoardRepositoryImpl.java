@@ -83,20 +83,74 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
                 .fetchCount();
     }
 
+
+    @Override
+    public List<BoardListDto> searchPostingAllCriteria(BoardSearchCondition condition, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return queryFactory
+                .select(new QBoardListDto(
+                        questionBoard.id,
+                        questionBoard.title,
+                        questionBoard.replyDateValue.contentCreatedDate,
+                        questionBoard.contentCreatedBy.id,
+                        questionBoard.viewCount
+                ))
+                .from(questionBoard)
+                .where(
+                        courseIdEq(condition.getCourseId()),
+                        titleContains(condition.getTitle())
+                            .or(contentContains(condition.getContent()))
+                            .or(createdByIdContains(condition.getMemberId()))
+                )
+                .orderBy(questionBoard.id.desc())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+    }
+
+    @Override
+    public long countTotalAllCriteria(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
+
+        return queryFactory
+                .select(new QBoardListDto(
+                        questionBoard.id,
+                        questionBoard.title,
+                        questionBoard.replyDateValue.contentCreatedDate,
+                        questionBoard.contentCreatedBy.id,
+                        questionBoard.viewCount
+                ))
+                .from(questionBoard)
+                .where(
+                        courseIdEq(condition.getCourseId()),
+                        titleContains(condition.getTitle())
+                                .or(contentContains(condition.getContent()))
+                                .or(createdByIdContains(condition.getMemberId()))
+                )
+                .fetchCount();
+    }
+
     private BooleanExpression courseIdEq(Long courseId) {
         return courseId == null ? null : questionBoard.course.id.eq(courseId);
     }
 
     private BooleanExpression titleContains(String title) {
-        return title == null ? null : questionBoard.title.contains(title);
+        return title == null ? null : questionBoard.title.containsIgnoreCase(title);
     }
 
     private BooleanExpression contentContains(String content) {
-        return content == null ? null : questionBoard.content.contains(content);
+        return content == null ? null : questionBoard.content.containsIgnoreCase(content);
     }
 
     private BooleanExpression createdByIdContains(String writer) {
-        return writer == null ? null : questionBoard.contentCreatedBy.id.contains(writer);
+        return writer == null ? null : questionBoard.contentCreatedBy.id.containsIgnoreCase(writer);
     }
 
 }

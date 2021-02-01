@@ -51,11 +51,11 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
 
 
     private BooleanExpression courseNameContains(String courseName) {
-        return courseName == null ? null : course.name.contains(courseName);
+        return courseName == null ? null : course.name.containsIgnoreCase(courseName);
     }
 
     private BooleanExpression teacherNameContains(String teacherName) {
-        return teacherName == null ? null : course.teacher.name.contains(teacherName);
+        return teacherName == null ? null : course.teacher.name.containsIgnoreCase(teacherName);
     }
 
     private BooleanExpression startDateGoe(LocalDate startDate) {

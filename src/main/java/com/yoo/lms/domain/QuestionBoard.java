@@ -3,6 +3,7 @@ package com.yoo.lms.domain;
 import com.yoo.lms.domain.valueType.ReplyDateValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -17,6 +18,11 @@ public class QuestionBoard extends Board{
         this.title = title;
         this.content = content;
         this.contentCreatedBy = contentCreatedBy;
+    }
+
+    public QuestionBoard(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

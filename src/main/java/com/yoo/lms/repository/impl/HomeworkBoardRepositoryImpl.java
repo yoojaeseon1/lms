@@ -78,15 +78,15 @@ public class HomeworkBoardRepositoryImpl implements HBoardRepositoryCumstom {
     }
 
     private BooleanExpression titleContains(String title) {
-        return title == null ? null : homeworkBoard.title.contains(title);
+        return title == null ? null : homeworkBoard.title.containsIgnoreCase(title);
     }
 
     private BooleanExpression contentContains(String content) {
-        return content == null ? null : homeworkBoard.content.contains(content);
+        return content == null ? null : homeworkBoard.content.containsIgnoreCase(content);
     }
 
     private BooleanExpression contentCreatedByIdContains(String memberId) {
-        return memberId == null ? null : homeworkBoard.createdBy.id.contains(memberId);
+        return memberId == null ? null : homeworkBoard.createdBy.id.containsIgnoreCase(memberId);
     }
 
     private BooleanExpression memberTypeEq(MemberType memberType) {

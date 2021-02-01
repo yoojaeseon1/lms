@@ -81,15 +81,15 @@ public class CounselBoardRepositoryImpl implements CounselBoardRepositoryCustom 
 
 
     private BooleanExpression titleContains(String title) {
-        return title == null ? null : counselBoard.title.contains(title);
+        return title == null ? null : counselBoard.title.containsIgnoreCase(title);
     }
 
     private BooleanExpression contentContains(String content) {
-        return content == null ? null : counselBoard.content.contains(content);
+        return content == null ? null : counselBoard.content.containsIgnoreCase(content);
     }
 
     private BooleanExpression contentCreatedByIdContains(String memberId) {
-        return memberId == null ? null : counselBoard.contentCreatedBy.id.contains(memberId);
+        return memberId == null ? null : counselBoard.contentCreatedBy.id.containsIgnoreCase(memberId);
     }
 
     private BooleanExpression memberTypeEq(MemberType memberType) {

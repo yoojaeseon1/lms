@@ -1,5 +1,9 @@
 package com.yoo.lms.repository;
 
+import com.yoo.lms.domain.Course;
+import com.yoo.lms.domain.Member;
+import com.yoo.lms.domain.QuestionBoard;
+import com.yoo.lms.domain.Student;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
 import org.junit.jupiter.api.Test;
@@ -20,6 +24,12 @@ class HomeworkBoardRepositoryTest {
 
     @Autowired
     HomeworkBoardRepository homeworkBoardRepository;
+
+    @Autowired
+    CourseRepository courseRepository;
+
+    @Autowired
+    StudentRepository studentRepository;
 
     @Test
     public void searchByDynamic(){
@@ -45,5 +55,7 @@ class HomeworkBoardRepositoryTest {
         assertThat(totalCount).isEqualTo(11);
 
     }
+
+
 
 }

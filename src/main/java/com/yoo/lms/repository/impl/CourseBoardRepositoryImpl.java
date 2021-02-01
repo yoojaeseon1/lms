@@ -86,15 +86,15 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
     }
 
     private BooleanExpression titleContains(String title) {
-        return title == null ? null : courseBoard.title.contains(title);
+        return title == null ? null : courseBoard.title.containsIgnoreCase(title);
     }
 
     private BooleanExpression contentContains(String content) {
-        return content == null ? null : courseBoard.content.contains(content);
+        return content == null ? null : courseBoard.content.containsIgnoreCase(content);
     }
 
     private BooleanExpression createdByIdContains(String writer) {
-        return writer == null ? null : courseBoard.createdBy.id.contains(writer);
+        return writer == null ? null : courseBoard.createdBy.id.containsIgnoreCase(writer);
     }
 
 

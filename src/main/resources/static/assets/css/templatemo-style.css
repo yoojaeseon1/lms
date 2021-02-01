@@ -404,7 +404,7 @@ section.contact-form {
 
 /* Tables */
 
-section.tables {
+/*section.tables {
     margin-top: 80px;
     border-top: 3px solid #eee!important;
     padding-top: 100px;
@@ -413,7 +413,7 @@ section.tables {
 section.tables .container-fluid {
     padding-left: 0px;
     padding-right: 0px;
-}
+}*/
 
 .default-table {
     -webkit-overflow-scrolling: touch;
@@ -496,14 +496,17 @@ table.alt tfoot {
     border-top: 0;
 }
 
-table tbody tr {
-    background-color: #e7e7e7;
-}
 
+
+table tbody tr {
+    /*background-color: #e7e7e7;*/
+    background-color: #fff
+}
+/*
     table tbody tr:nth-child(2n + 1) {
         background-color: #fff;
     }
-
+*/
 table th {
     color: #4a4a4a;
 }
@@ -1356,4 +1359,29 @@ section.buttons .container-fluid {
     border-top: 0;
     margin-top: 0;
     padding-top: 0;
+}
+
+
+/* panel */
+
+.panel panel-default {
+    border-bottom-color: #0c5460;
+    border-color: #1a1b20;
+}
+
+.panel-body {
+    border-bottom-color: #0c5460;
+    border-color: #1a1b20;
+}
+
+
+/*board*/
+
+.board-content{
+    width: 500px;
+    height: 500px;
+}
+
+.board-title{
+    width: 500px;
 }
