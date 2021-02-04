@@ -1,13 +1,15 @@
 package com.yoo.lms.controller;
 
 import com.yoo.lms.domain.CourseMaterial;
+import com.yoo.lms.domain.HomeworkBoard;
 import com.yoo.lms.domain.QuestionBoard;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
 import com.yoo.lms.searchType.BoardSearchCriteria;
 import com.yoo.lms.service.CourseMaterialService;
-import com.yoo.lms.service.QuestionBoardService;
+import com.yoo.lms.service.HomeworkBoardService;
 import com.yoo.lms.tools.PageMaker;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,20 +22,20 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
+@RequiredArgsConstructor
 @Slf4j
-public class QuestionBoardController {
+public class HomeworkBoardController {
 
-    @Autowired
-    QuestionBoardService questionBoardService;
+    private final HomeworkBoardService homeworkBoardService;
 
     @Autowired
     CourseMaterialService courseMaterialService;
 
-    @GetMapping("/{courseId}/question")
-    public String listQuestion(Model model,
-                       BoardSearchCriteria searchCriteria,
-                       @PathVariable("courseId") Long courseId,
-                       @RequestParam("page") int page) {
+    @GetMapping("/{courseId}/homework")
+    public String listHomework(Model model,
+                               BoardSearchCriteria searchCriteria,
+                               @PathVariable("courseId") Long courseId,
+                               @RequestParam("page") int page) {
 
         BoardSearchCondition condition = new BoardSearchCondition(courseId);
         condition.initCondition(searchCriteria);
@@ -43,105 +45,105 @@ public class QuestionBoardController {
 
         if(searchCriteria.getSearchType().equals("all") || searchCriteria.getSearchType().equals("titleAndContent")) {
 
-            postings = questionBoardService.searchPostingAllCriteria(condition, page-1, 10);
-            totalCount = questionBoardService.countTotalAllCriteria(condition, page-1, 10, postings.size());
+            postings = homeworkBoardService.searchPostingAllCriteria(condition, page-1, 10);
+            totalCount = homeworkBoardService.countTotalAllCriteria(condition, page-1, 10, postings.size());
 
         } else {
 
-            postings = questionBoardService.searchPosting(condition, page-1, 10);
-            totalCount = questionBoardService.countTotalPosting(condition, page-1, 10, postings.size());
+            postings = homeworkBoardService.searchPosting(condition, page-1, 10);
+            totalCount = homeworkBoardService.countTotalPosting(condition, page-1, 10, postings.size());
         }
 
 
-        PageMaker pageMaker = questionBoardService.makePageMaker(page, totalCount, searchCriteria);
-        
+        PageMaker pageMaker = homeworkBoardService.makePageMaker(page, totalCount, searchCriteria);
+
         model.addAttribute("postings", postings);
         model.addAttribute("pageMaker", pageMaker);
         model.addAttribute("searchCriteria", searchCriteria);
         model.addAttribute("courseId", courseId);
-        model.addAttribute("menuTitle", "질문 게시판");
-        model.addAttribute("action", "question");
-        
+        model.addAttribute("menuTitle", "과제 게시판");
+        model.addAttribute("action", "homework");
+
         return "board/boardList";
     }
 
-    @GetMapping("/{courseId}/question/{boardId}")
-    public String showQuestion(Model model,
+    @GetMapping("/{courseId}/homework/{boardId}")
+    public String showHomework(Model model,
                                @PathVariable("boardId") Long boardId) {
 
-        QuestionBoard findQuestion = questionBoardService.findPostingById(boardId);
+        HomeworkBoard homeworkBoard = homeworkBoardService.findPostingById(boardId, false);
 
         List<CourseMaterial> courseMaterials = courseMaterialService.findByBoardId(boardId);
 
-        model.addAttribute("posting", findQuestion);
+        model.addAttribute("posting", homeworkBoard);
         model.addAttribute("courseMaterials", courseMaterials);
-        model.addAttribute("menuTitle", "질문 게시물");
+        model.addAttribute("menuTitle", "과제 게시물");
 
-        return "boardDetailWithReply";
+        return "board/detail/homework";
 
     }
 
-    @GetMapping("/{courseId}/question/new")
-    public String createQuestionForm(Model model,
+    @GetMapping("/{courseId}/homework/new")
+    public String createHomeworkForm(Model model,
                                      @PathVariable("courseId") Long courseId,
                                      HttpServletRequest request){
 
         model.addAttribute("canUploadFile", true);
-        model.addAttribute("menuTitle", "질문 작성");
+        model.addAttribute("menuTitle", "과제 공지 작성");
 
         return "board/boardCreateForm";
     }
 
-    @PostMapping("/{courseId}/question")
-    public String createQuestion(@PathVariable("courseId") Long courseId,
+    @PostMapping("/{courseId}/homework")
+    public String createHomework(@PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
                                  MultipartFile[] files
-                                 ) throws IOException {
+    ) throws IOException {
 
-        questionBoardService.saveQuestion(files, courseId, title,content);
+        homeworkBoardService.saveHomework(files, courseId, title,content);
 
 
         return "redirect:/";
     }
 
 
-    @GetMapping("/{courseId}/question/{boardId}/update")
-    public String updateQuestionForm(Model model,
+    @GetMapping("/{courseId}/homework/{boardId}/update")
+    public String updateHomeworkForm(Model model,
                                      @PathVariable("boardId") Long boardId) {
 
-        QuestionBoard findQuestion = questionBoardService.findPostingById(boardId);
+        HomeworkBoard homeworkBoard = homeworkBoardService.findPostingById(boardId, false);
         List<CourseMaterial> courseMaterials = courseMaterialService.findByBoardId(boardId);
 //        List<String> fileNames = courseMaterialService.parseFileName(courseMaterials);
 
 
-        model.addAttribute("posting", findQuestion);
+        model.addAttribute("posting", homeworkBoard);
         model.addAttribute("courseMaterials", courseMaterials);
 //        model.addAttribute("fileNames", fileNames);
 //        model.addAttribute("boardId", boardId);
 
-        model.addAttribute("menuTitle", "질문 수정");
+        model.addAttribute("menuTitle", "과제 공지 수정");
         model.addAttribute("canUploadFile", true);
 
         return "/board/boardUpdateForm";
     }
 
-    @PutMapping("/{courseId}/question/{boardId}/")
-    public String updateQuestion(@PathVariable("boardId") Long boardId,
+    @PutMapping("/{courseId}/homework/{boardId}/")
+    public String updateHomework(@PathVariable("boardId") Long boardId,
                                  String title,
                                  String content,
                                  MultipartFile[] files) throws IOException{
 
-        questionBoardService.updateQuestion(boardId, title, content, files);
-        
+        homeworkBoardService.updateHomework(boardId, title, content, files);
+
         return "redirect:/";
 
     }
 
-    @DeleteMapping("{courseId}/question/{boardId}")
-    public String deleteQuestion(@PathVariable("boardId") Long boardId) {
+    @DeleteMapping("{courseId}/homework/{boardId}")
+    public String deleteHomework(@PathVariable("boardId") Long boardId) {
 
-        questionBoardService.deleteByBoardId(boardId);
+        homeworkBoardService.deleteByBoardId(boardId);
 
         return "redirect:/";
 

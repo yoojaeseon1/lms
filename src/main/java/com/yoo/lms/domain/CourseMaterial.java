@@ -16,12 +16,16 @@ public class CourseMaterial {
     @Column(name="course_material_id")
     private Long id;
 
+    private String filename;
+    private String directory;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
 
-    private String filename;
-    private String directory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="board_Reply_id")
+    private BoardReply reply;
 
     @CreatedDate
     private LocalDateTime createdDate;
@@ -30,5 +34,16 @@ public class CourseMaterial {
         this.board = board;
         this.filename = filename;
         this.directory = directory;
+    }
+
+    public CourseMaterial(String filename, String directory, BoardReply reply) {
+        this.filename = filename;
+        this.directory = directory;
+        this.reply = reply;
+    }
+
+    public void addReply(BoardReply boardReply) {
+        boardReply.getCourseMaterials().add(this);
+        this.reply = boardReply;
     }
 }

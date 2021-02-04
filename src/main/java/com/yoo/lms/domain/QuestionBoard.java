@@ -1,11 +1,13 @@
 package com.yoo.lms.domain;
 
+import com.yoo.lms.domain.valueType.DateValue;
 import com.yoo.lms.domain.valueType.ReplyDateValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @DiscriminatorValue("Q")
@@ -13,16 +15,11 @@ import javax.persistence.*;
 @Getter
 public class QuestionBoard extends Board{
 
-    public QuestionBoard(Course course, String title, String content, Member contentCreatedBy) {
+    public QuestionBoard(Course course, String title, String content, Member createdBy) {
         this.course = course;
         this.title = title;
         this.content = content;
-        this.contentCreatedBy = contentCreatedBy;
-    }
-
-    public QuestionBoard(String title, String content) {
-        this.title = title;
-        this.content = content;
+        this.createdBy = createdBy;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,13 +31,17 @@ public class QuestionBoard extends Board{
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="content_member_id")
-    private Member contentCreatedBy;
+    private Member createdBy;
 
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="reply_member_id")
-    private Member replyCreatedBy;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="reply_id")
+    private BoardReply reply;
 
-    @Embedded
-    private ReplyDateValue replyDateValue;
+    private DateValue dateValue;
+
+    public void updateInfo(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
 }

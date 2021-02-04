@@ -1,28 +1,20 @@
 package com.yoo.lms.service;
 
-
-import com.yoo.lms.domain.Course;
-import com.yoo.lms.domain.CourseMaterial;
-import com.yoo.lms.domain.QuestionBoard;
-import com.yoo.lms.domain.Student;
+import com.yoo.lms.domain.*;
 import com.yoo.lms.dto.BoardListDto;
-import com.yoo.lms.repository.CourseMaterialRepository;
-import com.yoo.lms.repository.CourseRepository;
-import com.yoo.lms.repository.QuestionBoardRepository;
-import com.yoo.lms.repository.StudentRepository;
+import com.yoo.lms.repository.*;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
 import com.yoo.lms.searchType.BoardSearchCriteria;
 import com.yoo.lms.tools.PageMaker;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.persistence.EntityManager;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -32,56 +24,37 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @Slf4j
-public class QuestionBoardService {
+@RequiredArgsConstructor
+public class HomeworkBoardService {
 
-
-    private QuestionBoardRepository questionBoardRepository;
+    private HomeworkBoardRepository homeworkBoardRepository;
     private CourseMaterialRepository courseMaterialRepository;
     private CourseRepository courseRepository;
     private StudentRepository studentRepository;
     private EntityManager em;
     private String baseDirectory;
 
-
     @Autowired
-    public QuestionBoardService(QuestionBoardRepository questionBoardRepository,
+    public HomeworkBoardService(HomeworkBoardRepository homeworkBoardRepository,
                                 CourseMaterialRepository courseMaterialRepository,
                                 CourseRepository courseRepository,
                                 StudentRepository studentRepository,
                                 EntityManager em) {
 
-        this.questionBoardRepository = questionBoardRepository;
+        this.homeworkBoardRepository = homeworkBoardRepository;
         this.courseMaterialRepository = courseMaterialRepository;
         this.courseRepository = courseRepository;
         this.studentRepository = studentRepository;
         this.em = em;
-        this.baseDirectory = "C:\\Users\\yoo-pc\\Desktop\\uploadedDirectory\\questionBoard\\";
+        this.baseDirectory = "C:\\Users\\yoo-pc\\Desktop\\uploadedDirectory\\homeworkBoard\\";
     }
 
-    @Transactional
-    public void save(Long courseId,
-                     String title,
-                     String content
-                     ) {
-
-        Course course = courseRepository.findById(courseId).get();
-
-        //--- session에서 받아와야 함
-
-        Student student = studentRepository.findById("studentId1").get();
-
-        //---
-
-        QuestionBoard questionBoard = new QuestionBoard(course, title, content, student);
-
-        questionBoardRepository.save(questionBoard);
-    }
 
     @Transactional
-    public void saveQuestion(MultipartFile[] files,
-                     Long courseId,
-                     String title,
-                     String content
+    public void saveHomework(MultipartFile[] files,
+                             Long courseId,
+                             String title,
+                             String content
     ) throws IOException {
 
         Course course = courseRepository.findById(courseId).get();
@@ -92,18 +65,18 @@ public class QuestionBoardService {
 
         //---
 
-        QuestionBoard questionBoard = new QuestionBoard(course, title, content, student);
+        HomeworkBoard homeworkBoard = new HomeworkBoard(course, title, content, student);
 
-        questionBoardRepository.save(questionBoard);
+        homeworkBoardRepository.save(homeworkBoard);
         em.flush();
 
 
         // 파일이 없으면 게시물만 save하고 종료
-        
+
         if(files[0].getOriginalFilename().equals(""))
             return;
 
-        String savedDirectory = baseDirectory+questionBoard.getId()+"\\";
+        String savedDirectory = baseDirectory+homeworkBoard.getId()+"\\";
 
         File directory = new File(savedDirectory);
 
@@ -116,26 +89,25 @@ public class QuestionBoardService {
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             file.transferTo(new File(savedDirectory+fileName));
 
-            courseMaterialRepository.save(new CourseMaterial(questionBoard, fileName, savedDirectory));
+            courseMaterialRepository.save(new CourseMaterial(homeworkBoard, fileName, savedDirectory));
         }
-
     }
 
     @Transactional
-    public void updateQuestion(Long boardId,
-                                  String title,
-                                  String content,
-                                  MultipartFile[] files
-                                  ) throws IOException {
+    public void updateHomework(Long boardId,
+                               String title,
+                               String content,
+                               MultipartFile[] files
+    ) throws IOException {
 
 
-        Optional<QuestionBoard> questionBoardOptional = questionBoardRepository.findById(boardId);
+        Optional<HomeworkBoard> homeworkBoardOptional = homeworkBoardRepository.findById(boardId);
 
-        QuestionBoard findQuestion = null;
-        if(questionBoardOptional.isPresent())
-            findQuestion = questionBoardOptional.get();
+        HomeworkBoard homeworkBoard = null;
+        if(homeworkBoardOptional.isPresent())
+            homeworkBoard = homeworkBoardOptional.get();
 
-        findQuestion.updateInfo(title, content);
+        homeworkBoard.updateInfo(title, content);
 
         // 파일이 없으면 게시물만 update하고 종료
 
@@ -156,7 +128,7 @@ public class QuestionBoardService {
 
         courseMaterialRepository.deleteAllByBoardId(boardId);
 
-        String savedDirectory = baseDirectory+findQuestion.getId() + "\\";
+        String savedDirectory = baseDirectory+homeworkBoard.getId() + "\\";
 
         File directory = new File(savedDirectory);
         if(!directory.exists()) {
@@ -168,7 +140,7 @@ public class QuestionBoardService {
             String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
             file.transferTo(new File(savedDirectory+fileName));
 
-            courseMaterialRepository.save(new CourseMaterial(findQuestion, fileName, savedDirectory));
+            courseMaterialRepository.save(new CourseMaterial(homeworkBoard, fileName, savedDirectory));
         }
 
 
@@ -176,11 +148,11 @@ public class QuestionBoardService {
 
     }
 
-    public QuestionBoard findPostingById(Long boardId) {
+    public HomeworkBoard findPostingById(Long boardId, boolean hasReplies) {
 
-        QuestionBoard questionBoard = questionBoardRepository.findPostingById(boardId);
+        HomeworkBoard homeworkBoard = homeworkBoardRepository.findPostingById(boardId, hasReplies);
 
-        return questionBoard;
+        return homeworkBoard;
     }
 
     public void deleteByBoardId(Long boardId) {
@@ -202,24 +174,24 @@ public class QuestionBoardService {
             directory.delete();
 
         courseMaterialRepository.deleteAllByBoardId(boardId);
-        questionBoardRepository.deletePostingById(boardId);
+        homeworkBoardRepository.deletePostingById(boardId);
 
     }
 
     public List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size) {
-        return questionBoardRepository.searchPosting(condition, page, size);
+        return homeworkBoardRepository.searchPosting(condition, page, size);
     }
 
     public long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-        return questionBoardRepository.countTotalPosting(condition, page, size, numCurrentPageContent);
+        return homeworkBoardRepository.countTotalPosting(condition, page, size, numCurrentPageContent);
     }
 
     public List<BoardListDto> searchPostingAllCriteria(BoardSearchCondition condition, int page, int size) {
-        return questionBoardRepository.searchPostingAllCriteria(condition, page, size);
+        return homeworkBoardRepository.searchPostingAllCriteria(condition, page, size);
     }
 
     public long countTotalAllCriteria(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-        return questionBoardRepository.countTotalAllCriteria(condition, page, size, numCurrentPageContent);
+        return homeworkBoardRepository.countTotalAllCriteria(condition, page, size, numCurrentPageContent);
     }
 
     public PageMaker makePageMaker(int page, long totalCount, BoardSearchCriteria searchCriteria) {
@@ -227,7 +199,4 @@ public class QuestionBoardService {
         return new PageMaker(page, totalCount, searchCriteria);
 
     }
-
-
-
 }

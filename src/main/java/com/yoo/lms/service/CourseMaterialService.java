@@ -26,7 +26,7 @@ public class CourseMaterialService {
 
         for(CourseMaterial material : materials) {
             String fileName = material.getFilename();
-            fileNames.add(fileName.substring(0, fileName.indexOf('_')));
+            fileNames.add(fileName.substring(fileName.indexOf('_')+1));
         }
         return fileNames;
     }

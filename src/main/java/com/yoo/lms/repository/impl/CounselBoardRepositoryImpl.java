@@ -36,12 +36,12 @@ public class CounselBoardRepositoryImpl implements CounselBoardRepositoryCustom 
                 .select(new QBoardListDto(
                         counselBoard.id,
                         counselBoard.title,
-                        counselBoard.replyDateValue.contentCreatedDate,
-                        counselBoard.contentCreatedBy.id,
+                        counselBoard.dateValue.createdDate,
+                        counselBoard.createdBy.id,
                         counselBoard.viewCount
                 ))
                 .from(counselBoard)
-                .join(counselBoard.contentCreatedBy, member)
+                .join(counselBoard.createdBy, member)
                 .where(titleContains(condition.getTitle()),
                         contentContains(condition.getContent()),
                         contentCreatedByIdContains(condition.getMemberId()),
@@ -66,12 +66,12 @@ public class CounselBoardRepositoryImpl implements CounselBoardRepositoryCustom 
                 .select(new QBoardListDto(
                         counselBoard.id,
                         counselBoard.title,
-                        counselBoard.replyDateValue.contentCreatedDate,
-                        counselBoard.contentCreatedBy.id,
+                        counselBoard.dateValue.createdDate,
+                        counselBoard.createdBy.id,
                         counselBoard.viewCount
                 ))
                 .from(counselBoard)
-                .join(counselBoard.contentCreatedBy, member)
+                .join(counselBoard.createdBy, member)
                 .where(titleContains(condition.getTitle()),
                         contentContains(condition.getContent()),
                         contentCreatedByIdContains(condition.getMemberId()),
@@ -89,11 +89,11 @@ public class CounselBoardRepositoryImpl implements CounselBoardRepositoryCustom 
     }
 
     private BooleanExpression contentCreatedByIdContains(String memberId) {
-        return memberId == null ? null : counselBoard.contentCreatedBy.id.containsIgnoreCase(memberId);
+        return memberId == null ? null : counselBoard.createdBy.id.containsIgnoreCase(memberId);
     }
 
     private BooleanExpression memberTypeEq(MemberType memberType) {
-        return memberType == null ? null : counselBoard.contentCreatedBy.memberType.eq(memberType);
+        return memberType == null ? null : counselBoard.createdBy.memberType.eq(memberType);
     }
 
 }

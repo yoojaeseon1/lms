@@ -30,4 +30,13 @@ public class CourseMaterialRepositoryImpl implements CourseMaterialRepositoryCus
                 .where(courseMaterial.board.id.eq(boardId))
                 .fetch();
     }
+
+    @Override
+    public long deleteAllByBoardId(Long boardId) {
+        return queryFactory
+                .delete(courseMaterial)
+                .where(courseMaterial.board.id.eq(boardId))
+                .execute();
+
+    }
 }

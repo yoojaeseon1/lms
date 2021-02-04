@@ -1380,6 +1380,7 @@ section.buttons .container-fluid {
 .board-content{
     width: 500px;
     height: 500px;
+    border: 1px solid black;
 }
 
 .board-title{

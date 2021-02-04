@@ -1,32 +1,22 @@
 package com.yoo.lms.repository.impl;
 
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yoo.lms.domain.CourseBoard;
-import com.yoo.lms.domain.QBoard;
-import com.yoo.lms.domain.QCourseBoard;
-import com.yoo.lms.domain.QMember;
+import com.yoo.lms.domain.*;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.dto.QBoardListDto;
 import com.yoo.lms.repository.custom.CourseBoardRepositoryCustom;
-import com.yoo.lms.repository.custom.CourseRepositoryCustom;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 
 import javax.persistence.EntityManager;
 
 import java.util.List;
 
-import static com.yoo.lms.domain.QBoard.*;
+import static com.yoo.lms.domain.QBoardReply.boardReply;
 import static com.yoo.lms.domain.QCourseBoard.*;
-import static com.yoo.lms.domain.QMember.*;
+import static com.yoo.lms.domain.QCourseBoard.courseBoard;
+import static com.yoo.lms.domain.QQuestionBoard.*;
 
 
 public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
@@ -37,6 +27,24 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
     public CourseBoardRepositoryImpl(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
+    }
+
+    @Override
+    public CourseBoard findPostingById(Long boardId) {
+
+        return queryFactory
+                .selectFrom(courseBoard)
+                .where(courseBoard.id.eq(boardId))
+                .fetchOne();
+
+    }
+
+    @Override
+    public long deletePostingById(Long boardId) {
+        return queryFactory
+                .delete(courseBoard)
+                .where(courseBoard.id.eq(boardId))
+                .execute();
     }
 
     @Override
@@ -54,6 +62,7 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
                 ))
                 .from(courseBoard)
                 .where(
+                        courseIdEq(condition.getCourseId()),
                         titleContains(condition.getTitle()),
                         contentContains(condition.getContent()),
                         createdByIdContains(condition.getMemberId())
@@ -77,12 +86,74 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
         return queryFactory
                 .selectFrom(courseBoard)
                 .where(
+                        courseIdEq(condition.getCourseId()),
                         titleContains(condition.getTitle()),
                         contentContains(condition.getContent()),
                         createdByIdContains(condition.getMemberId())
                         )
                 .fetchCount();
 
+    }
+
+    @Override
+    public List<BoardListDto> searchPostingAllCriteria(BoardSearchCondition condition, int page, int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return queryFactory
+                .select(new QBoardListDto(
+                        courseBoard.id,
+                        courseBoard.title,
+//                        questionBoard.replyDateValue.contentCreatedDate,
+                        courseBoard.dateValue.createdDate,
+                        courseBoard.createdBy.id,
+                        courseBoard.viewCount
+                ))
+                .from(courseBoard)
+                .where(
+                        courseIdEq(condition.getCourseId()),
+                        titleContains(condition.getTitle())
+                                .or(contentContains(condition.getContent()))
+                                .or(createdByIdContains(condition.getMemberId()))
+                )
+                .orderBy(courseBoard.id.desc())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
+    }
+
+    @Override
+    public long countTotalAllCriteria(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
+        if(numCurrentPageContent < size) {
+            if(page == 0)
+                return (long)numCurrentPageContent;
+            else
+                return (long)(page * size) + numCurrentPageContent;
+        }
+
+
+        return queryFactory
+                .select(new QBoardListDto(
+                        courseBoard.id,
+                        courseBoard.title,
+//                        questionBoard.replyDateValue.contentCreatedDate,
+                        courseBoard.dateValue.createdDate,
+//                        questionBoard.contentCreatedBy.id,
+                        courseBoard.createdBy.id,
+                        courseBoard.viewCount
+                ))
+                .from(courseBoard)
+                .where(
+                        courseIdEq(condition.getCourseId()),
+                        titleContains(condition.getTitle())
+                                .or(contentContains(condition.getContent()))
+                                .or(createdByIdContains(condition.getMemberId()))
+                )
+                .fetchCount();
+    }
+
+    private BooleanExpression courseIdEq(Long courseId) {
+        return courseId == null ? null : courseBoard.course.id.eq(courseId);
     }
 
     private BooleanExpression titleContains(String title) {

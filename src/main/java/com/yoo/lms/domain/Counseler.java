@@ -21,7 +21,7 @@ public class Counseler extends Member{
         super(id, password, name, age, address, birthDate, memberType);
     }
 
-    @OneToMany(mappedBy="replyCreatedBy")
-    private List<CounselBoard> counselBoards = new ArrayList<>();
+    @OneToMany(mappedBy="createdBy")
+    private List<BoardReply> counselBoards = new ArrayList<>();
 
 }

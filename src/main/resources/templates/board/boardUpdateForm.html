@@ -32,7 +32,8 @@
     <script type="text/javascript">
         $(function(){
             $("#fileUpload").change(function(){
-                fileList = $("#fileUpload")[0].files;
+                // fileList = $("#fileUpload")[0].files;
+                fileList = "";
                 fileListTag = '';
                 for(i = 0; i < fileList.length; i++){
                     fileListTag += "<li>"+fileList[i].name+"</li>";
@@ -59,26 +60,31 @@
                     <a href="index.html">LMS System</a>
                 </div>
             </header>
-                질문 작성5
-            <form th:action="@{new}" th:method="post" enctype="multipart/form-data">
+            <div th:text="${menuTitle}"></div>
+            <form th:action="@{./}" th:method="put" enctype="multipart/form-data">
             <table class="table table-hover">
                 <tr>
-                    <th>제목</th>
-                    <td><input th:name="title" class="board-title" /></td>
+                    <th>제목4</th>
+                    <td><input th:value="${posting.getTitle()}" th:name="title" class="board-title" /></td>
                 </tr>
                 <tr>
                     <th>내용</th>
-                    <td><textarea th:name="content" class="board-content"></textarea></td>
+                    <td><textarea th:text="${posting.getContent()}" th:name="content" class="board-content"></textarea></td>
                 </tr>
             </table>
             <div>
-                <table class="table-hover">
+                <table th:if="${canUploadFile}" class="table-hover">
                     <tr>
                         <th>첨부 파일</th>
                         <td><input type="file" id="fileUpload" th:name="files" multiple="multiple"></td>
                     </tr>
                     <tr>
-                        <ul id="fileList"></ul>
+<!--                        <ul th:each="file : ${fileNames}" id="fileList">-->
+<!--                            <li th:text="${file}"></li>-->
+<!--                        </ul>-->
+                        <ul th:each="courseMaterial: ${courseMaterials}" id="fileList">
+                            <li th:text="${#strings.substring(courseMaterial.getFilename(), #strings.indexOf(courseMaterial.getFilename(), '_')+1)}"></li>
+                        </ul>
                     </tr>
                 </table>
             </div>

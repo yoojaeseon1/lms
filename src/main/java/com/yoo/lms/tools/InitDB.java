@@ -116,17 +116,26 @@ public class InitDB {
 
 //            for(int i = 1; i <= 50; i++) {
 //
-//                CourseBoard courseBoard = new CourseBoard("title"+i, "content"+i, teachers[i], courses[i]);
+//                CourseBoard courseBoard = new CourseBoard( courses[i], "title"+i, "content"+i, teachers[i], teachers[i]);
+//                courseBoardRepository.save(courseBoard);
+//
+//            }
+
+//            for(int i = 1; i <= 157; i++) {
+//
+//                CourseBoard courseBoard = new CourseBoard( courses[2], "title"+i, "content"+i, teachers[i % 50]);
 //                courseBoardRepository.save(courseBoard);
 //
 //            }
 
             // create questionBoard
 
-            for (int i = 1; i <= 157; i++) {
-                QuestionBoard questionBoard = new QuestionBoard(courses[2], "질문 게시판"+i, "QBoardContent"+i, students[i % 50]);
-                questionBoardRepository.save(questionBoard);
-            }
+//            for (int i = 1; i <= 157; i++) {
+//                QuestionBoard questionBoard = new QuestionBoard(courses[2], "질문 게시판"+i, "QBoardContent"+i, students[i % 50]);
+////                questionBoard.initReply("replyTitle", "replyContent");
+//                questionBoardRepository.save(questionBoard);
+//            }
+
 
             /**
              * create counselBoard
@@ -141,11 +150,10 @@ public class InitDB {
              * create homeworkBoard
              */
 
-//            for(int i = 1; i <= 50; i++) {
-//                HomeworkBoard homeworkBoard = new HomeworkBoard("homeworkBoardTitle"+i, "homeworkBoardContent"+i, courses[i], teachers[i]);
-//                homeworkBoardRepository.save(homeworkBoard);
-//            }
-
+            for(int i = 1; i <= 50; i++) {
+                HomeworkBoard homeworkBoard = new HomeworkBoard(courses[2],"homeworkBoardTitle"+i, "homeworkBoardContent"+i,  teachers[i]);
+                homeworkBoardRepository.save(homeworkBoard);
+            }
         }
 
 //        public void dbInit2() {

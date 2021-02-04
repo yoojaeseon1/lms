@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class CourseBoard extends Board{
 
-    public CourseBoard(String title, String content, Member createdBy, Course course) {
+    public CourseBoard(Course course, String title, String content, Member createdBy) {
         this.title = title;
         this.content = content;
         this.createdBy = createdBy;
@@ -36,5 +36,11 @@ public class CourseBoard extends Board{
 
     @Embedded
     private DateValue dateValue;
+
+
+    public void updateInfo(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
 }

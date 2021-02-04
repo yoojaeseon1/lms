@@ -3,18 +3,17 @@ package com.yoo.lms.repository.impl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.QQuestionBoard;
+import com.yoo.lms.domain.QuestionBoard;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.dto.QBoardListDto;
 import com.yoo.lms.repository.custom.QBoardRepositoryCustom;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.yoo.lms.domain.QHomeworkBoard.homeworkBoard;
-import static com.yoo.lms.domain.QMember.member;
+import static com.yoo.lms.domain.QBoardReply.boardReply;
 import static com.yoo.lms.domain.QQuestionBoard.*;
 
 public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
@@ -29,6 +28,23 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
 
 
     @Override
+    public QuestionBoard findPostingById(Long boardId) {
+        return queryFactory
+                .selectFrom(questionBoard)
+                .leftJoin(questionBoard.reply, boardReply).fetchJoin()
+                .where(questionBoard.id.eq(boardId))
+                .fetchOne();
+    }
+
+    @Override
+    public long deletePostingById(Long boardId) {
+        return queryFactory
+                .delete(questionBoard)
+                .where(questionBoard.id.eq(boardId))
+                .execute();
+    }
+
+    @Override
     public List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -37,8 +53,8 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
                 .select(new QBoardListDto(
                         questionBoard.id,
                         questionBoard.title,
-                        questionBoard.replyDateValue.contentCreatedDate,
-                        questionBoard.contentCreatedBy.id,
+                        questionBoard.dateValue.createdDate,
+                        questionBoard.createdBy.id,
                         questionBoard.viewCount
                 ))
                 .from(questionBoard)
@@ -66,14 +82,7 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
 
 
         return queryFactory
-                .select(new QBoardListDto(
-                        questionBoard.id,
-                        questionBoard.title,
-                        questionBoard.replyDateValue.contentCreatedDate,
-                        questionBoard.contentCreatedBy.id,
-                        questionBoard.viewCount
-                ))
-                .from(questionBoard)
+                .selectFrom(questionBoard)
                 .where(
                         courseIdEq(condition.getCourseId()),
                         titleContains(condition.getTitle()),
@@ -92,8 +101,9 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
                 .select(new QBoardListDto(
                         questionBoard.id,
                         questionBoard.title,
-                        questionBoard.replyDateValue.contentCreatedDate,
-                        questionBoard.contentCreatedBy.id,
+//                        questionBoard.replyDateValue.contentCreatedDate,
+                        questionBoard.dateValue.createdDate,
+                        questionBoard.createdBy.id,
                         questionBoard.viewCount
                 ))
                 .from(questionBoard)
@@ -123,8 +133,10 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
                 .select(new QBoardListDto(
                         questionBoard.id,
                         questionBoard.title,
-                        questionBoard.replyDateValue.contentCreatedDate,
-                        questionBoard.contentCreatedBy.id,
+//                        questionBoard.replyDateValue.contentCreatedDate,
+                        questionBoard.dateValue.createdDate,
+//                        questionBoard.contentCreatedBy.id,
+                        questionBoard.createdBy.id,
                         questionBoard.viewCount
                 ))
                 .from(questionBoard)
@@ -150,7 +162,7 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
     }
 
     private BooleanExpression createdByIdContains(String writer) {
-        return writer == null ? null : questionBoard.contentCreatedBy.id.containsIgnoreCase(writer);
+        return writer == null ? null : questionBoard.createdBy.id.containsIgnoreCase(writer);
     }
 
 }

@@ -24,7 +24,7 @@ public class Teacher extends Member{
     @OneToMany(mappedBy = "teacher")
     private List<Course> courses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "contentCreatedBy")
+    @OneToMany(mappedBy = "createdBy")
     private List<CounselBoard> counselBoards = new ArrayList<>();
 
 

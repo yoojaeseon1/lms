@@ -1,5 +1,6 @@
 package com.yoo.lms.domain;
 
+import com.yoo.lms.domain.valueType.DateValue;
 import com.yoo.lms.domain.valueType.ReplyDateValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,25 +14,24 @@ import java.time.LocalDateTime;
 @Getter
 public class CounselBoard extends Board{
 
-    public CounselBoard(String title, String content, Member contentCreatedBy) {
-        super(title, content);
-        this.contentCreatedBy = contentCreatedBy;
-    }
-
     @Id @GeneratedValue
     @Column(name="counsel_board_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="content_member_id")
-    private Member contentCreatedBy;
+    private Member createdBy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reply_member_id")
-    private Member replyCreatedBy;
-    private String replyContent;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="reply_id")
+    private BoardReply reply;
 
-    private ReplyDateValue replyDateValue;
+    private DateValue dateValue;
+
+    public CounselBoard(String title, String content, Member createdBy) {
+        super(title, content);
+        this.createdBy = createdBy;
+    }
 
 
 }
