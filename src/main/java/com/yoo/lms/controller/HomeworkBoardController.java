@@ -98,8 +98,7 @@ public class HomeworkBoardController {
     public String createHomework(@PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
-                                 MultipartFile[] files
-    ) throws IOException {
+                                 MultipartFile[] files) throws IOException {
 
         homeworkBoardService.saveHomework(files, courseId, title,content);
 

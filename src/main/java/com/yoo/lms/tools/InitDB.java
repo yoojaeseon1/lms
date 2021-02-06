@@ -98,12 +98,12 @@ public class InitDB {
             // create attendance
 
 //            for(int i = 1; i <= 10; i++) {
-//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTEANDANCE);
+//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTENDANCE);
 //                attendanceRepository.save(attendance);
 //            }
 //
 //            for(int i = 1; i <= 10; i++) {
-//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTEANDANCE);
+//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTENDANCE);
 //                attendanceRepository.save(attendance);
 //            }
 //
@@ -150,10 +150,10 @@ public class InitDB {
              * create homeworkBoard
              */
 
-            for(int i = 1; i <= 50; i++) {
-                HomeworkBoard homeworkBoard = new HomeworkBoard(courses[2],"homeworkBoardTitle"+i, "homeworkBoardContent"+i,  teachers[i]);
-                homeworkBoardRepository.save(homeworkBoard);
-            }
+//            for(int i = 1; i <= 50; i++) {
+//                HomeworkBoard homeworkBoard = new HomeworkBoard(courses[2],"homeworkBoardTitle"+i, "homeworkBoardContent"+i,  teachers[i]);
+//                homeworkBoardRepository.save(homeworkBoard);
+//            }
         }
 
 //        public void dbInit2() {

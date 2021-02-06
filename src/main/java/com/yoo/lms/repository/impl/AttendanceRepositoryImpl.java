@@ -56,7 +56,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
 
             long numAttendance = countStudentAttendance(courseId,
                     attendanceListDto.getStudentId(),
-                    AttendanceType.ATTEANDANCE);
+                    AttendanceType.ATTENDANCE);
 
             long numAbsence = countStudentAttendance(courseId,
                     attendanceListDto.getStudentId(),
@@ -157,7 +157,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
             long numAttendance = countCourseAttendance(
                     atSearchCondition.getCourseId(),
                     attendanceListDto.getCheckedDate(),
-                    AttendanceType.ATTEANDANCE);
+                    AttendanceType.ATTENDANCE);
 
             long numAbsence = countCourseAttendance(
                     atSearchCondition.getCourseId(),

@@ -603,7 +603,7 @@ section.forms .container-fluid {
     margin-bottom: 30px;
 }
 
-input[type="checkbox"],
+/*input[type="checkbox"],
 input[type="radio"] {
     -moz-appearance: none;
     -webkit-appearance: none;
@@ -680,7 +680,7 @@ input[type="checkbox"] + label:before {
 
 input[type="radio"] + label:before {
     border-radius: 0px;
-}
+}*/
 
 
 /* Buttons */

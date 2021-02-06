@@ -33,7 +33,13 @@ public class CourseService {
     private final int pageSize = 10;
 
     public Course findOne(Long courseId) {
-        return courseRepository.findById(courseId).get();
+        Optional<Course> courseOptional = courseRepository.findById(courseId);
+
+        Course course = null;
+        if(courseOptional.isPresent())
+            course = courseOptional.get();
+
+        return course;
     }
 
     public List<Course> findAll(){
