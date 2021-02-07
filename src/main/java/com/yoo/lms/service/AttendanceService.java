@@ -2,17 +2,13 @@ package com.yoo.lms.service;
 
 import com.yoo.lms.domain.Attendance;
 import com.yoo.lms.domain.Course;
-import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.enumType.AttendanceType;
 import com.yoo.lms.dto.AttendanceListDto;
-import com.yoo.lms.dto.AttendanceStateDto;
+import com.yoo.lms.dto.AttendanceTypeDto;
 import com.yoo.lms.repository.AttendanceRepository;
-import com.yoo.lms.repository.CourseRepository;
-import com.yoo.lms.repository.StudentRepository;
 import com.yoo.lms.searchCondition.AtSearchCondition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,18 +26,18 @@ public class AttendanceService {
     private final CourseService courseService;
 
     @Transactional
-    public void save(Long courseId, List<AttendanceStateDto> attendanceStateDtos) {
+    public void save(Long courseId, List<AttendanceTypeDto> attendanceStateDtos) {
 
         Course course = courseService.findOne(courseId);
 
-        for (AttendanceStateDto attendanceStateDto : attendanceStateDtos) {
+        for (AttendanceTypeDto attendanceStateDto : attendanceStateDtos) {
             Student student = studentService.findById(attendanceStateDto.getStudentId());
 
             Attendance attendance = new Attendance(
                     course,
                     student,
                     LocalDate.now(),
-                    AttendanceType.valueOf(attendanceStateDto.getAttendState()));
+                    AttendanceType.valueOf(attendanceStateDto.getAttendanceType()));
 
             attendanceRepository.save(attendance);
 
@@ -85,14 +81,21 @@ public class AttendanceService {
     }
 
     @Transactional
-    public void updateAttendance(Long attendanceId, AttendanceType attendanceType){
-        Optional<Attendance> attendanceOptional = attendanceRepository.findById(attendanceId);
-        Attendance attendance = null;
+    public void updateAttendance(List<AttendanceTypeDto> attendanceTypeDtos){
 
-        if(attendanceOptional.isPresent())
-            attendance = attendanceOptional.get();
+        for (AttendanceTypeDto attendanceTypeDto : attendanceTypeDtos) {
+            Optional<Attendance> attendanceOptional = attendanceRepository.findById(attendanceTypeDto.getAttendanceId());
+            Attendance attendance = null;
 
-        attendance.updateAttendanceType(attendanceType);
+            if(attendanceOptional.isPresent())
+                attendance = attendanceOptional.get();
+
+            attendance.updateAttendanceType(AttendanceType.valueOf(attendanceTypeDto.getAttendanceType()));
+
+        }
+//        attendance.updateAttendanceType(attendanceType);
+
+
 
     }
 

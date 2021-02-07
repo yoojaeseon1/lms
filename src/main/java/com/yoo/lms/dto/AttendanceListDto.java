@@ -74,4 +74,8 @@ public class AttendanceListDto {
 
     }
 
+    public String changeTypeToString() {
+        return this.getAttendanceType().toString();
+    }
+
 }

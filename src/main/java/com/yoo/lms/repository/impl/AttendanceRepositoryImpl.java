@@ -74,32 +74,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
 
 
 
-    /**
-     * 출석 리스트(수정용)
-     * 초기화되는 정보 : 이름 / 생년월일 / 출석 횟수 / 결석 횟수 / 지각 횟수 / 해당일자 출석 상태
-     * @param courseId
-     * @param checkedDate
-     * @return
-     */
-    @Override
-    public List<AttendanceListDto> searchUpdateList(Long courseId, LocalDate checkedDate) {
 
-        return queryFactory
-                .select(new QAttendanceListDto(
-                        attendance.id,
-                        attendance.student.name,
-                        attendance.student.birthDate,
-                        attendance.attendanceType
-                ))
-                .from(attendance)
-                .join(attendance.student, student)
-                .where(
-                        attendance.course.id.eq(courseId),
-                        attendance.checkedDate.eq(checkedDate)
-                )
-                .orderBy(attendance.student.name.asc())
-                .fetch();
-    }
 
     /**
      * 해당 과목을 듣는 학생의 출석상태 count(타입 별)
@@ -120,19 +95,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
                 ).fetchCount();
     }
 
-    @Override
-    public List<Attendance> searchMyAttend(AtSearchCondition atSearchCondition) {
-        return queryFactory
-                .selectFrom(attendance)
-                .where(
-                        attendance.course.id.eq(atSearchCondition.getCourseId()),
-                        attendance.student.id.eq(atSearchCondition.getStudentId()),
-                        checkedDateGoe(atSearchCondition.getStartDate()),
-                        checkedDateLoe(atSearchCondition.getEndDate())
-                        )
-                .orderBy(attendance.checkedDate.desc())
-                .fetch();
-    }
+
 
     /**
      * 해당 과목 수업한 모든 날짜에 대한 출석 상태(출석 / 결석 / 지각) count
@@ -186,6 +149,47 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
                         attendance.attendanceType.eq(attendanceType)
                 )
                 .fetchCount();
+    }
+
+    /**
+     * 출석 리스트(수정용)
+     * 초기화되는 정보 : 이름 / 생년월일 / 출석 횟수 / 결석 횟수 / 지각 횟수 / 해당일자 출석 상태
+     * @param courseId
+     * @param checkedDate
+     * @return
+     */
+    @Override
+    public List<AttendanceListDto> searchUpdateList(Long courseId, LocalDate checkedDate) {
+
+        return queryFactory
+                .select(new QAttendanceListDto(
+                        attendance.id,
+                        attendance.student.name,
+                        attendance.student.birthDate,
+                        attendance.attendanceType
+                ))
+                .from(attendance)
+                .join(attendance.student, student)
+                .where(
+                        attendance.checkedDate.eq(checkedDate),
+                        attendance.course.id.eq(courseId)
+                )
+                .orderBy(attendance.student.name.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<Attendance> searchMyAttend(AtSearchCondition atSearchCondition) {
+        return queryFactory
+                .selectFrom(attendance)
+                .where(
+                        attendance.course.id.eq(atSearchCondition.getCourseId()),
+                        attendance.student.id.eq(atSearchCondition.getStudentId()),
+                        checkedDateGoe(atSearchCondition.getStartDate()),
+                        checkedDateLoe(atSearchCondition.getEndDate())
+                )
+                .orderBy(attendance.checkedDate.desc())
+                .fetch();
     }
 
     private BooleanExpression checkedDateGoe(LocalDate checkedDate) {

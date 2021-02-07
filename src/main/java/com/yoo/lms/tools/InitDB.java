@@ -102,15 +102,15 @@ public class InitDB {
 //                attendanceRepository.save(attendance);
 //            }
 //
-//            for(int i = 1; i <= 10; i++) {
-//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.ATTENDANCE);
-//                attendanceRepository.save(attendance);
-//            }
-//
-//            for(int i = 10; i <= 20; i++) {
-//                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.now(), AttendanceType.LATENESS);
-//                attendanceRepository.save(attendance);
-//            }
+            for(int i = 1; i <= 10; i++) {
+                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.of(2021,2,7), AttendanceType.ATTENDANCE);
+                attendanceRepository.save(attendance);
+            }
+
+            for(int i = 11; i <= 20; i++) {
+                Attendance attendance = new Attendance(courses[1], students[i], LocalDate.of(2021,2,7), AttendanceType.LATENESS);
+                attendanceRepository.save(attendance);
+            }
 
             // create courseBoard
 
@@ -130,11 +130,11 @@ public class InitDB {
 
             // create questionBoard
 
-//            for (int i = 1; i <= 157; i++) {
-//                QuestionBoard questionBoard = new QuestionBoard(courses[2], "질문 게시판"+i, "QBoardContent"+i, students[i % 50]);
-////                questionBoard.initReply("replyTitle", "replyContent");
-//                questionBoardRepository.save(questionBoard);
-//            }
+            for (int i = 1; i <= 157; i++) {
+                QuestionBoard questionBoard = new QuestionBoard(courses[1], "질문 게시판"+i, "QBoardContent"+i, students[i % 50]);
+//                questionBoard.initReply("replyTitle", "replyContent");
+                questionBoardRepository.save(questionBoard);
+            }
 
 
             /**

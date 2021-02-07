@@ -8,11 +8,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class AttendanceStateListDto {
+public class AttendanceTypeListDto {
 
-    private List<AttendanceStateDto> states;
+    private List<AttendanceTypeDto> states;
 
-    public AttendanceStateListDto(List<AttendanceStateDto> states) {
+    public AttendanceTypeListDto(List<AttendanceTypeDto> states) {
         this.states = states;
     }
 }

@@ -49,42 +49,59 @@
           <div class="row">
             <div class="col-md-12">
               <div class="section-heading">
-                <h2 th:text="${menuTitle}"></h2>
+<!--                <h2 th:text="${menuTitle}"></h2>-->
+                <h2 th:text="${attendances.get(0).getCheckedDate()}">haha</h2>
               </div>
               <div class="default-table">
                 <table>
                   <thead>
                   <tr>
-                    <th>이름4</th>
-                    <th>아이디</th>
+                    <th>이름</th>
+                    <th>생년월일</th>
                     <th>출석일수</th>
                     <th>결석일수</th>
                     <th>지각일수</th>
                     <th>출석</th>
                     <th>결석</th>
                     <th>지각</th>
-                    <th>test</th>
                   </tr>
                   </thead>
                   <tbody>
-                  <form action="new" method="post">
+                  <form th:if="${attendances.get(0).getAttendanceType() == null}" action="./" method="post">
                   <tr th:each="attendance, index : ${attendances}">
                     <td th:text="${attendance.getStudentName()}"></td>
-                    <td th:text="${attendance.getStudentId()}"></td>
+                    <td th:text="${attendance.getBirthDate()}"></td>
                     <td th:text="${attendance.getNumAttendance()}"></td>
                     <td th:text="${attendance.getNumAbsence()}"></td>
                     <td th:text="${attendance.getNumLateness()}"></td>
 
-                    <td><input th:name="states+'['+${index.index}+'].attendState'" value="ATTENDANCE" type="radio" checked></td>
-                    <td><input th:name="states+'['+${index.index}+'].attendState'" value="ABSENCE" type="radio"></td>
-                    <td><input th:name="states+'['+${index.index}+'].attendState'" value="LATENESS" type="radio"></td>
+                    <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ATTENDANCE" type="radio" checked></td>
+                    <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ABSENCE" type="radio"></td>
+                    <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="LATENESS" type="radio"></td>
 <!--                    <td><input name="attendState" value="lateness" type="radio"></td>-->
                     <input th:name="states+'['+${index.index}+'].studentId'" th:value="${attendance.getStudentId()}" hidden>
                     <!--<td><a href="#" th:href="@{/items/{id}/edit (id=${item.id})}"
                            class="btn btn-primary" role="button">수정</a></td>-->
-                    <td th:text="states+'['+${index.index}+'].attendState'"></td>
                   </tr>
                     <button type="submit">출석 등록</button>
+                    </form>
+                  <form th:if="${attendances.get(0).getAttendanceType() != null}" th:action="@{../attendance(checkedDate=${checkedDate})}" th:method="put">
+                    <tr th:each="attendance, index : ${attendances}">
+                      <td th:text="${attendance.getStudentName()}"></td>
+                      <td th:text="${attendance.getBirthDate()}"></td>
+                      <td th:text="${attendance.getNumAttendance()}"></td>
+                      <td th:text="${attendance.getNumAbsence()}"></td>
+                      <td th:text="${attendance.getNumLateness()}"></td>
+
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ATTENDANCE" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'ATTENDANCE')}"></td>
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ABSENCE" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'ABSENCE')}"></td>
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="LATENESS" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'LATENESS')}"></td>
+                      <!--                    <td><input name="attendState" value="lateness" type="radio"></td>-->
+                      <input th:name="states+'['+${index.index}+'].attendanceId'" th:value="${attendance.getAttendanceId()}" hidden>
+                      <!--<td><a href="#" th:href="@{/items/{id}/edit (id=${item.id})}"
+                             class="btn btn-primary" role="button">수정</a></td>-->
+                    </tr>
+                    <button type="submit">출석 수정</button>
                   </form>
                   </tbody>
                 </table>
