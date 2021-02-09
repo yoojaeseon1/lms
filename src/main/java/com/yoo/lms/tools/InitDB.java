@@ -47,7 +47,16 @@ public class InitDB {
             Teacher[] teachers = new Teacher[51];
 
             for(int i = 1; i <= 50; i++) {
-                Teacher teacher = new Teacher("teacherId"+i, "1234", "teacherName"+i, 12, new Address("1","2","3"), LocalDate.now(), MemberType.TEACHER);
+
+                Teacher teacher = new Teacher("teacherId"+i,
+                        "1234",
+                        "teacherName"+i,
+                        "email"+i,
+                        12,
+                        new Address("1","2","3"),
+                        LocalDate.now(),
+                        MemberType.TEACHER);
+
                 memberRepository.save(teacher);
                 teachers[i] = teacher;
             }
@@ -57,7 +66,16 @@ public class InitDB {
             Student[] students = new Student[51];
 
             for(int i = 1; i <= 50; i++) {
-                Student student = new Student("studentId"+i, "1234", "studentName"+i, 12, new Address("1","2","3"), LocalDate.now(), MemberType.STUDENT);
+
+                Student student = new Student("studentId"+i,
+                        "1234",
+                        "studentName"+i,
+                        "email"+i,
+                        12,
+                        new Address("1","2","3"),
+                        LocalDate.now(),
+                        MemberType.STUDENT);
+
                 memberRepository.save(student);
                 students[i] = student;
             }

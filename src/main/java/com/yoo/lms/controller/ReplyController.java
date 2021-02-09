@@ -40,6 +40,7 @@ public class ReplyController {
         Student student = new Student("studentId100",
                 "1234",
                 "name",
+                "email",
                 12,
                 new Address("1","2","3"),
                 LocalDate.now(), MemberType.STUDENT);

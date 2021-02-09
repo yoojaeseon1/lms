@@ -19,6 +19,16 @@ spring:
       filter:
         enabled: true
 
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: lmsSystem3695@gmail.com
+    password: system!@34
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
   devtools:
     livereload:
       enabled: true

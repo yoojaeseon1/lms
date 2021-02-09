@@ -17,9 +17,10 @@ import java.util.List;
 @NoArgsConstructor
 public class Student extends Member{
 
-    public Student(String id, String password, String name, int age, Address address, LocalDate birthDate, MemberType memberType) {
-        super(id, password, name, age, address, birthDate, memberType);
+    public Student(String id, String password, String name, String email, int age, Address address, LocalDate birthDate, MemberType memberType) {
+        super(id, password, name, email, age, address, birthDate, memberType);
     }
+
 
     @OneToMany(mappedBy = "student")
     private List<StudentCourse> studentCourses = new ArrayList<>();

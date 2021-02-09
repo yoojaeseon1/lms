@@ -64,16 +64,16 @@
                   </thead>
                   <tbody>
                   <tr th:each="attendance: ${attendanceListDtos}">
-                    <form th:action="@{attendance/update(checkedDate=${attendance.getCheckedDate()})}" th:method="get">
-                      <!--<td th:text="${attendance.getCheckedDate()}"></td>-->
-                      <!--<form action="attendance/update" method="get">-->
-                    <td th:text="${attendance.getNumAttendance()}"></td>
-                    <td th:text="${attendance.getNumAbsence()}"></td>
-                    <td th:text="${attendance.getNumLateness()}"></td>
-                    <td>
-                      <button type="submit">수정</button>
-                    </td>
-                      <input type="hidden" name="checkedDate" th:value="${attendance.getCheckedDate()}">
+                    <!--<form th:action="@{attendance/update(checkedDate=${attendance.getCheckedDate()})}" th:method="get">-->
+                    <form action="attendance/update" method="get">
+                      <td th:text="${attendance.getCheckedDate()}"></td>
+                      <td th:text="${attendance.getNumAttendance()}"></td>
+                      <td th:text="${attendance.getNumAbsence()}"></td>
+                      <td th:text="${attendance.getNumLateness()}"></td>
+                      <td>
+                        <button type="submit">수정</button>
+                      </td>
+                        <input type="hidden" name="checkedDate" th:value="${attendance.getCheckedDate()}">
                     </form>
                   </tr>
                   </tbody>

@@ -92,13 +92,15 @@ public class AttendanceController {
         return "attendance/studentList";
     }
 
+//    @PutMapping("{courseId}/attendance")
+//    public String updateAttendance(@PathVariable("courseId") Long courseId,
+//                                   @RequestParam("checkedDate")
+//                                   @DateTimeFormat(pattern="yyyy-MM-dd")
+//                                           LocalDate checkedDate,
+//                                   AttendanceTypeListDto AttendanceTypeListDto
+//                                   ) {
     @PutMapping("{courseId}/attendance")
-    public String updateAttendance(@PathVariable("courseId") Long courseId,
-                                   @RequestParam("checkedDate")
-                                   @DateTimeFormat(pattern="yyyy-MM-dd")
-                                           LocalDate updatedDate,
-                                   AttendanceTypeListDto AttendanceTypeListDto
-                                   ) {
+    public String updateAttendance(AttendanceTypeListDto AttendanceTypeListDto) {
 
         log.info("=================");
         log.info("execute updateAttendance(put)");

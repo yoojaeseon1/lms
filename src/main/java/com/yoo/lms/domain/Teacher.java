@@ -16,10 +16,9 @@ import java.util.List;
 @Getter
 public class Teacher extends Member{
 
-    public Teacher(String id, String password, String name, int age, Address address, LocalDate birthDate, MemberType memberType) {
-        super(id, password, name, age, address, birthDate, memberType);
+    public Teacher(String id, String password, String name, String email, int age, Address address, LocalDate birthDate, MemberType memberType) {
+        super(id, password, name, email, age, address, birthDate, memberType);
     }
-
 
     @OneToMany(mappedBy = "teacher")
     private List<Course> courses = new ArrayList<>();
