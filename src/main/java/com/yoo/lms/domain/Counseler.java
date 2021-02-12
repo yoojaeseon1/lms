@@ -22,8 +22,8 @@ public class Counseler extends Member{
 //    }
 
 
-    public Counseler(String id, String password, String name, String email, int age, Address address, LocalDate birthDate, MemberType memberType) {
-        super(id, password, name, email, age, address, birthDate, memberType);
+    public Counseler(String id, String password, String name, String email, Address address, LocalDate birthDate, MemberType memberType) {
+        super(id, password, name, email, address, birthDate, memberType);
     }
 
     @OneToMany(mappedBy="createdBy")

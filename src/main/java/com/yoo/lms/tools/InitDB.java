@@ -48,11 +48,10 @@ public class InitDB {
 
             for(int i = 1; i <= 50; i++) {
 
-                Teacher teacher = new Teacher("teacherId"+i,
+                Teacher teacher = new Teacher("teacherid"+i,
                         "1234",
                         "teacherName"+i,
                         "email"+i,
-                        12,
                         new Address("1","2","3"),
                         LocalDate.now(),
                         MemberType.TEACHER);
@@ -67,11 +66,10 @@ public class InitDB {
 
             for(int i = 1; i <= 50; i++) {
 
-                Student student = new Student("studentId"+i,
+                Student student = new Student("studentid"+i,
                         "1234",
                         "studentName"+i,
                         "email"+i,
-                        12,
                         new Address("1","2","3"),
                         LocalDate.now(),
                         MemberType.STUDENT);

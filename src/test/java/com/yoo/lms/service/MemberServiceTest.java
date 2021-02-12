@@ -63,7 +63,6 @@ class MemberServiceTest {
                 password,
                 name,
                 email,
-                12,
                 new Address("1","2","3"),
                 LocalDate.now(),
                 MemberType.STUDENT);
@@ -87,6 +86,19 @@ class MemberServiceTest {
         assertThat(updateResult).isTrue();
         assertThat(member.getPassword()).isNotEqualTo(password);
 
+
+    }
+
+    @Test
+    public void create(){
+
+        //given
+
+
+        //when
+
+
+        //then
 
     }
 

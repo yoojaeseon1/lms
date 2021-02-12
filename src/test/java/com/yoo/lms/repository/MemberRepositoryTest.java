@@ -35,8 +35,21 @@ class MemberRepositoryTest {
     @Test
     public void joinTest(){
 
-        Student student1 = new Student("yoo1", "1234", "name1", "email", 12, new Address("1","2","3"), LocalDate.now(), MemberType.STUDENT);
-        Teacher teacher = new Teacher("yoo2", "1234", "name2", "email",12, new Address("1","2","3"), LocalDate.now(), MemberType.TEACHER);
+        Student student1 = new Student("yoo1",
+                "1234",
+                "name1",
+                "email",
+                new Address("1","2","3"),
+                LocalDate.now(),
+                MemberType.STUDENT);
+
+        Teacher teacher = new Teacher("yoo2",
+                "1234",
+                "name2",
+                "email",
+                new Address("1","2","3"),
+                LocalDate.now(),
+                MemberType.TEACHER);
 
         memberRepository.save(student1);
         memberRepository.save(teacher);

@@ -12,9 +12,9 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/sample")
-    public String sample(){
-        return "shortcodes";
-    }
+//    @GetMapping("/sample")
+//    public String sample(){
+//        return "shortcodes";
+//    }
 
 }

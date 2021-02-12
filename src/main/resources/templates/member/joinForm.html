@@ -1,0 +1,424 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="en">
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <title>Ramayana - HTML5 Template</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!--
+    Ramayana CSS Template
+    https://templatemo.com/tm-529-ramayana
+    -->
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/assets/css/templatemo-style.css">
+    <link rel="stylesheet" href="/assets/css/owl.css">
+
+</head>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+
+        let wasCheckedId = false;
+        // const now = new Date(convertDate(new Date()));
+        const now = convertDate(new Date());
+
+        // 이메일 형식
+
+        const emailRegex = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+
+
+        // 영어 소문자 + 대문자 + 특수문자 조합, 길이 : 8~12
+
+        const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,12}$/;
+
+
+        // 영어 소문자 또는 영어소문자+숫자 조합, 길이 : 4~10
+        const idRegex = /^[0-9a-z]{4,10}$/;
+
+        const nameRegex = /^[가-힣]{2,4}|[a-zA-Z]{2,10}\s[a-zA-Z]{2,10}$/;
+
+
+        function checkId() {
+
+            const id = $("#id").val();
+
+            if(id.length == 0) {
+                alert("아이디를 입력해주세요");
+                return;
+            }
+
+            if(!idRegex.test(id)) {
+                alert("아이디를 조건에 맞게 작성해주세요");
+                return;
+            }
+
+            console.log("id : " + id);
+
+            // let dupCheckForm = {
+            //     id: id
+            // };
+
+            $.ajax({
+               type: "get",
+               url: "/join/checkDuplicationId",
+                data: "id="+id,
+                dataType: "text",
+                success: function(data) {
+                   console.log("data : " + data);
+                   if(data == "dup"){
+                        alert("중복된 아이디입니다.");
+                        wasCheckedId = false;
+                   }
+                   else {
+                       alert("사용가능한 아이디입니다.");
+                       wasCheckedId = true;
+                   }
+                },
+                error(request, status, error) {
+                   console.log("request : " + request);
+                   console.log("status : " + status);
+                   console.log("error : " + error);
+                }
+            });
+
+        };
+
+        function checkPassword() {
+            const password = $("#password").val();
+
+            if(password.length == 0) {
+                alert("비밀번호를 입력해주세요");
+                return false;
+            }
+
+            const repeatedPassword = $("#repeatedPassword").val();
+
+            if(repeatedPassword.length == 0) {
+                alert("비밀번호 확인을 입력해주세요.");
+                return false;
+            }
+
+            if(password != repeatedPassword) {
+                alert("비밀번호가 일치하지 않습니다.");
+                return false;
+            }
+
+            if(!passwordRegex.test(password)) {
+                alert("비밀번호를 조건에 맞게 입력해주세요.");
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkName(){
+            const name = $("#name").val();
+
+            if(name.length == 0) {
+                alert("이름을 입력해주세요.");
+                return false;
+            }
+
+            if(!nameRegex.test(name)){
+                alert("이름을 정확히 입력해주세요.")
+                return false;
+            }
+
+            return true;
+
+        }
+
+        function checkEmail() {
+            const email = $("#email").val();
+
+            if(email.length == 0) {
+                alert("이메일을 입력해주세요");
+                return false;
+            }
+
+            if(!emailRegex.test(email)) {
+                alert("이메일을 형식에 맞게 입력해주세요.");
+                return false;
+            }
+
+            return true;
+
+        }
+
+
+
+        function checkBirthDate() {
+
+            console.log("into checkBirthDate");
+
+            const birthDate = new Date($("#birthDate").val().split("-"));
+
+            console.log("birthDate : " + birthDate);
+
+            if(birthDate.toString() == "Invalid Date") {
+                alert("생일을 입력해주세요.");
+                return false;
+            }
+
+
+            if(birthDate.getTime() >= now.getTime()) {
+                alert("생일이 오늘보다 늦을 수 없습니다.");
+                return false;
+            }
+
+            return true;
+
+
+        }
+
+        function convertDate(date) {
+
+            const year = date.getFullYear();
+
+            let month = date.getMonth();
+            month = month < 10 ? "0" + month : month;
+
+            let day = date.getDate();
+            day = day < 10 ? "0" + day : day;
+
+            return new Date(year, month, day);
+
+        }
+
+
+        function goPopup(){
+            var pop = window.open("/jusoPopup","pop","width=570,height=420, scrollbars=yes, resizable=yes");
+        }
+
+        function jusoCallBack(roadAddrPart1,addrDetail,roadAddrPart2,zipNo){
+
+            $("#postNumber").val(zipNo);
+            $("#roadAddress").val(roadAddrPart1);
+            $("#detailAddress").val(addrDetail+roadAddrPart2);
+        }
+
+
+
+        function clickSubmit() {
+
+
+            const name = $("#name").val();
+
+            if(!wasCheckedId) {
+                alert("아이디 중복을 확인해주세요.");
+                return;
+            }
+
+            if(!(checkPassword() && checkEmail())) {
+                return;
+            }
+
+            if(!checkName()){
+                return;
+            }
+
+            if(!checkBirthDate()) {
+                return;
+            }
+
+            if($("#postNumber").val().length == 0) {
+                alert("주소를 입력해주세요.");
+                return;
+            }
+
+            let joinForm = {
+                            id: $("#id").val(),
+                            password: $("#password").val(),
+                            name: $("#name").val(),
+                            birthDate: $("#birthDate").val(),
+                            email: $("#email").val(),
+                            address: {
+                                postNumber: $("#postNumber").val(),
+                                roadAddress: $("#roadAddress").val(),
+                                detailAddress: $("#detailAddress").val()
+                                }
+                            };
+
+            // let joinForm = JSON.stringify($("#joinForm").val());
+            console.log("execute ajax");
+            $.ajax({
+                type: "post",
+                url: "/join/"+$("#memberType").val(),
+                data: JSON.stringify(joinForm),
+                contentType: "application/json",
+                dataType: "text",
+                success: function(data) {
+                   alert("회원가입이 완료되었습니다.");
+                   // console.log("success : " + data);
+                   location.href = "/";
+                },
+                error: function(request, status, error) {
+                   console.log("request : " + request);
+                   console.log("status : " + status);
+                   console.log("error : " + error);
+                }
+            });
+        }
+
+    </script>
+</th:block>
+
+
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <div class="inner">
+
+            <!-- Header -->
+            <header id="header">
+                <div class="logo">
+                    <a href="index.html">LMS System</a>
+                </div>
+            </header>
+            <div>회원 가입</div>
+                <table class="table table-hover">
+                    <tr>
+                        <th>아이디</th>
+                        <td>
+                            <input id="id" />
+                        </td>
+                        <td>
+                            <button type="button" onclick="checkId()">중복확인</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>비밀번호</th>
+                        <td><input type="password" id="password"/></td>
+                    </tr>
+                    <tr>
+                        <th>비밀번호 확인</th>
+                        <td><input type="password" id="repeatedPassword"/></td>
+                    </tr>
+                    <tr>
+                        <th>이름</th>
+                        <td><input id="name"/></td>
+                    </tr>
+                    <tr>
+                        <th>생년월일</th>
+                        <td><input type="date" id="birthDate"/></td>
+                    </tr>
+                    <tr>
+                        <th>이메일</th>
+                        <td><input id="email"/></td>
+                    </tr>
+                    <tr>
+                        <th>우편번호</th>
+                        <td>
+                            <input type="hidden" id="confmKey" name="confmKey" value=""  >
+                            <input type="text" id="postNumber" readonly style="width:100px">
+                            <input type="button"  value="주소검색" onclick="goPopup();">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>도로명주소</th>
+                        <td><input type="text" id="roadAddress" style="width:85%"></td>
+                    </tr>
+                    <tr>
+                        <th>상세주소</th>
+                        <td>
+                            <input type="text" id="detailAddress" style="width:80%" value="">
+                            <!--                <input type="text" id="roadAddrPart2"  style="width:40%" value="">-->
+                        </td>
+                    </tr>
+                </table>
+                <div>
+                    <button type="submit" onclick="clickSubmit()">가입</button>
+                    <button type="button" onclick="location.href='/'">취소</button>
+                </div>
+                <input type="hidden" id="memberType" th:value="${memberType}" >
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+
+        <div class="inner">
+
+            <!-- Search Box -->
+            <!-- 수강 / 강의 중인 과목 selectBox 넣자 -->
+            <section id="search" class="alt">
+                <form method="get" action="#">
+                    <li>
+                        <span class="opener">Dropdown One</span>
+                        <ul>
+                            <li><a href="#">First Sub Menu</a></li>
+                            <li><a href="#">Second Sub Menu</a></li>
+                            <li><a href="#">Third Sub Menu</a></li>
+                        </ul>
+                    </li>
+                </form>
+            </section>
+
+            <!-- Menu -->
+            <nav id="menu">
+                <ul>
+                    <li><a href="index.html">Homepage</a></li>
+                    <li><a href="simple_page.html">Simple Page</a></li>
+                    <li><a href="shortcodes.html">Shortcodes</a></li>
+                    <li>
+                        <span class="opener">Dropdown One</span>
+                        <ul>
+                            <li><a href="#">First Sub Menu</a></li>
+                            <li><a href="#">Second Sub Menu</a></li>
+                            <li><a href="#">Third Sub Menu</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span class="opener">Dropdown Two</span>
+                        <ul>
+                            <li><a href="#">Sub Menu #1</a></li>
+                            <li><a href="#">Sub Menu #2</a></li>
+                            <li><a href="#">Sub Menu #3</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="https://www.google.com">External Link</a></li>
+                </ul>
+            </nav>
+
+            <!-- Footer -->
+            <footer id="footer">
+                <p class="copyright">Copyright &copy; 2019 Company Name
+                    <br>Designed by <a rel="nofollow" href="https://www.facebook.com/templatemo">Template Mo</a></p>
+            </footer>
+
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<!-- Bootstrap core JavaScript -->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/transition.js"></script>
+<script src="/assets/js/owl-carousel.js"></script>
+<script src="/assets/js/custom.js"></script>
+</body>
+
+
+</body>
+
+</html>

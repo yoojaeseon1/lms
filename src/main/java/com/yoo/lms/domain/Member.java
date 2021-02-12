@@ -17,7 +17,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
 @NoArgsConstructor
-@Getter @Setter
+@Getter
 public class Member {
 
 
@@ -41,14 +41,15 @@ public class Member {
     private Address address;
 
 
-    public Member(String id, String password, String name, String email, int age, Address address, LocalDate birthDate, MemberType memberType) {
+    public Member(String id, String password, String name, String email, Address address, LocalDate birthDate, MemberType memberType) {
         this.id = id;
         this.password = password;
         this.name = name;
-        this.age = age;
         this.email = email;
         this.address = address;
+        this.birthDate = birthDate;
         this.memberType = memberType;
+        this.age = LocalDate.now().getYear() - birthDate.getYear() + 1;
     }
 
     public void updateInfo(Member member) {

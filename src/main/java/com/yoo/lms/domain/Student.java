@@ -17,8 +17,26 @@ import java.util.List;
 @NoArgsConstructor
 public class Student extends Member{
 
-    public Student(String id, String password, String name, String email, int age, Address address, LocalDate birthDate, MemberType memberType) {
-        super(id, password, name, email, age, address, birthDate, memberType);
+    public Student(String id, String password, String name, String email, Address address, LocalDate birthDate, MemberType memberType) {
+        super(id,
+                password,
+                name,
+                email,
+                address,
+                birthDate,
+                memberType
+        );
+    }
+
+    public Student(Member member) {
+        super(member.getId(),
+                member.getPassword(),
+                member.getName(),
+                member.getEmail(),
+                member.getAddress(),
+                member.getBirthDate(),
+                member.getMemberType()
+        );
     }
 
 
