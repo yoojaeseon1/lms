@@ -30,15 +30,6 @@
 <th:block layout:fragment="script">
     <script type="text/javascript">
 
-        function parseFileName(fileName) {
-
-            const parsedFileName = fileName.indexOf('_');
-
-            console.log(parsedFileName);
-
-            return parsedFileName;
-        }
-
     </script>
 </th:block>
 
@@ -57,29 +48,20 @@
                     <a href="index.html">LMS System</a>
                 </div>
             </header>
-            <div th:text="${menuTitle}"></div>
+            <div>아이디 찾기 결과</div>
             <table class="table table-hover">
                 <tr>
-                    <th>글번호</th>
-                    <td th:text="${posting.getId()}"></td>
-                </tr>
-                <tr>
-                    <th>제목</th>
-                    <td th:text="${posting.getTitle()}"></td>
-                </tr>
-                <tr>
-                    <th>작성일</th>
-                    <td th:text="${posting.getCreatedBy()}"></td>
-                </tr>
-                <tr>
-                    <th>내용</th>
-                    <td></td>
+                    <th th:if="${#strings.length(hiddenID) > 0}">
+                        <div th:text="|아이디는 ${hiddenID} 입니다.|"></div>
+                        <button type="button" onclick="location.href='/loginForm'">로그인 페이지로 이동</button>
+                        <form action="/findFullID" method="get">
+                            <input type="hidden" name="id" th:value="${id}">
+                        <button type="submit">전체 아이디 이메일로 전송 받기</button>
+                        </form>
+                    </th>
+                    <th th:unless="${#strings.length(hiddenID) > 0}">정보와 일치하는 아이디가 없습니다.</th>
                 </tr>
             </table>
-            <div>
-            <button>수정</button>
-            <button>삭제</button>
-            </div>
         </div>
 
     </div>

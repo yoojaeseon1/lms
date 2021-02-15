@@ -71,13 +71,17 @@ class MemberServiceTest {
 
         em.flush();
 
+        MemberSearchCondition searchCondition = new MemberSearchCondition(id, null, name, email);
+
         //when
 
-        boolean updateResult = memberService.updateTempPW(id, name, email);
+
+        boolean updateResult = memberService.updateTempPW(searchCondition);
 
         em.flush();
 
-        MemberSearchCondition searchCondition = new MemberSearchCondition("tempId", null,null, null);
+        searchCondition = new MemberSearchCondition("tempId", null,null, null);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition("tempId");
 
         Member member = memberRepository.searchMember(searchCondition);
 
@@ -97,6 +101,31 @@ class MemberServiceTest {
 
         //when
 
+
+        //then
+
+    }
+
+    @Test
+    public void testDownCasting(){
+
+        //given
+
+        String id = "tempId";
+        String name = "tempName";
+        String password = "1234";
+        String email = "you8054@nate.com";
+
+        Member member = new Member(
+                id,
+                password,
+                name,
+                email,
+                new Address("1","2","3"),
+                LocalDate.now(),
+                MemberType.STUDENT);
+
+        //when
 
         //then
 

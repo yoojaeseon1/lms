@@ -61,8 +61,9 @@ class MemberRepositoryTest {
 
         //given
 
-//        MemberSearchCondition searchCondition = new MemberSearchCondition("studentId1", null, null, null);
-        MemberSearchCondition searchCondition = new MemberSearchCondition("studentId1", "1234", null, null);
+        MemberSearchCondition searchCondition = new MemberSearchCondition("studentId1", null, null, null);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition("studentId1", "1234", null, null);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition("studentId1");
 
         //when
 

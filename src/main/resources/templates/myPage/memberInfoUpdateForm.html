@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
 <html lang="en">
 
 <head>
 
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -30,17 +30,59 @@
 <th:block layout:fragment="script">
     <script type="text/javascript">
 
-        function parseFileName(fileName) {
+        function clickSubmit() {
 
-            const parsedFileName = fileName.indexOf('_');
+            const password = $("#password").val();
+            const repeatedPassword = $("#repeatedPassword").val();
+            const email = $("#email").val();
+            const postNumber = $("#postNumber").val();
+            const roadAddress = $("#roadAddress").val();
+            const detailAddress = $("#detailAddress").val();
 
-            console.log(parsedFileName);
+            if(!(checkPassword(password, repeatedPassword) && checkEmail(email))) {
+                return;
+            }
 
-            return parsedFileName;
+
+            if(postNumber.length == 0) {
+                alert("주소를 입력해주세요.");
+                return;
+            }
+
+            let updateForm = {
+                password: password,
+                email: email,
+                address: {
+                    postNumber: postNumber,
+                    roadAddress: roadAddress,
+                    detailAddress: detailAddress
+                }
+            };
+
+            // let joinForm = JSON.stringify($("#joinForm").val());
+            console.log("execute ajax");
+            $.ajax({
+                type: "put",
+                url: "/myPage/infomation",
+                data: JSON.stringify(updateForm),
+                contentType: "application/json",
+                dataType: "text",
+                success: function(data) {
+                    alert("회원 정보 변경이 완료되었습니다.");
+                    // console.log("success : " + data);
+                    location.href = "/";
+                },
+                error: function(request, status, error) {
+                    console.log("request : " + request);
+                    console.log("status : " + status);
+                    console.log("error : " + error);
+                }
+            });
         }
 
     </script>
 </th:block>
+
 
 <body class="is-preload">
 
@@ -57,31 +99,57 @@
                     <a href="index.html">LMS System</a>
                 </div>
             </header>
-            <div th:text="${menuTitle}"></div>
+            <div>회원 정보 변경</div>
             <table class="table table-hover">
                 <tr>
-                    <th>글번호</th>
-                    <td th:text="${posting.getId()}"></td>
+                    <th>비밀번호</th>
+                    <td><input type="password" id="password"/></td>
                 </tr>
                 <tr>
-                    <th>제목</th>
-                    <td th:text="${posting.getTitle()}"></td>
+                    <th>비밀번호 확인</th>
+                    <td><input type="password" id="repeatedPassword"/></td>
                 </tr>
                 <tr>
-                    <th>작성일</th>
-                    <td th:text="${posting.getCreatedBy()}"></td>
+                    <th>이름</th>
+                    <td>
+                        <div th:text="${member.getName()}"></div>
+                    </td>
                 </tr>
                 <tr>
-                    <th>내용</th>
-                    <td></td>
+                    <th>생년월일</th>
+                    <td>
+                        <div th:text="${member.getBirthDate()}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>이메일</th>
+                    <td><input id="email" th:value="${member.getEmail()}"/></td>
+                </tr>
+                <tr>
+                    <th>우편번호</th>
+                    <td>
+                        <input type="hidden" id="confmKey" name="confmKey" value=""  >
+                        <input type="text" id="postNumber" readonly style="width:100px" th:value="${member.getAddress().getPostNumber()}">
+                        <input type="button"  value="주소검색" onclick="goPopup();">
+                    </td>
+                </tr>
+                <tr>
+                    <th>도로명주소</th>
+                    <td><input type="text" id="roadAddress" style="width:85%" th:value="${member.getAddress().getRoadAddress()}"></td>
+                </tr>
+                <tr>
+                    <th>상세주소</th>
+                    <td>
+                        <input type="text" id="detailAddress" style="width:80%" th:value="${member.getAddress().getDetailAddress()}">
+                        <!--                <input type="text" id="roadAddrPart2"  style="width:40%" value="">-->
+                    </td>
                 </tr>
             </table>
             <div>
-            <button>수정</button>
-            <button>삭제</button>
+                <button type="submit" onclick="clickSubmit()">수정</button>
+                <button type="button" onclick="location.href='/'">취소</button>
             </div>
         </div>
-
     </div>
 
     <!-- Sidebar -->
@@ -150,6 +218,7 @@
 <script src="/assets/js/transition.js"></script>
 <script src="/assets/js/owl-carousel.js"></script>
 <script src="/assets/js/custom.js"></script>
+<script src="/js/joinValidation.js"></script>
 </body>
 
 

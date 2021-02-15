@@ -4,21 +4,25 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.QMember;
+import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.repository.custom.MemberRepositoryCustom;
 import com.yoo.lms.searchCondition.MemberSearchCondition;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.EntityManager;
 
+import java.util.Optional;
+
 import static com.yoo.lms.domain.QMember.*;
 
 
 public class MemberRepositoryImpl implements MemberRepositoryCustom {
 
-    private EntityManager em;
-    private JPAQueryFactory queryFactory;
+    private final EntityManager em;
+    private final JPAQueryFactory queryFactory;
 
     public MemberRepositoryImpl(EntityManager em) {
+        this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
     }
 
@@ -33,6 +37,21 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         emailEq(searchCondition.getEmail())
                 )
                 .fetchOne();
+    }
+
+    @Override
+    public Optional<MemberType> searchMemberType(MemberSearchCondition searchCondition) {
+        return Optional.ofNullable(queryFactory
+                .select(member.memberType)
+                .from(member)
+                .where(
+                        idEq(searchCondition.getId()),
+                        passwordEq(searchCondition.getPassword()),
+                        nameEq(searchCondition.getName()),
+                        emailEq(searchCondition.getEmail())
+                )
+                .fetchOne()
+        );
     }
 
     private BooleanExpression idEq(String id){

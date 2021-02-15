@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -54,6 +55,8 @@ public class MemberService {
     public boolean checkDuplicationID(String id) {
 
         MemberSearchCondition searchCondition = new MemberSearchCondition(id, null, null, null);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition(id);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition();
 
         Member findMember = memberRepository.searchMember(searchCondition);
 
@@ -64,23 +67,27 @@ public class MemberService {
 
     }
 
+    public Optional<MemberType> searchMemberType(MemberSearchCondition searchCondition) {
+        return memberRepository.searchMemberType(searchCondition);
+    }
 
-    boolean login(String id, String password) {
 
-        MemberSearchCondition searchCondition = new MemberSearchCondition(id, password, null, null);
+    public Member login(MemberSearchCondition searchCondition) {
 
-        Member findMember = memberRepository.searchMember(searchCondition);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition(id, password, null, null);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition(id);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition();
 
-        if(findMember == null)
-            return false;
-        else
-            return true;
+        return memberRepository.searchMember(searchCondition);
+
 
     }
 
-    public String findID(String name, String email) {
+    public String findID(MemberSearchCondition searchCondition) {
 
-        MemberSearchCondition searchCondition = new MemberSearchCondition(null, null, name, email);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition(null, null, name, email);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition(name);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition();
 
         Member findMember = memberRepository.searchMember(searchCondition);
 
@@ -89,11 +96,15 @@ public class MemberService {
         else
             return findMember.getId();
 
+
+
     }
 
     @Transactional
-    public boolean updateTempPW(String id, String name, String email) {
-        MemberSearchCondition searchCondition = new MemberSearchCondition(id, null, name, email);
+    public boolean updateTempPW(MemberSearchCondition searchCondition) {
+//        MemberSearchCondition searchCondition = new MemberSearchCondition(id, null, name, email);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition(id);
+//        MemberSearchCondition searchCondition = new MemberSearchCondition();
 
         Member findMember = memberRepository.searchMember(searchCondition);
 
@@ -101,8 +112,6 @@ public class MemberService {
             return false;
         else {
 
-            
-            
             // 임시비밀번호 생성
             String tempPassword = createTempPW();
             
@@ -125,15 +134,28 @@ public class MemberService {
 
     }
 
+    public void sendEmailFullID(MemberSearchCondition searchCondition) {
+
+        Member findMember = memberRepository.searchMember(searchCondition);
+
+        SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+
+        simpleMailMessage.setTo(findMember.getEmail());
+        simpleMailMessage.setSubject("[LMS 전체 아이디 확인 메일]");
+        simpleMailMessage.setText("전체 아이디는 [ " + findMember.getId() +"  ] 입니다.");
+        javaMailSender.send(simpleMailMessage);
+    }
 
     @Transactional
-    public void updatePersonalInfo(Member member){
+    public void updateInfo(String id, Member member){
 
-        Member findMember = memberRepository.findById(member.getId()).get();
+        Member findMember = memberRepository.findById(id).get();
 
         findMember.updateInfo(member);
 
     }
+
+
 
 
     private String createTempPW() {

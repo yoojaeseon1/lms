@@ -1,8 +1,10 @@
 package com.yoo.lms.searchCondition;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+//@NoArgsConstructor
 public class MemberSearchCondition {
 
     private String id;

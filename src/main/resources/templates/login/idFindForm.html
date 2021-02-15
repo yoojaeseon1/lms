@@ -30,15 +30,6 @@
 <th:block layout:fragment="script">
     <script type="text/javascript">
 
-        function parseFileName(fileName) {
-
-            const parsedFileName = fileName.indexOf('_');
-
-            console.log(parsedFileName);
-
-            return parsedFileName;
-        }
-
     </script>
 </th:block>
 
@@ -57,24 +48,26 @@
                     <a href="index.html">LMS System</a>
                 </div>
             </header>
-            <div th:text="${menuTitle}"></div>
+            <div>아이디 찾기</div>
             <table class="table table-hover">
+                <form action="/findID" method="get">
                 <tr>
-                    <th>글번호</th>
-                    <td th:text="${posting.getId()}"></td>
+                    <th>이름</th>
+                    <td>
+                        <input name="name">
+                    </td>
                 </tr>
                 <tr>
-                    <th>제목</th>
-                    <td th:text="${posting.getTitle()}"></td>
+                    <th>이메일</th>
+                    <td>
+                        <input name="email">
+                    </td>
                 </tr>
                 <tr>
-                    <th>작성일</th>
-                    <td th:text="${posting.getCreatedBy()}"></td>
+                    <button type="submit">확인</button>
+                    <button type="button" onclick="location.href='/'">취소</button>
                 </tr>
-                <tr>
-                    <th>내용</th>
-                    <td></td>
-                </tr>
+                </form>
             </table>
             <div>
             <button>수정</button>

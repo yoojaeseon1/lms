@@ -54,18 +54,14 @@ public class Member {
 
     public void updateInfo(Member member) {
 
-        if(!name.equals(member.getName())) {
-//            System.out.println("1");
-            name = member.getName();
-        }
-
         if(!password.equals(member.getPassword())) {
-//            System.out.println("2");
             password = member.getPassword();
         }
 
+        if(!email.equals(member.getEmail()))
+            email = member.getEmail();
+
         if(!address.equals(member.getAddress())) {
-//            System.out.println(3);
             address = member.getAddress();
         }
 

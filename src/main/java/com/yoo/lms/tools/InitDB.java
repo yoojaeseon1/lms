@@ -51,7 +51,7 @@ public class InitDB {
                 Teacher teacher = new Teacher("teacherid"+i,
                         "1234",
                         "teacherName"+i,
-                        "email"+i,
+                        "you8054@nate.com",
                         new Address("1","2","3"),
                         LocalDate.now(),
                         MemberType.TEACHER);
@@ -69,7 +69,7 @@ public class InitDB {
                 Student student = new Student("studentid"+i,
                         "1234",
                         "studentName"+i,
-                        "email"+i,
+                        "you8054@nate.com",
                         new Address("1","2","3"),
                         LocalDate.now(),
                         MemberType.STUDENT);
@@ -77,6 +77,20 @@ public class InitDB {
                 memberRepository.save(student);
                 students[i] = student;
             }
+
+            Student student = new Student(
+                    "you8054",
+                    "QWer!@34",
+                    "유재선",
+                    "you8054@nate.com",
+                    new Address("1","2","3"),
+                    LocalDate.now(),
+                    MemberType.STUDENT
+            );
+
+            memberRepository.save(student);
+
+
 
             em.flush();
 

@@ -4,16 +4,21 @@ import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.Teacher;
 import com.yoo.lms.domain.enumType.MemberType;
-import com.yoo.lms.domain.valueType.Address;
 import com.yoo.lms.service.MemberService;
+import com.yoo.lms.service.StudentService;
+import com.yoo.lms.service.TeacherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 @Controller
 @RequiredArgsConstructor
@@ -21,74 +26,88 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final StudentService studentService;
+    private final TeacherService teacherService;
 
-    @GetMapping("/join/memberTypeChoise")
-    public String chooseMemberTypeForm(Model model) {
 
-        return "member/memberTypeChoise";
+    @GetMapping("/myPage/passwordCheckForm")
+    public String checkPasswordForm(){
+
+
+        return "myPage/passwordCheckForm";
     }
 
-    @GetMapping("/join/{memberType}")
-    public String joinForm(Model model,
-                           @PathVariable("memberType") String memberType
-                           ) {
-
-        model.addAttribute("memberType", memberType);
-
-        return "member/joinForm";
-
-    }
-
-    @PostMapping("/join/{memberType}")
+    @PostMapping("/myPage/passwordCheck")
     @ResponseBody
-    public ResponseEntity<String> join(@RequestBody Member member,
-//                               @RequestBody Address address,
-//                                       String postNumber,
-                               @PathVariable("memberType") String memberType) {
+    public String checkPassword(@RequestBody String password,
+                                HttpServletRequest request
+                                ) throws UnsupportedEncodingException {
 
-//        log.info("member type : " + member.getMemberType());
-//        log.info("member Type is student : " + (member.getMemberType() == MemberType.STUDENT));
-//        log.info("member Type is teacher : " + (member.getMemberType() == MemberType.TEACHER));
-//        log.info("member type's type : " + (member.getMemberType().getClass()));
+        String decodedPassword = URLDecoder.decode(password,"utf-8");
 
-//        log.info("id : " + member.getId());
-//        log.info("password : " + member.getPassword());
-//        log.info("memberType : " + memberType);
-//        log.info("birthDate's type : " + member.getBirthDate().getClass());
-//        log.info("postNumber : " + address.getPostNumber());
-//        log.info("roadAddress : " + address.getRoadAddress());
-//        log.info("detailAddress : " + address.getDetailAddress());
-        log.info("postNumber : " + member.getAddress().getPostNumber());
+        password = decodedPassword.substring(0, decodedPassword.length()-1);
+//        log.info("checkPassword - decodedPassword : " + decodedPassword);
+//        log.info("checkPassword - password : " + password);
+//        log.info("checkPassword - password(equals 3333=)" + (password.equals("3333=")));
 
-        ResponseEntity<String> entity = new ResponseEntity<>("success", HttpStatus.OK);
+        HttpSession session = request.getSession();
 
-        if(memberType.equals("student"))
-            memberService.joinStduent(new Student(member));
-        else
-            memberService.joinTeacher(new Teacher(member));
+//        MemberType memberType = (MemberType) session.getAttribute("memberType");
 
-        log.info("insert success============");
+        Member loginMember = (Member)session.getAttribute("loginMember");
+        log.info("checkPassword - member.addresss.postNumber : " + loginMember.getAddress().getPostNumber());
+        log.info("checkPassword - member.addresss.roadAddress : " + loginMember.getAddress().getRoadAddress());
+        log.info("checkPassword - member.addresss.detailAddress : " + loginMember.getAddress().getDetailAddress());
 
-        return entity;
+        if(loginMember.getPassword().equals(password))
+            return "success";
+
+        return "fail";
     }
 
+    @GetMapping("/myPage/memberInfo")
+    public String updateInfoForm(HttpServletRequest request,
+                                   Model model){
+
+        HttpSession session = request.getSession();
+
+        Member loginMember = (Member)session.getAttribute("loginMember");
+
+        model.addAttribute("member", loginMember);
+
+
+        return "/myPage/memberInfoUpdateForm";
+
+    }
+
+    @PutMapping("/myPage/infomation")
     @ResponseBody
-    @GetMapping("/join/checkDuplicationId")
-    public ResponseEntity<String> checkDuplicationID(String id) {
+    public String updateInfo(@RequestBody Member member,
+                             HttpServletRequest request
+                             ){
 
-        log.info("id : " + id);
+        log.info("updateInfo - password : " + member.getPassword());
+        log.info("updateInfo - name : " + member.getName());
+        log.info("updateInfo - postNumber : " + member.getAddress().getPostNumber());
 
-        boolean isDuplicated = memberService.checkDuplicationID(id);
+        HttpSession session = request.getSession();
 
-        ResponseEntity<String> entity = null;
+        Member loginMember = (Member)session.getAttribute("loginMember");
 
-        if(isDuplicated)
-            entity = new ResponseEntity<>("dup", HttpStatus.OK);
-        else
-            entity = new ResponseEntity<>("no dup", HttpStatus.OK);
+        memberService.updateInfo(loginMember.getId(), member);
 
-        return entity;
+        session.removeAttribute("loginMember");
+
+        if(loginMember.getMemberType() == MemberType.STUDENT) {
+            session.setAttribute("loginMember", studentService.findById(loginMember.getId()));
+        } else {
+            session.setAttribute("loginMember", teacherService.findById(loginMember.getId()));
+        }
+
+        return "success";
     }
+
+
 
 
 }
