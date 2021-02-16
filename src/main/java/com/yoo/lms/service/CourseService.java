@@ -4,6 +4,7 @@ package com.yoo.lms.service;
 import com.yoo.lms.domain.Course;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.StudentCourse;
+import com.yoo.lms.domain.Teacher;
 import com.yoo.lms.repository.CourseRepository;
 import com.yoo.lms.repository.StudentCourseRepository;
 import com.yoo.lms.repository.StudentRepository;
@@ -26,6 +27,8 @@ public class CourseService {
 
     private final StudentRepository studentRepository;
 
+    private final TeacherService teacherService;
+
     private final CourseRepository courseRepository;
 
     private final StudentCourseRepository studentCourseRepository;
@@ -47,11 +50,16 @@ public class CourseService {
     }
 
     @Transactional
-    public boolean createCourse(Course course) {
+    public boolean createCourse(Course course, String teacherId) {
 
         List<Course> findCourse = courseRepository.findByNameContaining(course.getName());
 
         if(findCourse.size() == 0) {
+
+            Teacher teacher = teacherService.findById(teacherId);
+
+            course.addTeacher(teacher);
+
             courseRepository.save(course);
             return true;
         }
@@ -86,6 +94,7 @@ public class CourseService {
 
     @Transactional
     public void permitCourse(Course course) {
+
         Course findCourse = courseRepository.findById(course.getId()).get();
 
         findCourse.acceptCourse();

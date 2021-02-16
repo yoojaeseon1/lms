@@ -147,7 +147,7 @@ class CourseRepositoryTest {
 
         //given
         Course findCourse = courseRepository.findById(1L).get();
-        Course updateCourse = new Course("updatedName", findCourse.getTeacher(), 50, 10, LocalDate.now(), LocalDate.now());
+        Course updateCourse = new Course("updatedName",  50, LocalDate.now(), LocalDate.now());
 
         //when
         findCourse.updateInfo(updateCourse);

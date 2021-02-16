@@ -1,0 +1,20 @@
+#tableWrapper {
+    width: 400px;
+    height: 300px;
+    overflow: auto;
+}
+
+#courseListTable{
+    width: 500px;
+    border: 0px;
+    border-collapse: collapse;
+}
+
+#courseListTable th {
+    position: sticky;
+    top: 0px;
+}
+
+#numStudent{
+    text-align: center;
+}

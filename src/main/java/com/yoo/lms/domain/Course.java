@@ -3,7 +3,9 @@ package com.yoo.lms.domain;
 import com.yoo.lms.domain.enumType.CourseAcceptType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -12,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@NoArgsConstructor
 @Getter
 public class Course {
 
@@ -33,7 +34,11 @@ public class Course {
 
     @CreatedDate
     private LocalDate createdDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     @OneToMany(mappedBy="course")
@@ -54,14 +59,27 @@ public class Course {
     @OneToMany(mappedBy="course")
     private List<CourseSchedule> courseSchedules = new ArrayList<>();
 
+    public Course() {
+        this.currentNumStudent = 0;
+        this.acceptType = CourseAcceptType.WAITING;
+    }
 
-    public Course(String name, Teacher teacher, int maxNumStudent, int currentNumStudent, LocalDate startDate, LocalDate endDate) {
+    public Course(String name, int maxNumStudent, LocalDate startDate, LocalDate endDate) {
+        this.name = name;
+        this.maxNumStudent = maxNumStudent;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.currentNumStudent = 0;
+        this.acceptType = CourseAcceptType.WAITING;
+    }
+
+    public Course(String name, Teacher teacher, int maxNumStudent, LocalDate startDate, LocalDate endDate) {
         this.name = name;
         this.teacher = teacher;
         this.maxNumStudent = maxNumStudent;
-        this.currentNumStudent = currentNumStudent;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.currentNumStudent = 0;
         this.acceptType = CourseAcceptType.WAITING;
     }
 

@@ -104,7 +104,6 @@ public class InitDB {
                         "course"+i,
                         teachers[i],
                         50,
-                        0,
                         LocalDate.of(2020,12,1),
                         LocalDate.of(2021,3,1));
 
@@ -116,12 +115,11 @@ public class InitDB {
 
             // enroll course(student)
 
-            for(int i = 1; i <= 20; i++) {
-                StudentCourse studentCourse = new StudentCourse();
-                studentCourse.enrollCourse(students[i], courses[1]);
-                studentCourseRepository.save(studentCourse);
-
-            }
+//            for(int i = 1; i <= 20; i++) {
+//                StudentCourse studentCourse = new StudentCourse();
+//                studentCourse.enrollCourse(students[i], courses[1]);
+//                studentCourseRepository.save(studentCourse);
+//            }
 
             em.flush();
 

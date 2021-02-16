@@ -33,7 +33,7 @@ class CourseServiceTest {
         //given
         Course course = courseService.findOne(1L);
 
-        Course updateCourse = new Course("newCourse", course.getTeacher(), 50, 10, LocalDate.now(), LocalDate.now());
+        Course updateCourse = new Course("newCourse",  50, LocalDate.now(), LocalDate.now());
         courseService.updateCourse(course.getId(), updateCourse);
         em.flush();
 
