@@ -1,7 +1,9 @@
 package com.yoo.lms.controller;
 
 import com.yoo.lms.domain.Course;
+import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.Teacher;
+import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.searchCondition.CourseSearchCondition;
 import com.yoo.lms.service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,6 @@ import java.util.List;
 public class CourseController {
 
     private final CourseService courseService;
-
 
     @GetMapping("/createCourseForm")
     public String createCourseForm(){
@@ -64,22 +65,58 @@ public class CourseController {
 
     @GetMapping("/student/courseList")
     public String listCourse(CourseSearchCondition searchCondition,
+                             String category,
+                             String keyword,
+                             boolean canApplicable,
                              Model model
                              ) {
 
-        List<Course> courses = courseService.searchCourse(searchCondition);
 
-        log.info("listCourse - searchCondition.courseName : " + searchCondition.getCourseName());
-        log.info("listCourse - searchCondition.teacherName : " + searchCondition.getTeacherName());
+        if(category.equals("courseName") && keyword.length() > 0) {
+            searchCondition.setCourseName(keyword);
+        } else if(category.equals("teacherName") && keyword.length() > 0){
+            searchCondition.setTeacherName(keyword);
+        }
+
+        List<Course> courses = courseService.searchCourse(searchCondition, canApplicable);
+
+//        log.info("listCourse - searchCondition.courseName : " + searchCondition.getCourseName());
+//        log.info("listCourse - searchCondition.teacherName : " + searchCondition.getTeacherName());
+//        log.info("listCourse - searchCondition.startDate : " + searchCondition.getStartDate());
+//        log.info("listCourse - searchCondition.endDate : " + searchCondition.getEndDate());
+//        log.info("listCourse - searchCondition.acceptType : " + searchCondition.getAcceptType());
+//        log.info("listCourse - category : " + category);
+//        log.info("listCourse - keyword : " + keyword.length());
+//        log.info("listCourse - canApplicable : " + canApplicable);
 
 //        for (Course cours : courses) {
 //            log.info("listCourse - course.name : " + cours.getName());
 //        }
 
-        courseService.permitCourse(courses.get(0));
+//        courseService.permitCourse(courses.get(0));
 
         model.addAttribute("courses", courses);
 
         return "/course/courseList";
+    }
+
+    @PostMapping("/student/enrollCourse")
+    public String enrollCourse(Long courseId,
+                               HttpServletRequest request
+                               ) {
+
+        HttpSession session = request.getSession();
+
+        MemberType memberType = (MemberType)session.getAttribute("memberType");
+
+
+
+        if(memberType == MemberType.STUDENT) {
+            Student loginMember = (Student) session.getAttribute("loginMember");
+            courseService.enrollCourse(loginMember, courseId);
+        }
+
+
+        return "redirect:/courseList";
     }
 }

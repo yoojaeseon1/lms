@@ -98,13 +98,39 @@ public class InitDB {
 
             Course[] courses = new Course[51];
 
-            for(int i = 1; i <= 50; i++) {
+            for(int i = 1; i <= 10; i++) {
 
                 Course course = new Course(
                         "course"+i,
                         teachers[i],
                         50,
-                        LocalDate.of(2020,12,1),
+                        LocalDate.of(2020,10, 1),
+                        LocalDate.of(2021,3,1));
+
+                courseRepository.save(course);
+                courses[i] = course;
+            }
+
+            for(int i = 11; i <= 20; i++) {
+
+                Course course = new Course(
+                        "course"+i,
+                        teachers[i],
+                        50,
+                        LocalDate.of(2020,11, 1),
+                        LocalDate.of(2021,3,1));
+
+                courseRepository.save(course);
+                courses[i] = course;
+            }
+
+            for(int i = 21; i <= 30; i++) {
+
+                Course course = new Course(
+                        "course"+i,
+                        teachers[i],
+                        50,
+                        LocalDate.of(2020,12, 1),
                         LocalDate.of(2021,3,1));
 
                 courseRepository.save(course);
@@ -115,11 +141,17 @@ public class InitDB {
 
             // enroll course(student)
 
-//            for(int i = 1; i <= 20; i++) {
-//                StudentCourse studentCourse = new StudentCourse();
-//                studentCourse.enrollCourse(students[i], courses[1]);
-//                studentCourseRepository.save(studentCourse);
-//            }
+            for(int i = 1; i <= 20; i++) {
+                StudentCourse studentCourse = new StudentCourse();
+                studentCourse.enrollCourse(students[i], courses[1]);
+                studentCourseRepository.save(studentCourse);
+            }
+
+            for(int i = 1; i <= 20; i++) {
+                StudentCourse studentCourse = new StudentCourse();
+                studentCourse.enrollCourse(students[i], courses[2]);
+                studentCourseRepository.save(studentCourse);
+            }
 
             em.flush();
 

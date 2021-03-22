@@ -1,11 +1,12 @@
-  <div class="inner">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
+    <div class="inner">
 
         <!-- Search Box -->
         <!-- 수강 / 강의 중인 과목 selectBox 넣자 -->
         <section id="search" class="alt">
             <form method="get" action="#">
                 <li>
-                    <span class="opener">Dropdown One</span>
+                    <span class="opener">드롭다운</span>
                     <ul>
                         <li><a href="#">First Sub Menu</a></li>
                         <li><a href="#">Second Sub Menu</a></li>
@@ -15,13 +16,51 @@
             </form>
         </section>
 
-        <!-- Menu -->
         <nav id="menu">
-            <ul>
-                <li><a href="index.html">Homepage</a></li>
-                <li><a href="simple_page.html">Simple Page</a></li>
-                <li><a href="shortcodes.html">Shortcodes</a></li>
-                <li>
+            <ul th:if="${session.memberType == null}">
+                <div>
+                    <li><a href="/loginForm">로그인</a></li>
+                    <li><a href="simple_page.html">공지사항</a></li>
+                    <li><a href="shortcodes.html">과목 검색</a></li>
+                </div>
+            </ul>
+            <ul th:if="${session.memberType == 'STUDENT'}">
+                <div th:if="${#httpServletRequest.requestURI} == '/'">
+                    <li><a href="simple_page.html">공지사항</a></li>
+                    <li>
+                        <span class="opener">수강 과목</span>
+                        <ul >
+                            <li th:each="course : ${session.courseListDtos}">
+                                <a th:href="${course.id}" th:text="${course.name}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="shortcodes.html">마이페이지</a></li>
+                </div>
+            </ul>
+
+            <ul th:if="${session.memberType == 'TEACHER'}">
+                <div th:if="${#httpServletRequest.requestURI} == '/'">
+                    <li><a href="index.html">선생</a></li>
+                    <li><a href="simple_page.html">공지사항</a></li>
+                    <li><a href="shortcodes.html">과목 검색</a></li>
+                </div>
+            </ul>
+
+        </nav>
+
+
+        <!-- Footer -->
+        <footer id="footer">
+            <p class="copyright">Copyright &copy; 2019 Company Name
+                <br>Designed by <a rel="nofollow" href="https://www.facebook.com/templatemo">Template Mo</a></p>
+        </footer>
+
+    </div>
+</html>
+
+
+<!--            <li>
                     <span class="opener">Dropdown One</span>
                     <ul>
                         <li><a href="#">First Sub Menu</a></li>
@@ -37,14 +76,4 @@
                         <li><a href="#">Sub Menu #3</a></li>
                     </ul>
                 </li>
-                <li><a href="https://www.google.com">External Link</a></li>
-            </ul>
-        </nav>
-
-        <!-- Footer -->
-        <footer id="footer">
-            <p class="copyright">Copyright &copy; 2019 Company Name
-                <br>Designed by <a rel="nofollow" href="https://www.facebook.com/templatemo">Template Mo</a></p>
-        </footer>
-
-    </div>
+                <li><a href="https://www.google.com">External Link</a></li>-->

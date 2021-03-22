@@ -5,6 +5,7 @@ import com.yoo.lms.domain.Course;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.StudentCourse;
 import com.yoo.lms.domain.Teacher;
+import com.yoo.lms.dto.CourseListDto;
 import com.yoo.lms.repository.CourseRepository;
 import com.yoo.lms.repository.StudentCourseRepository;
 import com.yoo.lms.repository.StudentRepository;
@@ -49,6 +50,11 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
+    public List<CourseListDto> findCourseListDtos(String studentId) {
+        return courseRepository
+                .findCourseListDtos(studentId);
+    }
+
     @Transactional
     public boolean createCourse(Course course, String teacherId) {
 
@@ -68,17 +74,17 @@ public class CourseService {
     }
 
     @Transactional
-    public List<Course> searchCourse(CourseSearchCondition condition) {
-        return courseRepository.searchCourse(condition);
+    public List<Course> searchCourse(CourseSearchCondition condition, boolean canApplicable) {
+        return courseRepository.searchCourseByStudent(condition, canApplicable);
     }
 
 
     @Transactional
-    public void enrollCourse(Student student, Course course){
+    public void enrollCourse(Student student, Long courseId){
 
         Student findStudent = studentRepository.findById(student.getId()).get();
 
-        Course findCourse = courseRepository.findById(course.getId()).get();
+        Course findCourse = courseRepository.findById(courseId).get();
 
 //        System.out.println("===================");
 //        System.out.println("findCourse = " + findCourse.getTeacher().getName());

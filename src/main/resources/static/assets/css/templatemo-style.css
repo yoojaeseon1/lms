@@ -1240,9 +1240,128 @@ section.buttons .container-fluid {
 	margin-bottom: 0px;
 }
 
-
 /* Menu */
 #menu {
+	margin-top: 50px;
+}
+
+#menu ul {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: #3d4449;
+    font-family: "Roboto Slab", serif;
+    font-family: 400;
+    letter-spacing: 0.075em;
+    list-style: none;
+    margin-bottom: 0;
+    padding: 0;
+    text-transform: uppercase;
+}
+
+#menu ul div a,
+#menu ul div span {
+	color: #fff;
+    border-bottom: 0;
+    cursor: pointer;
+    display: block;
+    font-size: 15px;
+    font-weight: 300;
+    padding: 15px 0px;
+}
+#menu ul div li ul a,
+#menu ul div li ul span {
+    padding: 10px 0px;
+}
+
+#menu ul div a:hover,
+#menu ul div span:hover {
+    color: #535ba0;
+}
+
+#menu ul div a.opener,
+#menu ul div span.opener {
+    -moz-transition: color 0.2s ease-in-out;
+    -webkit-transition: color 0.2s ease-in-out;
+    -ms-transition: color 0.2s ease-in-out;
+    transition: color 0.2s ease-in-out;
+    text-decoration: none;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    position: relative;
+}
+
+#menu ul div a.opener:before,
+#menu ul div span.opener:before {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-transform: none !important;
+}
+
+#menu ul div a.opener:before,
+#menu ul div span.opener:before {
+    -moz-transition: color 0.2s ease-in-out, -moz-transform 0.2s ease-in-out;
+    -webkit-transition: color 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out;
+    -ms-transition: color 0.2s ease-in-out, -ms-transform 0.2s ease-in-out;
+    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    color: #fff;
+    content: '\f078';
+    position: absolute;
+    right: 0;
+}
+
+#menu ul div a.opener:hover:before,
+#menu ul div span.opener:hover:before {
+    color: #535ba0;
+}
+
+#menu ul div a.opener.active + ul,
+#menu ul div span.opener.active + ul {
+    display: block;
+}
+
+#menu ul div a.opener.active:before,
+#menu ul div span.opener.active:before {
+    -moz-transform: rotate(-180deg);
+    -webkit-transform: rotate(-180deg);
+    -ms-transform: rotate(-180deg);
+    transform: rotate(-180deg);
+}
+
+#menu > ul > div > li {
+    border-top: solid 1px #1a1b20;
+    margin: 0.5em 0 0 0;
+    padding: 0.5em 0 0 0;
+}
+
+#menu > ul > div > li > ul {
+    color: #9fa3a6;
+    display: none;
+    margin: 0.5em 0 1.5em 0;
+    padding-left: 1em;
+}
+
+#menu > ul > div > li > ul a,
+#menu > ul > div > li > ul span {
+    font-size: 13px;
+}
+
+#menu > ul > div > li > ul > li {
+    margin: 0.125em 0 0 0;
+    padding: 0.125em 0 0 0;
+}
+
+#menu > ul > div > li:first-child {
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* Menu */
+/*#menu {
 	margin-top: 50px;
 }
 
@@ -1359,7 +1478,7 @@ section.buttons .container-fluid {
     border-top: 0;
     margin-top: 0;
     padding-top: 0;
-}
+}*/
 
 
 /* panel */

@@ -76,7 +76,7 @@ class CourseRepositoryTest {
 
         Student student = studentRepository.findById("yoo1").get();
 
-        courseService.enrollCourse(student, course);
+        courseService.enrollCourse(student, 1L);
 
         em.flush();
         em.clear();
@@ -131,7 +131,7 @@ class CourseRepositoryTest {
 
         //when
 
-        List<Course> courses = courseRepository.searchCourse(condition);
+        List<Course> courses = courseRepository.searchCourseByStudent(condition, true);
 
         //then
 

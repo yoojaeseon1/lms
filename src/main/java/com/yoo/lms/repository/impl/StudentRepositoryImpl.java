@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.QStudent;
 import com.yoo.lms.domain.Student;
+import com.yoo.lms.domain.StudentCourse;
 import com.yoo.lms.repository.custom.StudentRepositoryCustom;
 import com.yoo.lms.searchCondition.MemberSearchCondition;
 
