@@ -27,23 +27,26 @@ public class HomeController {
     private final CourseService courseService;
 
     @GetMapping("/")
-    public String home(HttpServletRequest request){
+    public String home(HttpServletRequest request,
+                       HttpSession session){
 
-//        Teacher teacherName1 = teacherService.findById("teacherid1");
+        Teacher member = teacherService.findById("teacherid1");
 
-        HttpSession session = request.getSession();
+//        HttpSession session = request.getSession();
 
-        Student student1 = studentService.findById("studentid1");
+//        Student member = studentService.findById("studentid1");
 
-        List<CourseListDto> courseListDtos = courseService.findCourseListDtos(student1.getId());
+//        List<CourseListDto> courseListDtos = courseService.findCListDtosStudent(member.getId());
+        List<CourseListDto> courseListDtos = courseService.findCListDtosTeacher(member.getId());
 
         for (CourseListDto courseListDto : courseListDtos) {
             log.info(courseListDto.getName());
         }
 
         session.setAttribute("courseListDtos", courseListDtos);
-        session.setAttribute("loginMember", student1);
-        session.setAttribute("memberType", student1.getMemberType().toString());
+        session.setAttribute("loginMember", member);
+        session.setAttribute("memberType", member.getMemberType().toString());
+        session.setAttribute("sideBarType", "home");
 
 //        log.info("teacherName1.getMemberType().toString() : " + teacherName1.getMemberType().toString());
 

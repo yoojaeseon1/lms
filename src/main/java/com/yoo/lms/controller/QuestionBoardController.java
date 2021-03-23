@@ -29,7 +29,7 @@ public class QuestionBoardController {
     @Autowired
     CourseMaterialService courseMaterialService;
 
-    @GetMapping("/{courseId}/question")
+    @GetMapping("/course/{courseId}/question")
     public String listQuestion(Model model,
                        BoardSearchCriteria searchCriteria,
                        @PathVariable("courseId") Long courseId,
@@ -65,7 +65,7 @@ public class QuestionBoardController {
         return "board/boardList";
     }
 
-    @GetMapping("/{courseId}/question/{boardId}")
+    @GetMapping("/course/{courseId}/question/{boardId}")
     public String showQuestion(Model model,
                                @PathVariable("boardId") Long boardId) {
 
@@ -81,7 +81,7 @@ public class QuestionBoardController {
 
     }
 
-    @GetMapping("/{courseId}/question/new")
+    @GetMapping("/course/{courseId}/question/new")
     public String createQuestionForm(Model model,
                                      @PathVariable("courseId") Long courseId,
                                      HttpServletRequest request){
@@ -92,7 +92,7 @@ public class QuestionBoardController {
         return "board/boardCreateForm";
     }
 
-    @PostMapping("/{courseId}/question")
+    @PostMapping("/course/{courseId}/question")
     public String createQuestion(@PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
@@ -106,7 +106,7 @@ public class QuestionBoardController {
     }
 
 
-    @GetMapping("/{courseId}/question/{boardId}/update")
+    @GetMapping("/course/{courseId}/question/{boardId}/update")
     public String updateQuestionForm(Model model,
                                      @PathVariable("boardId") Long boardId) {
 
@@ -126,7 +126,7 @@ public class QuestionBoardController {
         return "/board/boardUpdateForm";
     }
 
-    @PutMapping("/{courseId}/question/{boardId}/")
+    @PutMapping("/course/{courseId}/question/{boardId}/")
     public String updateQuestion(@PathVariable("boardId") Long boardId,
                                  String title,
                                  String content,
@@ -138,7 +138,7 @@ public class QuestionBoardController {
 
     }
 
-    @DeleteMapping("{courseId}/question/{boardId}")
+    @DeleteMapping("/course/{courseId}/question/{boardId}")
     public String deleteQuestion(@PathVariable("boardId") Long boardId) {
 
         questionBoardService.deleteByBoardId(boardId);

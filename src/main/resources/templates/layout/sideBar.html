@@ -25,28 +25,50 @@
                 </div>
             </ul>
             <ul th:if="${session.memberType == 'STUDENT'}">
-                <div th:if="${#httpServletRequest.requestURI} == '/'">
+                <div th:if="${session.sideBarType} == 'home'">
                     <li><a href="simple_page.html">공지사항</a></li>
                     <li>
                         <span class="opener">수강 과목</span>
-                        <ul >
+                        <ul>
                             <li th:each="course : ${session.courseListDtos}">
-                                <a th:href="${course.id}" th:text="${course.name}"></a>
+                                <a th:href="@{/course/{courseId}(courseId=${course.id})}" th:text="${course.name}"></a>
                             </li>
                         </ul>
                     </li>
                     <li><a href="shortcodes.html">마이페이지</a></li>
                 </div>
-            </ul>
-
-            <ul th:if="${session.memberType == 'TEACHER'}">
-                <div th:if="${#httpServletRequest.requestURI} == '/'">
-                    <li><a href="index.html">선생</a></li>
-                    <li><a href="simple_page.html">공지사항</a></li>
-                    <li><a href="shortcodes.html">과목 검색</a></li>
+                <div th:if="${session.sideBarType} == 'course'">
+                    <!--<li><a th:href="@{__${#httpServletRequest.requestURI}__/courseBoard(page=1,searchType='',keyword='')}">공지사항zz</a></li>-->
+                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">공지사항</a></li>
+                    <li><a href="simple_page.html">강의 자료</a></li>
+                    <li><a th:href="@{/course/{courseId}/question(courseId=${courseId},page=1,searchType='',keyword='')}">질문 게시판</a></li>
+                    <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId},page=1,searchType='',keyword='')}">과제 게시판</a></li>
+                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">출석</a></li>
                 </div>
             </ul>
 
+            <ul th:if="${session.memberType == 'TEACHER'}">
+                <div th:if="${session.sideBarType} == 'home'">
+                    <li><a href="index.html">선생</a></li>
+                    <li>
+                        <span class="opener">강의 과목</span>
+                        <ul >
+                            <li th:each="course : ${session.courseListDtos}">
+                                <a th:href="@{/course/{courseId}(courseId=${course.id})}" th:text="${course.name}"></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="simple_page.html">공지사항</a></li>
+                    <li><a href="shortcodes.html">과목 검색</a></li>
+                </div>
+                <div th:if="${session.sideBarType} == 'course'">
+                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">공지사항</a></li>
+                    <li><a href="simple_page.html">강의 자료</a></li>
+                    <li><a th:href="@{/course/{courseId}/question(courseId=${courseId},page=1,searchType='',keyword='')}">질문 게시판</a></li>
+                    <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId},page=1,searchType='',keyword='')}">과제 게시판</a></li>
+                    <li><a th:href="@{/course/{courseId}/attendance(courseId=${courseId},startDate='',endDate='')}">출석</a></li>
+                </div>
+            </ul>
         </nav>
 
 

@@ -23,7 +23,7 @@ public class AttendanceController {
 
     private final AttendanceService attendanceService;
 
-    @GetMapping("{courseId}/attendance/new")
+    @GetMapping("/course/{courseId}/attendance/new")
     public String createAttendanceForm(@PathVariable("courseId") Long courseId,
                                        Model model
                                        ){
@@ -41,7 +41,7 @@ public class AttendanceController {
         return "attendance/studentList";
     }
 
-    @PostMapping("{courseId}/attendance")
+    @PostMapping("/course/{courseId}/attendance")
     public String createAttendance(@PathVariable("courseId") Long courseId,
                                    AttendanceTypeListDto attendanceStateListDto
                                     ){
@@ -64,7 +64,7 @@ public class AttendanceController {
         return "redirect:/";
     }
 
-    @GetMapping("{courseId}/attendance/update")
+    @GetMapping("/course/{courseId}/attendance/update")
     public String updateAttendanceForm(@PathVariable("courseId") Long courseId,
                                        @RequestParam("checkedDate")
                                        @DateTimeFormat(pattern="yyyy-MM-dd")
@@ -99,7 +99,7 @@ public class AttendanceController {
 //                                           LocalDate checkedDate,
 //                                   AttendanceTypeListDto AttendanceTypeListDto
 //                                   ) {
-    @PutMapping("{courseId}/attendance")
+    @PutMapping("/course/{courseId}/attendance")
     public String updateAttendance(AttendanceTypeListDto AttendanceTypeListDto) {
 
         log.info("=================");
@@ -122,23 +122,33 @@ public class AttendanceController {
 
     }
 
-    @GetMapping("{courseId}/attendance")
+    @GetMapping("/course/{courseId}/attendance")
     public String listAttendance(@PathVariable("courseId") Long courseId,
-                                 @RequestParam("startDate")
+                                 @RequestParam(name = "startDate", required = false)
                                  @DateTimeFormat(pattern="yyyy-MM-dd")
                                          LocalDate startDate,
-                                 @RequestParam("endDate")
+                                 @RequestParam(name = "endDate", required = false)
                                  @DateTimeFormat(pattern="yyyy-MM-dd")
                                          LocalDate endDate,
                                  Model model
                                  ) {
 
+
+//        log.info("startDate : " + startDate);
+//        log.info("endDate : " + endDate);
+
+
         AtSearchCondition atSearchCondition = new AtSearchCondition(courseId, startDate, endDate);
 
         List<AttendanceListDto> attendanceListDtos = attendanceService.searchCourseAttendList(atSearchCondition);
 
+//        for (AttendanceListDto attendanceListDto : attendanceListDtos) {
+//            log.info("getAttendanceId() : " + attendanceListDto.getAttendanceId());
+//        }
+
+
         model.addAttribute("attendanceListDtos", attendanceListDtos);
-        model.addAttribute("checkedDate", LocalDate.of(2021,2,7));
+//        model.addAttribute("checkedDate", LocalDate.of(2021,2,7));
 //        model.addAttribute("checkedDate", attendanceListDtos.get(0).getCheckedDate());
 
         return "attendance/attendanceList";

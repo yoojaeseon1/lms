@@ -31,7 +31,7 @@ public class HomeworkBoardController {
     @Autowired
     CourseMaterialService courseMaterialService;
 
-    @GetMapping("/{courseId}/homework")
+    @GetMapping("/course/{courseId}/homework")
     public String listHomework(Model model,
                                BoardSearchCriteria searchCriteria,
                                @PathVariable("courseId") Long courseId,
@@ -67,7 +67,7 @@ public class HomeworkBoardController {
         return "board/boardList";
     }
 
-    @GetMapping("/{courseId}/homework/{boardId}")
+    @GetMapping("/course/{courseId}/homework/{boardId}")
     public String showHomework(Model model,
                                @PathVariable("boardId") Long boardId) {
 
@@ -83,7 +83,7 @@ public class HomeworkBoardController {
 
     }
 
-    @GetMapping("/{courseId}/homework/new")
+    @GetMapping("/course/{courseId}/homework/new")
     public String createHomeworkForm(Model model,
                                      @PathVariable("courseId") Long courseId,
                                      HttpServletRequest request){
@@ -94,7 +94,7 @@ public class HomeworkBoardController {
         return "board/boardCreateForm";
     }
 
-    @PostMapping("/{courseId}/homework")
+    @PostMapping("/course/{courseId}/homework")
     public String createHomework(@PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
@@ -107,7 +107,7 @@ public class HomeworkBoardController {
     }
 
 
-    @GetMapping("/{courseId}/homework/{boardId}/update")
+    @GetMapping("/course/{courseId}/homework/{boardId}/update")
     public String updateHomeworkForm(Model model,
                                      @PathVariable("boardId") Long boardId) {
 
@@ -127,7 +127,7 @@ public class HomeworkBoardController {
         return "/board/boardUpdateForm";
     }
 
-    @PutMapping("/{courseId}/homework/{boardId}/")
+    @PutMapping("/course/{courseId}/homework/{boardId}/")
     public String updateHomework(@PathVariable("boardId") Long boardId,
                                  String title,
                                  String content,
@@ -139,7 +139,7 @@ public class HomeworkBoardController {
 
     }
 
-    @DeleteMapping("{courseId}/homework/{boardId}")
+    @DeleteMapping("/course/{courseId}/homework/{boardId}")
     public String deleteHomework(@PathVariable("boardId") Long boardId) {
 
         homeworkBoardService.deleteByBoardId(boardId);

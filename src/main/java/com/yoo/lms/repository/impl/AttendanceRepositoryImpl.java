@@ -104,7 +104,9 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
      */
     @Override
     public List<AttendanceListDto> searchCourseAttendList(AtSearchCondition atSearchCondition) {
-        List<AttendanceListDto> attendanceListDtos = queryFactory
+
+        List<AttendanceListDto> attendanceListDtos =
+                queryFactory
                 .select(new QAttendanceListDto(attendance.checkedDate))
                 .from(attendance)
                 .where(

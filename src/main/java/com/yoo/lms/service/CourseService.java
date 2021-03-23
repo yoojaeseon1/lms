@@ -50,9 +50,19 @@ public class CourseService {
         return courseRepository.findAll();
     }
 
-    public List<CourseListDto> findCourseListDtos(String studentId) {
+    public List<CourseListDto> findCListDtosStudent(String studentId) {
         return courseRepository
-                .findCourseListDtos(studentId);
+                .findCListDtosByStduent(studentId);
+    }
+
+    public List<CourseListDto> findCListDtosTeacher(String teacherId) {
+        return courseRepository
+                .findCListDtosByTeacher(teacherId);
+    }
+
+    public String findName(Long courseId, String teacherId) {
+        return courseRepository
+                .findCourseName(courseId, teacherId);
     }
 
     @Transactional

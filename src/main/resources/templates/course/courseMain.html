@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+  <title>Ramayana - HTML5 Template</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!--
+  Ramayana CSS Template
+  https://templatemo.com/tm-529-ramayana
+  -->
+
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="/assets/css/fontawesome.css">
+  <link rel="stylesheet" href="/assets/css/templatemo-style.css">
+  <link rel="stylesheet" href="/assets/css/owl.css">
+  <!--<link rel="stylesheet" href="/assets/css/course.css">-->
+
+</head>
+
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+  <!-- Main -->
+  <div id="main">
+    <div class="inner">
+
+      <!-- Header -->
+      <header id="header">
+        <div class="logo">
+          <a href="index.html">LMS System</a>
+        </div>
+      </header>
+
+      <!-- Tables -->
+      <section class="tables">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="section-heading">
+                <h2>과목 메인 페이지</h2>
+                <form action="" method="get">
+                  <table>
+                    <tr>
+                      <th>
+                        <select name="category">
+                          <option value="courseName">과목명</option>
+                          <option value="teacherName">강사명</option>
+                        </select>
+                        <input name="keyword"/>
+                      </th>
+                      <th>
+                        시작일
+                        <input name="startDate" type="date">
+                      </th>
+                      <th>
+                        종료일
+                        <input name="endDate" type="date">
+                      </th>
+                      <th>
+                        수강신청 가능 여부
+                        <select name="canApplicable">
+                          <option th:value="${false}">전체</option>
+                          <option th:value="${true}">가능</option>
+                        </select>
+                      </th>
+                      <button type="submit">검색</button>
+                    </tr>
+                  </table>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div id="sidebar" th:include="/layout/sideBar.html">
+  </div>
+</div>
+
+<!-- Scripts -->
+<!-- Bootstrap core JavaScript -->
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/transition.js"></script>
+<script src="/assets/js/owl-carousel.js"></script>
+<script src="/assets/js/custom.js"></script>
+</body>
+</html>

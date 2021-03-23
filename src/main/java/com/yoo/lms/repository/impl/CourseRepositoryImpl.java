@@ -53,7 +53,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
     }
 
     @Override
-    public List<CourseListDto> findCourseListDtos(String studentId) {
+    public List<CourseListDto> findCListDtosByStduent(String studentId) {
 
         List<Long> courseIds = findCourseIds(studentId);
 
@@ -71,12 +71,39 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
     }
 
     @Override
+    public List<CourseListDto> findCListDtosByTeacher(String teacherId) {
+
+        return queryFactory
+                .select(new QCourseListDto(
+                        course.id,
+                        course.name
+                        ))
+                .from(course)
+                .where(course.teacher.id.eq(teacherId))
+                .orderBy(course.name.asc())
+                .fetch();
+
+
+    }
+
+    @Override
     public List<Long> findCourseIds(String studentId) {
         return queryFactory
                 .select(studentCourse.course.id)
                 .from(studentCourse)
                 .where(studentCourse.student.id.eq(studentId))
                 .fetch();
+    }
+
+    @Override
+    public String findCourseName(Long courseId, String teacherId) {
+        return queryFactory
+                .select(course.name)
+                .from(course)
+                .where(course.id.eq(courseId)
+                .and(course.teacher.id.eq(teacherId))
+                )
+                .fetchOne();
     }
 
     private BooleanExpression courseNameContains(String courseName) {

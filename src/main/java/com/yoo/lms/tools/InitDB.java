@@ -174,19 +174,20 @@ public class InitDB {
 
             // create courseBoard
 
-//            for(int i = 1; i <= 50; i++) {
-//
-//                CourseBoard courseBoard = new CourseBoard( courses[i], "title"+i, "content"+i, teachers[i], teachers[i]);
-//                courseBoardRepository.save(courseBoard);
-//
-//            }
+            for(int i = 1; i <= 50; i++) {
 
-//            for(int i = 1; i <= 157; i++) {
-//
-//                CourseBoard courseBoard = new CourseBoard( courses[2], "title"+i, "content"+i, teachers[i % 50]);
-//                courseBoardRepository.save(courseBoard);
-//
-//            }
+//                CourseBoard courseBoard = new CourseBoard(courses[i], "title"+i, "content"+i, teachers[i], teachers[i]);
+                CourseBoard courseBoard = new CourseBoard(courses[i], "title"+i, "content"+i, teachers[i]);
+                courseBoardRepository.save(courseBoard);
+
+            }
+
+            for(int i = 1; i <= 157; i++) {
+
+                CourseBoard courseBoard = new CourseBoard(courses[1], "title"+i, "content"+i, teachers[i % 50]);
+                courseBoardRepository.save(courseBoard);
+
+            }
 
             // create questionBoard
 
@@ -201,19 +202,19 @@ public class InitDB {
              * create counselBoard
              */
 
-//            for(int i = 1; i <= 50; i++) {
-//                CounselBoard counselBoard = new CounselBoard("counselBoardTitle"+i, "counselBoardContent"+i, teachers[i]);
-//                counselBoardRepository.save(counselBoard);
-//            }
+            for(int i = 1; i <= 50; i++) {
+                CounselBoard counselBoard = new CounselBoard("counselBoardTitle"+i, "counselBoardContent"+i, teachers[i]);
+                counselBoardRepository.save(counselBoard);
+            }
 
             /**
              * create homeworkBoard
              */
 
-//            for(int i = 1; i <= 50; i++) {
-//                HomeworkBoard homeworkBoard = new HomeworkBoard(courses[2],"homeworkBoardTitle"+i, "homeworkBoardContent"+i,  teachers[i]);
-//                homeworkBoardRepository.save(homeworkBoard);
-//            }
+            for(int i = 1; i <= 50; i++) {
+                HomeworkBoard homeworkBoard = new HomeworkBoard(courses[2],"homeworkBoardTitle"+i, "homeworkBoardContent"+i,  teachers[i]);
+                homeworkBoardRepository.save(homeworkBoard);
+            }
         }
 
 //        public void dbInit2() {

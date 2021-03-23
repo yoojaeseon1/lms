@@ -26,6 +26,17 @@
   <link rel="stylesheet" href="/assets/css/owl.css">
 
 </head>
+<th:block layout:fragment="script">
+  <script type="text/javascript">
+
+    function goCreatePage(boardType) {
+
+      location.href=boardType + "/new";
+
+    }
+
+  </script>
+</th:block>
 
 <body class="is-preload">
 
@@ -64,6 +75,8 @@
                     <button type="submit">검색</button>
                   </div>
                 </form>
+                <!--<button th:if="${canWritePosting}" th:onlick="|./${action}/new|">글 쓰기</button>-->
+                <button th:if="${canWritePosting}" th:onlick="goCreatePage(${action})">글 쓰기</button>
               </div>
               <div class="default-table">
                 <table>
@@ -89,13 +102,18 @@
                   </tbody>
                 </table>
                 <ul class="table-pagination">
-                  <li th:if="${pageMaker.isPrev()}"><a th:href="@{question(page=${pageMaker.getCurrentPage() - 1},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">Previous</a></li>
+                  <li th:if="${pageMaker.isPrev()}"><a th:href="@{{boardType}(boardType=${action},page=${pageMaker.getCurrentPage() - 1},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">Previous</a></li>
                   <div th:each="page : ${#numbers.sequence(pageMaker.startPage, pageMaker.endPage)}">
-                  <li th:class="${page == pageMaker.getCurrentPage()} ? 'active' : ''"><a th:href="@{question(page=${page},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">
-                    <div th:text="${page}"></div>
-                  </a></li>
+                  <li th:class="${page == pageMaker.getCurrentPage()} ? 'active' : ''">
+                    <!--<a th:href="@{question(page=${page},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">
+                      <div th:text="${page}"></div>
+                    </a>-->
+                    <a th:href="@{{boardType}(boardType=${action},page=${page},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">
+                      <div th:text="${page}"></div>
+                    </a>
+                  </li>
                   </div>
-                  <li th:if="${pageMaker.isNext()}"><a th:href="@{question(page=${pageMaker.getCurrentPage()+1},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">Next</a></li>
+                  <li th:if="${pageMaker.isNext()}"><a th:href="@{{boardType}(boardType=${action},page=${pageMaker.getCurrentPage()+1},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">Next</a></li>
                 </ul>
                 <br>
               </div>
@@ -107,58 +125,8 @@
   </div>
 
   <!-- Sidebar -->
-  <div id="sidebar">
+  <div id="sidebar" th:include="/layout/sideBar.html">
 
-    <div class="inner">
-
-      <!-- Search Box -->
-      <!-- 수강 / 강의 중인 과목 selectBox 넣자 -->
-      <section id="search" class="alt">
-        <form method="get" action="#">
-          <li>
-            <span class="opener">Dropdown One</span>
-            <ul>
-              <li><a href="#">First Sub Menu</a></li>
-              <li><a href="#">Second Sub Menu</a></li>
-              <li><a href="#">Third Sub Menu</a></li>
-            </ul>
-          </li>
-        </form>
-      </section>
-
-      <!-- Menu -->
-      <nav id="menu">
-        <ul>
-          <li><a href="index.html">Homepage</a></li>
-          <li><a href="simple_page.html">Simple Page</a></li>
-          <li><a href="shortcodes.html">Shortcodes</a></li>
-          <li>
-            <span class="opener">Dropdown One</span>
-            <ul>
-              <li><a href="#">First Sub Menu</a></li>
-              <li><a href="#">Second Sub Menu</a></li>
-              <li><a href="#">Third Sub Menu</a></li>
-            </ul>
-          </li>
-          <li>
-            <span class="opener">Dropdown Two</span>
-            <ul>
-              <li><a href="#">Sub Menu #1</a></li>
-              <li><a href="#">Sub Menu #2</a></li>
-              <li><a href="#">Sub Menu #3</a></li>
-            </ul>
-          </li>
-          <li><a href="https://www.google.com">External Link</a></li>
-        </ul>
-      </nav>
-
-      <!-- Footer -->
-      <footer id="footer">
-        <p class="copyright">Copyright &copy; 2019 Company Name
-          <br>Designed by <a rel="nofollow" href="https://www.facebook.com/templatemo">Template Mo</a></p>
-      </footer>
-
-    </div>
   </div>
 </div>
 

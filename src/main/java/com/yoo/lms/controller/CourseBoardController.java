@@ -2,11 +2,15 @@ package com.yoo.lms.controller;
 
 import com.yoo.lms.domain.CourseBoard;
 import com.yoo.lms.domain.CourseMaterial;
+import com.yoo.lms.domain.Student;
+import com.yoo.lms.domain.Teacher;
+import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
 import com.yoo.lms.searchType.BoardSearchCriteria;
 import com.yoo.lms.service.CourseBoardService;
 import com.yoo.lms.service.CourseMaterialService;
+import com.yoo.lms.service.CourseService;
 import com.yoo.lms.tools.PageMaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,12 +32,14 @@ public class CourseBoardController {
 
     private final CourseBoardService courseBoardService;
     private final CourseMaterialService courseMaterialService;
+    private final CourseService courseService;
 
-    @GetMapping("/{courseId}/courseBoard")
+    @GetMapping("/course/{courseId}/courseBoard")
     public String listCourseBoard(Model model,
                                BoardSearchCriteria searchCriteria,
                                @PathVariable("courseId") Long courseId,
-                               @RequestParam("page") int page) {
+                               @RequestParam("page") int page,
+                                  HttpSession session) {
 
         BoardSearchCondition condition = new BoardSearchCondition(courseId);
 
@@ -70,10 +77,25 @@ public class CourseBoardController {
         model.addAttribute("action","courseBoard");
         model.addAttribute("menuTitle", "강의 공지사항");
 
+
+
+        String memberType = (String)session.getAttribute("memberType");
+
+        boolean canWritePosting = false;
+        if(memberType.equals("TEACHER")) {
+            Teacher member = (Teacher) session.getAttribute("loginMember");
+            String name = courseService.findName(courseId, member.getId());
+            if(name != null)
+                canWritePosting = true;
+        }
+
+        model.addAttribute("canWritePosting", canWritePosting);
+
+
         return "board/boardList";
     }
 
-    @GetMapping("/{courseId}/courseBoard/{boardId}")
+    @GetMapping("/course/{courseId}/courseBoard/{boardId}")
     public String showCourseBoard(Model model,
                                @PathVariable("boardId") Long boardId) {
 
@@ -89,7 +111,7 @@ public class CourseBoardController {
 
     }
 
-    @GetMapping("/{courseId}/courseBoard/new")
+    @GetMapping("/course/{courseId}/courseBoard/new")
     public String createCourseBoardForm(Model model,
                                      @PathVariable("courseId") Long courseId,
                                      HttpServletRequest request){
@@ -100,7 +122,7 @@ public class CourseBoardController {
         return "board/boardCreateForm";
     }
 
-    @PostMapping("/{courseId}/courseBoard")
+    @PostMapping("/course/{courseId}/courseBoard")
     public String createCourseBoard(@PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
@@ -114,7 +136,7 @@ public class CourseBoardController {
     }
 
 
-    @GetMapping("/{courseId}/courseBoard/{boardId}/update")
+    @GetMapping("/course/{courseId}/courseBoard/{boardId}/update")
     public String updateCourseBoardForm(Model model,
                                      @PathVariable("boardId") Long boardId) {
 
@@ -134,7 +156,7 @@ public class CourseBoardController {
         return "/board/boardUpdateForm";
     }
 
-    @PutMapping("/{courseId}/courseBoard/{boardId}/")
+    @PutMapping("/course/{courseId}/courseBoard/{boardId}/")
     public String updateCourseBoard(@PathVariable("boardId") Long boardId,
                                  String title,
                                  String content,
@@ -146,7 +168,7 @@ public class CourseBoardController {
 
     }
 
-    @DeleteMapping("{courseId}/courseBoard/{boardId}")
+    @DeleteMapping("/course/{courseId}/courseBoard/{boardId}")
     public String deleteCourseBoard(@PathVariable("boardId") Long boardId) {
 
         courseBoardService.deleteByBoardId(boardId);

@@ -12,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -27,6 +24,18 @@ import java.util.List;
 public class CourseController {
 
     private final CourseService courseService;
+
+    @GetMapping("/course/{courseId}")
+    public String showCourseMain(@PathVariable("courseId") Long courseId,
+                                 HttpSession session
+                                 ){
+
+        session.setAttribute("sideBarType", "course");
+
+//        request.setAttribute("sideBarType", "course");
+
+        return "course/courseMain";
+    }
 
     @GetMapping("/createCourseForm")
     public String createCourseForm(){

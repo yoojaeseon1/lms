@@ -12,10 +12,12 @@ public interface CourseRepositoryCustom {
 
     List<Course> searchCourseByStudent(CourseSearchCondition condition, boolean canApplicable);
 
-    List<CourseListDto> findCourseListDtos(String studentId);
+    List<CourseListDto> findCListDtosByStduent(String studentId);
+
+    List<CourseListDto> findCListDtosByTeacher(String teacherId);
+
+    String findCourseName(Long courseId, String teacherId);
 
     List<Long> findCourseIds(String studentId);
-
-
 
 }
