@@ -119,7 +119,8 @@ public class LoginController {
 
         if(memberTypeOptional.isEmpty()) {
             model.addAttribute("loginRetry", true);
-            return "redirect:/loginForm";
+//            return "redirect:/loginForm";
+            return "login/loginForm";
         }
 
         MemberType memberType = memberTypeOptional.get();

@@ -54,18 +54,19 @@ public class HomeworkBoardService {
     public void saveHomework(MultipartFile[] files,
                              Long courseId,
                              String title,
-                             String content
+                             String content,
+                             Member member
     ) throws IOException {
 
         Course course = courseRepository.findById(courseId).get();
 
         // session에서 받아와야 함--
 
-        Student student = studentRepository.findById("studentId1").get();
+//        Student student = studentRepository.findById("studentId1").get();
 
         //---
 
-        HomeworkBoard homeworkBoard = new HomeworkBoard(course, title, content, student);
+        HomeworkBoard homeworkBoard = new HomeworkBoard(course, title, content, member);
 
         homeworkBoardRepository.save(homeworkBoard);
         em.flush();

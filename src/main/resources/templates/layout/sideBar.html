@@ -39,11 +39,16 @@
                 </div>
                 <div th:if="${session.sideBarType} == 'course'">
                     <!--<li><a th:href="@{__${#httpServletRequest.requestURI}__/courseBoard(page=1,searchType='',keyword='')}">공지사항zz</a></li>-->
-                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">공지사항</a></li>
+<!--                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">공지사항</a></li>
                     <li><a href="simple_page.html">강의 자료</a></li>
                     <li><a th:href="@{/course/{courseId}/question(courseId=${courseId},page=1,searchType='',keyword='')}">질문 게시판</a></li>
                     <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId},page=1,searchType='',keyword='')}">과제 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">출석</a></li>
+                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">출석</a></li>-->
+                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId})}">공지사항</a></li>
+                    <li><a href="simple_page.html">강의 자료</a></li>
+                    <li><a th:href="@{/course/{courseId}/question(courseId=${courseId})}">질문 게시판</a></li>
+                    <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId})}">과제 게시판</a></li>
+                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId})}">출석</a></li>
                 </div>
             </ul>
 
@@ -62,11 +67,16 @@
                     <li><a href="shortcodes.html">과목 검색</a></li>
                 </div>
                 <div th:if="${session.sideBarType} == 'course'">
-                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">공지사항</a></li>
+<!--                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">공지사항</a></li>
                     <li><a href="simple_page.html">강의 자료</a></li>
                     <li><a th:href="@{/course/{courseId}/question(courseId=${courseId},page=1,searchType='',keyword='')}">질문 게시판</a></li>
                     <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId},page=1,searchType='',keyword='')}">과제 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/attendance(courseId=${courseId},startDate='',endDate='')}">출석</a></li>
+                    <li><a th:href="@{/course/{courseId}/attendance(courseId=${courseId},startDate='',endDate='')}">출석</a></li>-->
+                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId})}">공지사항</a></li>
+                    <li><a href="simple_page.html">강의 자료</a></li>
+                    <li><a th:href="@{/course/{courseId}/question(courseId=${courseId})}">질문 게시판</a></li>
+                    <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId})}">과제 게시판</a></li>
+                    <li><a th:href="@{/course/{courseId}/attendance(courseId=${courseId})}">출석</a></li>
                 </div>
             </ul>
         </nav>
@@ -82,7 +92,34 @@
 </html>
 
 
-<!--            <li>
+<!-- Sidebar -->
+<!--
+<div id="sidebar">
+
+    <div class="inner">
+
+        &lt;!&ndash; Search Box &ndash;&gt;
+        &lt;!&ndash; 수강 / 강의 중인 과목 selectBox 넣자 &ndash;&gt;
+        <section id="search" class="alt">
+            <form method="get" action="#">
+                <li>
+                    <span class="opener">Dropdown One</span>
+                    <ul>
+                        <li><a href="#">First Sub Menu</a></li>
+                        <li><a href="#">Second Sub Menu</a></li>
+                        <li><a href="#">Third Sub Menu</a></li>
+                    </ul>
+                </li>
+            </form>
+        </section>
+
+        &lt;!&ndash; Menu &ndash;&gt;
+        <nav id="menu">
+            <ul>
+                <li><a href="index.html">Homepage</a></li>
+                <li><a href="simple_page.html">Simple Page</a></li>
+                <li><a href="shortcodes.html">Shortcodes</a></li>
+                <li>
                     <span class="opener">Dropdown One</span>
                     <ul>
                         <li><a href="#">First Sub Menu</a></li>
@@ -98,4 +135,15 @@
                         <li><a href="#">Sub Menu #3</a></li>
                     </ul>
                 </li>
-                <li><a href="https://www.google.com">External Link</a></li>-->
+                <li><a href="https://www.google.com">External Link</a></li>
+            </ul>
+        </nav>
+
+        &lt;!&ndash; Footer &ndash;&gt;
+        <footer id="footer">
+            <p class="copyright">Copyright &copy; 2019 Company Name
+                <br>Designed by <a rel="nofollow" href="https://www.facebook.com/templatemo">Template Mo</a></p>
+        </footer>
+
+    </div>
+</div>-->

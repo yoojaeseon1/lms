@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
 <html lang="en">
 
 <head>
 
-  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
@@ -24,16 +24,11 @@
   <link rel="stylesheet" href="/assets/css/fontawesome.css">
   <link rel="stylesheet" href="/assets/css/templatemo-style.css">
   <link rel="stylesheet" href="/assets/css/owl.css">
-
 </head>
+
 <th:block layout:fragment="script">
   <script type="text/javascript">
 
-    function goCreatePage(boardType) {
-
-      location.href=boardType + "/new";
-
-    }
 
   </script>
 </th:block>
@@ -76,7 +71,7 @@
                   </div>
                 </form>
                 <!--<button th:if="${canWritePosting}" th:onlick="|./${action}/new|">글 쓰기</button>-->
-                <button th:if="${canWritePosting}" th:onlick="goCreatePage(${action})">글 쓰기</button>
+                <button type="submit" th:onclick="'location.href=\''+@{{boardType}/new(boardType=${action})}+'\';'">글 쓰기</button>
               </div>
               <div class="default-table">
                 <table>
@@ -92,7 +87,9 @@
                   <tbody>
                   <tr th:each="posting : ${postings}">
                     <td th:text="${posting.id}"></td>
-                    <td th:text="${posting.title}"></td>
+                    <td >
+                      <a th:text="${posting.title}" th:href="@{{boardType}/{postingId}(boardType=${action},postingId=${posting.id})}"></a>
+                    </td>
                     <td th:text="${posting.createdBy}"></td>
                     <td th:text="${posting.createdDate}"></td>
                     <td th:text="${posting.viewCount}"></td>
@@ -104,14 +101,14 @@
                 <ul class="table-pagination">
                   <li th:if="${pageMaker.isPrev()}"><a th:href="@{{boardType}(boardType=${action},page=${pageMaker.getCurrentPage() - 1},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">Previous</a></li>
                   <div th:each="page : ${#numbers.sequence(pageMaker.startPage, pageMaker.endPage)}">
-                  <li th:class="${page == pageMaker.getCurrentPage()} ? 'active' : ''">
-                    <!--<a th:href="@{question(page=${page},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">
-                      <div th:text="${page}"></div>
-                    </a>-->
-                    <a th:href="@{{boardType}(boardType=${action},page=${page},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">
-                      <div th:text="${page}"></div>
-                    </a>
-                  </li>
+                    <li th:class="${page == pageMaker.getCurrentPage()} ? 'active' : ''">
+                      <!--<a th:href="@{question(page=${page},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">
+                        <div th:text="${page}"></div>
+                      </a>-->
+                      <a th:href="@{{boardType}(boardType=${action},page=${page},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">
+                        <div th:text="${page}"></div>
+                      </a>
+                    </li>
                   </div>
                   <li th:if="${pageMaker.isNext()}"><a th:href="@{{boardType}(boardType=${action},page=${pageMaker.getCurrentPage()+1},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">Next</a></li>
                 </ul>
@@ -132,17 +129,18 @@
 
 <!-- Scripts -->
 <!-- Bootstrap core JavaScript -->
+
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
 <script src="/assets/js/browser.min.js"></script>
 <script src="/assets/js/breakpoints.min.js"></script>
 <script src="/assets/js/transition.js"></script>
 <script src="/assets/js/owl-carousel.js"></script>
 <script src="/assets/js/custom.js"></script>
+<script src="/js/joinValidation.js"></script>
+
 </body>
 
 
 </body>
-
 </html>

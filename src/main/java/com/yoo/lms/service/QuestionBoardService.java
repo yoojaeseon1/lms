@@ -1,10 +1,7 @@
 package com.yoo.lms.service;
 
 
-import com.yoo.lms.domain.Course;
-import com.yoo.lms.domain.CourseMaterial;
-import com.yoo.lms.domain.QuestionBoard;
-import com.yoo.lms.domain.Student;
+import com.yoo.lms.domain.*;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.repository.CourseMaterialRepository;
 import com.yoo.lms.repository.CourseRepository;
@@ -81,18 +78,19 @@ public class QuestionBoardService {
     public void saveQuestion(MultipartFile[] files,
                      Long courseId,
                      String title,
-                     String content
+                     String content,
+                     Member member
     ) throws IOException {
 
         Course course = courseRepository.findById(courseId).get();
 
         // session에서 받아와야 함--
 
-        Student student = studentRepository.findById("studentId1").get();
+//        Student student = studentRepository.findById("studentId1").get();
 
         //---
 
-        QuestionBoard questionBoard = new QuestionBoard(course, title, content, student);
+        QuestionBoard questionBoard = new QuestionBoard(course, title, content, member);
 
         questionBoardRepository.save(questionBoard);
         em.flush();

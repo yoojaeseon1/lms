@@ -1,9 +1,6 @@
 package com.yoo.lms.controller;
 
-import com.yoo.lms.domain.CourseBoard;
-import com.yoo.lms.domain.CourseMaterial;
-import com.yoo.lms.domain.Student;
-import com.yoo.lms.domain.Teacher;
+import com.yoo.lms.domain.*;
 import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
@@ -38,7 +35,7 @@ public class CourseBoardController {
     public String listCourseBoard(Model model,
                                BoardSearchCriteria searchCriteria,
                                @PathVariable("courseId") Long courseId,
-                               @RequestParam("page") int page,
+                               @RequestParam(name = "page", defaultValue = "1") int page,
                                   HttpSession session) {
 
         BoardSearchCondition condition = new BoardSearchCondition(courseId);
@@ -50,6 +47,9 @@ public class CourseBoardController {
 //        log.info("keyword : " + searchCriteria.getKeyword().equals(""));
 //        log.info("keyword : " + (searchCriteria.getKeyword()==null));
 //        log.info("========================");
+
+        if(searchCriteria.getKeyword() == null && searchCriteria.getSearchType() == null)
+            searchCriteria = new BoardSearchCriteria("","");
 
         condition.initCondition(searchCriteria);
 
@@ -126,13 +126,16 @@ public class CourseBoardController {
     public String createCourseBoard(@PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
-                                 MultipartFile[] files
+                                 MultipartFile[] files,
+                                    HttpSession session
     ) throws IOException {
 
-        courseBoardService.saveCourseBoard(files, courseId, title,content);
+        Member member = (Member)session.getAttribute("loginMember");
+
+        courseBoardService.saveCourseBoard(files, courseId, title, content, member);
 
 
-        return "redirect:/";
+        return "redirect:/course/"+courseId+"/courseBoard";
     }
 
 
@@ -158,21 +161,23 @@ public class CourseBoardController {
 
     @PutMapping("/course/{courseId}/courseBoard/{boardId}/")
     public String updateCourseBoard(@PathVariable("boardId") Long boardId,
+                                    @PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
                                  MultipartFile[] files) throws IOException{
 
         courseBoardService.updateCourseBoard(boardId, title, content, files);
 
-        return "redirect:/";
+        return "redirect:/course/"+courseId+"/courseBoard";
 
     }
 
     @DeleteMapping("/course/{courseId}/courseBoard/{boardId}")
-    public String deleteCourseBoard(@PathVariable("boardId") Long boardId) {
+    public String deleteCourseBoard(@PathVariable("boardId") Long boardId,
+                                    @PathVariable("courseId") Long courseId) {
 
         courseBoardService.deleteByBoardId(boardId);
 
-        return "redirect:/";
+        return "redirect:/course/"+courseId+"/courseBoard";
     }
 }

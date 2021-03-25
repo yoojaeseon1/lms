@@ -61,7 +61,7 @@ public class AttendanceController {
 
         attendanceService.save(courseId, states);
 
-        return "redirect:/";
+        return "redirect:/course/"+courseId+"/attendance";
     }
 
     @GetMapping("/course/{courseId}/attendance/update")
@@ -100,7 +100,9 @@ public class AttendanceController {
 //                                   AttendanceTypeListDto AttendanceTypeListDto
 //                                   ) {
     @PutMapping("/course/{courseId}/attendance")
-    public String updateAttendance(AttendanceTypeListDto AttendanceTypeListDto) {
+    public String updateAttendance(AttendanceTypeListDto AttendanceTypeListDto,
+                                   @PathVariable("courseId") Long courseId
+                                   ) {
 
         log.info("=================");
         log.info("execute updateAttendance(put)");
@@ -118,7 +120,7 @@ public class AttendanceController {
         attendanceService.updateAttendance(AttendanceTypeListDto.getStates());
 
 
-        return "redirect:/";
+        return "redirect:/course/"+courseId+"/attendance";
 
     }
 

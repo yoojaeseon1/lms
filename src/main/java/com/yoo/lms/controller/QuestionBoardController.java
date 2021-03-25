@@ -1,6 +1,7 @@
 package com.yoo.lms.controller;
 
 import com.yoo.lms.domain.CourseMaterial;
+import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.QuestionBoard;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -33,9 +35,13 @@ public class QuestionBoardController {
     public String listQuestion(Model model,
                        BoardSearchCriteria searchCriteria,
                        @PathVariable("courseId") Long courseId,
-                       @RequestParam("page") int page) {
+                       @RequestParam(name = "page", defaultValue = "1") int page) {
 
         BoardSearchCondition condition = new BoardSearchCondition(courseId);
+
+        if(searchCriteria.getKeyword() == null && searchCriteria.getSearchType() == null)
+            searchCriteria = new BoardSearchCriteria("","");
+
         condition.initCondition(searchCriteria);
 
         List<BoardListDto> postings = null;
@@ -77,7 +83,7 @@ public class QuestionBoardController {
         model.addAttribute("courseMaterials", courseMaterials);
         model.addAttribute("menuTitle", "질문 게시물");
 
-        return "boardDetailWithReply";
+        return "board/boardDetailWithReply";
 
     }
 
@@ -96,13 +102,16 @@ public class QuestionBoardController {
     public String createQuestion(@PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
-                                 MultipartFile[] files
+                                 MultipartFile[] files,
+                                 HttpSession session
                                  ) throws IOException {
 
-        questionBoardService.saveQuestion(files, courseId, title,content);
+        Member loginMember = (Member)session.getAttribute("loginMember");
+
+        questionBoardService.saveQuestion(files, courseId, title,content, loginMember);
 
 
-        return "redirect:/";
+        return "redirect:/course/"+courseId+"/question";
     }
 
 
@@ -128,22 +137,24 @@ public class QuestionBoardController {
 
     @PutMapping("/course/{courseId}/question/{boardId}/")
     public String updateQuestion(@PathVariable("boardId") Long boardId,
+                                 @PathVariable("courseId") Long courseId,
                                  String title,
                                  String content,
                                  MultipartFile[] files) throws IOException{
 
         questionBoardService.updateQuestion(boardId, title, content, files);
         
-        return "redirect:/";
+        return "redirect:/course/"+courseId+"/question";
 
     }
 
     @DeleteMapping("/course/{courseId}/question/{boardId}")
-    public String deleteQuestion(@PathVariable("boardId") Long boardId) {
+    public String deleteQuestion(@PathVariable("boardId") Long boardId,
+                                 @PathVariable("courseId") Long courseId) {
 
         questionBoardService.deleteByBoardId(boardId);
 
-        return "redirect:/";
+        return "redirect:/course/"+courseId+"/question";
 
     }
 
