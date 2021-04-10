@@ -71,9 +71,11 @@
                       </th>
                       <th>
                         수강신청 가능 여부
-                        <select name="canApplicable">
-                          <option th:value="${false}">전체</option>
-                          <option th:value="${true}">가능</option>
+                        <select name="acceptType">
+                          <!--<option th:value="${false}">전체</option>
+                          <option th:value="${true}">가능</option>-->
+                          <option th:value="${null}">전체</option>
+                          <option th:value="${T(com.yoo.lms.domain.enumType.CourseAcceptType).ACCEPTED}">가능</option>
                         </select>
                       </th>
                       <button type="submit">검색</button>
@@ -107,7 +109,7 @@
                     <td>
                       <button th:if="${#strings.equals(course.getAcceptType().toString(), 'ACCEPTED') and course.currentNumStudent < course.maxNumStudent}" type="submit">신청</button>
                     </td>
-                      <input type="hidden" th:value="${course.id}">
+                      <input type="hidden" id="courseId" name="courseId" th:value="${course.id}">
                     </form>
                   </tr>
                   </tbody>

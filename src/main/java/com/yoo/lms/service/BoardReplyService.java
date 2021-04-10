@@ -52,12 +52,8 @@ public class BoardReplyService {
                      String content,
                      String memberId,
                      Long boardId){
-//                     ,Long courseId) {
 
-//        Optional<Course> courseOptional = courseRepository.findById(courseId);
-//        Course course = null;
-//        if(courseOptional.isPresent())
-//            course = courseOptional.get();
+
 
         Optional<Teacher> teacherOptional = teacherRepository.findById(memberId);
         Teacher teacher = null;

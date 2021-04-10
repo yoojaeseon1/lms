@@ -24,7 +24,7 @@
                     <li><a href="shortcodes.html">과목 검색</a></li>
                 </div>
             </ul>
-            <ul th:if="${session.memberType == 'STUDENT'}">
+            <ul th:if="${session.memberType == T(com.yoo.lms.domain.enumType.MemberType).STUDENT}">
                 <div th:if="${session.sideBarType} == 'home'">
                     <li><a href="simple_page.html">공지사항</a></li>
                     <li>

@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,6 +35,27 @@ class StudentCourseRepositoryTest {
         //then
 
         assertThat(removeCount).isEqualTo(1);
+
+    }
+
+    @Test
+    public void findCourseId(){
+
+        //given
+
+        String studentId = "studentid1";
+
+        //when
+
+        List<Long> courseIds = studentCourseRepository.findCourseId(studentId);
+
+//        for (Long courseId : courseIds) {
+//            System.out.println("courseId = " + courseId);
+//        }
+
+        //then
+
+        assertThat(courseIds.size()).isEqualTo(2);
 
     }
 

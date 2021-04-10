@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface CourseRepositoryCustom {
 
-    List<Course> searchCourseByStudent(CourseSearchCondition condition, boolean canApplicable);
+//    List<Course> searchCourseByStudent(CourseSearchCondition condition, boolean canApplicable);
+    List<Course> searchCourseByStudent(CourseSearchCondition condition, String studentId);
 
     List<CourseListDto> findCListDtosByStduent(String studentId);
 

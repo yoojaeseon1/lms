@@ -1,6 +1,7 @@
 package com.yoo.lms.controller;
 
 import com.yoo.lms.domain.Course;
+import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.Teacher;
 import com.yoo.lms.domain.enumType.MemberType;
@@ -25,7 +26,7 @@ public class CourseController {
 
     private final CourseService courseService;
 
-    @GetMapping("/course/{courseId}")
+    @GetMapping("/courses/{courseId}")
     public String showCourseMain(@PathVariable("courseId") Long courseId,
                                  HttpSession session
                                  ){
@@ -45,7 +46,7 @@ public class CourseController {
         return "course/createCourseForm";
     }
 
-    @PostMapping("/course")
+    @PostMapping("/courses")
     @ResponseBody
     public ResponseEntity<String> createCourse(@RequestBody Course course,
                                                HttpServletRequest request
@@ -76,18 +77,25 @@ public class CourseController {
     public String listCourse(CourseSearchCondition searchCondition,
                              String category,
                              String keyword,
-                             boolean canApplicable,
-                             Model model
+                             Model model,
+                             HttpSession session
                              ) {
 
+        log.info("accecpt type : " + searchCondition.getAcceptType());
 
-        if(category.equals("courseName") && keyword.length() > 0) {
-            searchCondition.setCourseName(keyword);
-        } else if(category.equals("teacherName") && keyword.length() > 0){
-            searchCondition.setTeacherName(keyword);
+        if(category != null) {
+
+            if (category.equals("courseName") && keyword.length() > 0) {
+                searchCondition.setCourseName(keyword);
+            } else if (category.equals("teacherName") && keyword.length() > 0) {
+                searchCondition.setTeacherName(keyword);
+            }
+
         }
 
-        List<Course> courses = courseService.searchCourse(searchCondition, canApplicable);
+        Member loginMember = (Member)session.getAttribute("loginMember");
+
+        List<Course> courses = courseService.searchCourse(searchCondition, loginMember.getId());
 
 //        log.info("listCourse - searchCondition.courseName : " + searchCondition.getCourseName());
 //        log.info("listCourse - searchCondition.teacherName : " + searchCondition.getTeacherName());
@@ -122,10 +130,10 @@ public class CourseController {
 
         if(memberType == MemberType.STUDENT) {
             Student loginMember = (Student) session.getAttribute("loginMember");
-            courseService.enrollCourse(loginMember, courseId);
+            courseService.enrollCourse(loginMember.getId(), courseId);
         }
 
 
-        return "redirect:/courseList";
+        return "redirect:./courseList";
     }
 }

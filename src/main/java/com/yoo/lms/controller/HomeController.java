@@ -30,11 +30,11 @@ public class HomeController {
     public String home(HttpServletRequest request,
                        HttpSession session){
 
-        Teacher member = teacherService.findById("teacherid1");
+//        Teacher member = teacherService.findById("teacherid1");
 
 //        HttpSession session = request.getSession();
 
-//        Student member = studentService.findById("studentid1");
+        Student member = studentService.findById("studentid1");
 
 //        List<CourseListDto> courseListDtos = courseService.findCListDtosStudent(member.getId());
         List<CourseListDto> courseListDtos = courseService.findCListDtosTeacher(member.getId());
@@ -45,7 +45,8 @@ public class HomeController {
 
         session.setAttribute("courseListDtos", courseListDtos);
         session.setAttribute("loginMember", member);
-        session.setAttribute("memberType", member.getMemberType().toString());
+//        session.setAttribute("memberType", member.getMemberType().toString());
+        session.setAttribute("memberType", member.getMemberType());
         session.setAttribute("sideBarType", "home");
 
 //        log.info("teacherName1.getMemberType().toString() : " + teacherName1.getMemberType().toString());

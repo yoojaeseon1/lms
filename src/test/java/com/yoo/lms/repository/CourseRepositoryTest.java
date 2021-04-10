@@ -76,7 +76,7 @@ class CourseRepositoryTest {
 
         Student student = studentRepository.findById("yoo1").get();
 
-        courseService.enrollCourse(student, 1L);
+        courseService.enrollCourse(student.getId(), 1L);
 
         em.flush();
         em.clear();
@@ -127,15 +127,16 @@ class CourseRepositoryTest {
     public void searchCourse(){
 
         //given
-        CourseSearchCondition condition = new CourseSearchCondition(null, "teacherName1sdadsa", null, null, null);
+//        CourseSearchCondition condition = new CourseSearchCondition(null, "teacherName1sdadsa", null, null, null);
+        CourseSearchCondition condition = new CourseSearchCondition(null, null, null, null, null);
 
         //when
 
-        List<Course> courses = courseRepository.searchCourseByStudent(condition, true);
+        List<Course> courses = courseRepository.searchCourseByStudent(condition, "studentid1");
 
         //then
 
-        assertThat(courses.size()).isEqualTo(0);
+        assertThat(courses.size()).isEqualTo(28);
         assertThat(courses).isNotNull();
 //        assertThat(courses.get(0).getName()).isEqualTo("course1");
 

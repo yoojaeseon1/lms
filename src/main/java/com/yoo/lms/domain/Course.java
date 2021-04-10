@@ -119,4 +119,8 @@ public class Course {
 
     }
 
+    public void addCurStudentNum() {
+        this.currentNumStudent++;
+    }
+
 }

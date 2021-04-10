@@ -84,28 +84,29 @@ public class CourseService {
     }
 
     @Transactional
-    public List<Course> searchCourse(CourseSearchCondition condition, boolean canApplicable) {
-        return courseRepository.searchCourseByStudent(condition, canApplicable);
+    public List<Course> searchCourse(CourseSearchCondition condition, String studentId) {
+        return courseRepository.searchCourseByStudent(condition, studentId);
     }
 
 
     @Transactional
-    public void enrollCourse(Student student, Long courseId){
-
-        Student findStudent = studentRepository.findById(student.getId()).get();
+    public boolean enrollCourse(String studentId, Long courseId){
 
         Course findCourse = courseRepository.findById(courseId).get();
 
-//        System.out.println("===================");
-//        System.out.println("findCourse = " + findCourse.getTeacher().getName());
-//        System.out.println("===================");
+        if(findCourse.getCurrentNumStudent() == findCourse.getMaxNumStudent())
+            return false;
+
+        Student findStudent = studentRepository.findById(studentId).get();
 
         StudentCourse studentCourse = new StudentCourse();
 
         studentCourse.enrollCourse(findStudent, findCourse);
 
+        findCourse.addCurStudentNum();
         studentCourseRepository.save(studentCourse);
 
+        return true;
     }
 
     @Transactional
