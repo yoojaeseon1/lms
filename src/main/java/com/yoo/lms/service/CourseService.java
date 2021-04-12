@@ -90,7 +90,7 @@ public class CourseService {
 
 
     @Transactional
-    public boolean enrollCourse(String studentId, Long courseId){
+    public synchronized boolean enrollCourse(String studentId, Long courseId){
 
         Course findCourse = courseRepository.findById(courseId).get();
 
