@@ -7,14 +7,11 @@ import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.repository.MemberRepository;
 import com.yoo.lms.searchCondition.MemberSearchCondition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +27,7 @@ public class MemberService {
             'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+
 
     @Transactional
     public void joinStduent(Student student){
@@ -51,7 +49,7 @@ public class MemberService {
 
     public boolean checkDuplicationID(String id) {
 
-        return memberRepository.isExistId(id);
+        return memberRepository.existId(id);
 
     }
 
@@ -86,19 +84,14 @@ public class MemberService {
             return false;
         else {
 
-            // 임시비밀번호 생성
             String tempPassword = createTempPW();
-            
-            // 이메일로 전송
+
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
             simpleMailMessage.setTo(findMember.getEmail());
             simpleMailMessage.setSubject("[LMS 임시 비밀번호 발급 메일]");
             simpleMailMessage.setText("임시 비밀번호는 [ " + tempPassword +"  ] 입니다.");
             javaMailSender.send(simpleMailMessage);
-            
-            
-            // 임시비밀번호로 수정
 
             findMember.initPassword(tempPassword);
 
@@ -126,9 +119,6 @@ public class MemberService {
         findMember.updateInfo(member);
 
     }
-
-
-
 
     private String createTempPW() {
 

@@ -8,10 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
+
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
-
-  <title>Ramayana - HTML5 Template</title>
-
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/fontawesome.css">
   <link rel="stylesheet" href="/assets/css/templatemo-style.css">
@@ -77,6 +75,7 @@
                   </tbody>
                 </table>
                 <ul class="table-pagination">
+<!--                  <li th:if="${pageMaker.isPrev()}"><a th:href="@{./{boardType}(boardType=${action},currentPage=${pageMaker.currentPage - 1},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">Previous</a></li>-->
                   <li th:if="${pageMaker.isPrev()}"><a th:href="@{./{boardType}(boardType=${action},currentPage=${pageMaker.currentPage - 1},searchType=${searchCriteria.searchType}, keyword=${searchCriteria.keyword})}">Previous</a></li>
                   <div th:each="pageNumber : ${#numbers.sequence(pageMaker.startPage, pageMaker.endPage)}">
                     <li th:class="${pageNumber == pageMaker.currentPage} ? 'active' : ''">

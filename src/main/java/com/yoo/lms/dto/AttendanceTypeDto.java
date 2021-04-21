@@ -1,16 +1,17 @@
 package com.yoo.lms.dto;
 
 
+import com.yoo.lms.domain.enumType.AttendanceType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @NoArgsConstructor
-@Setter
-@Getter
+@Getter @Setter
 public class AttendanceTypeDto {
 
     private String studentId;
     private Long attendanceId;
-    private String attendanceType;
+    private AttendanceType attendanceType;
+
 }

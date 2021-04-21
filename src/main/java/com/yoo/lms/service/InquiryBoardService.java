@@ -31,11 +31,11 @@ public class InquiryBoardService {
         return inquiryBoardRepository.findByIdFetchMember(id);
     }
 
-    @Transactional
-    public void deleteBoardReply(Long boardId) {
+    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int currentPage, int limit) {
 
-        viewRepository.deleteAllByBoardId(boardId);
-        inquiryBoardRepository.deleteById(boardId);
+        Page<BoardListDto> page = inquiryBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(currentPage, limit));
+
+        return page;
 
     }
 
@@ -57,12 +57,14 @@ public class InquiryBoardService {
         findPosting.updateInfo(title, content);
     }
 
-    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int currentPage, int limit) {
 
-        Page<BoardListDto> page = inquiryBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(currentPage, limit));
+    @Transactional
+    public void deleteBoardReply(Long boardId) {
 
-        return page;
+        viewRepository.deleteAllByBoardId(boardId);
+        inquiryBoardRepository.deleteById(boardId);
 
     }
+
 
 }

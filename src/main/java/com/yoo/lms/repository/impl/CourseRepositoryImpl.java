@@ -37,7 +37,6 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
 
 
     @Override
-//    public List<Course> searchCourseByStudent(CourseSearchCondition condition, boolean canApplicable) {
     public List<Course> searchCourseByStudent(CourseSearchCondition condition, String studentId) {
 
         List<Long> courseIds = new ArrayList<>();
@@ -49,14 +48,12 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
                 .selectFrom(course)
                 .join(course.teacher, teacher).fetchJoin()
                 .where(
-                        studentIdNotIn(courseIds),
+                        courseIdNotIn(courseIds),
                         courseNameContains(condition.getCourseName()),
                         teacherNameContains(condition.getTeacherName()),
                         acceptTypeEq(condition.getAcceptType()),
-//                        acceptTypeEq(condition.getAcceptType()),
                         startDateGoe(condition.getStartDate()),
                         endDateLoe(condition.getEndDate())
-//                        currentNumStudentLtMaxNumStudent(canApplicable)
                 )
                 .orderBy(course.name.asc())
                 .fetch();
@@ -98,13 +95,11 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
                 .select(new QCourseListDto(
                         course.id,
                         course.name
-//                        course.acceptType
                         ))
                 .from(course)
                 .where(course.teacher.id.eq(teacherId))
                 .orderBy(course.name.asc())
                 .fetch();
-
 
     }
 
@@ -116,19 +111,6 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
                 .where(studentCourse.student.id.eq(studentId))
                 .fetch();
     }
-
-//    @Override
-//    public boolean existCourseName(Long courseId, String teacherId) {
-//
-//        Integer fetchFirst = queryFactory
-//                .selectOne()
-//                .from(course)
-//                .where(course.id.eq(courseId)
-//                        .and(course.teacher.id.eq(teacherId)))
-//                .fetchFirst();
-//
-//        return fetchFirst != null;
-//    }
 
     @Override
     public boolean existCourseName(CourseSearchCondition condition) {
@@ -199,16 +181,8 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
         return endDate == null ? null : course.endDate.loe(endDate);
     }
 
-//    private BooleanExpression courseAcceptType(CourseAcceptType acceptType) {
-//        return acceptType == null ? null : course.acceptType.eq(acceptType);
-//    }
-
-    private BooleanExpression studentIdNotIn(List<Long> studentIds) {
+    private BooleanExpression courseIdNotIn(List<Long> studentIds) {
         return studentIds.size() == 0 ? null : course.id.notIn(studentIds);
     }
-
-//    private BooleanExpression currentNumStudentLtMaxNumStudent(boolean canApplicable) {
-//        return canApplicable ? course.currentNumStudent.lt(course.maxNumStudent) : null;
-//    }
 
 }

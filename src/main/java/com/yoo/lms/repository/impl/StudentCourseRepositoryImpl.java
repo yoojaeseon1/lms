@@ -1,8 +1,6 @@
 package com.yoo.lms.repository.impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yoo.lms.domain.QCourse;
-import com.yoo.lms.domain.QStudentCourse;
 import com.yoo.lms.dto.MyCourseDto;
 import com.yoo.lms.dto.QMyCourseDto;
 import com.yoo.lms.repository.custom.StudentCourseRepositoryCustom;

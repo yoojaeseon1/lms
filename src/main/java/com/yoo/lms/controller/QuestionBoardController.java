@@ -37,6 +37,30 @@ public class QuestionBoardController {
     private final StudentCourseService studentCourseService;
     private final CourseService courseService;
 
+
+    @GetMapping("/{courseId}/question-board/new")
+    public String createQuestionForm(Model model){
+
+        model.addAttribute("canUploadFile", true);
+        model.addAttribute("menuTitle", "질문 작성");
+
+        return "board/boardCreateForm";
+    }
+
+    @PostMapping("/{courseId}/question-board/new")
+    public String createQuestion(@PathVariable Long courseId,
+                                 String title,
+                                 String content,
+                                 MultipartFile[] files,
+                                 HttpSession session) throws IOException {
+
+        Member loginMember = (Member)session.getAttribute("loginMember");
+
+        questionBoardService.saveQuestion(files, courseId, title,content, loginMember);
+
+        return "redirect:/courses/"+courseId+"/question-board";
+    }
+
     @GetMapping("/{courseId}/question-board")
     public String listQuestion(@PathVariable Long courseId,
                                @RequestParam(defaultValue = "1") int currentPage,
@@ -59,9 +83,7 @@ public class QuestionBoardController {
             page = questionBoardService.searchPosting(condition, false, currentPage-1, 10);
 
 
-        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements());
-
-        // 글 쓰기 가능 여부
+        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements(),10,10);
 
         Member loginMember = (Member)session.getAttribute("loginMember");
         boolean canWritePosting = false;
@@ -116,29 +138,6 @@ public class QuestionBoardController {
 
         return "board/boardDetailWithReply";
 
-    }
-
-    @GetMapping("/{courseId}/question-board/new")
-    public String createQuestionForm(Model model){
-
-        model.addAttribute("canUploadFile", true);
-        model.addAttribute("menuTitle", "질문 작성");
-
-        return "board/boardCreateForm";
-    }
-
-    @PostMapping("/{courseId}/question-board/new")
-    public String createQuestion(@PathVariable Long courseId,
-                                 String title,
-                                 String content,
-                                 MultipartFile[] files,
-                                 HttpSession session) throws IOException {
-
-        Member loginMember = (Member)session.getAttribute("loginMember");
-
-        questionBoardService.saveQuestion(files, courseId, title,content, loginMember);
-
-        return "redirect:/courses/"+courseId+"/question-board";
     }
 
 

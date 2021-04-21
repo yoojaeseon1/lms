@@ -26,9 +26,22 @@ import java.util.Optional;
 public class CourseService {
 
     private final StudentRepository studentRepository;
-    private final TeacherService teacherService;
     private final CourseRepository courseRepository;
     private final StudentCourseRepository studentCourseRepository;
+
+    @Transactional
+    public boolean createCourse(Course course, Teacher teacher) {
+
+        boolean isExistCourse = courseRepository.existCourseName(new CourseSearchCondition(course.getName()));
+
+        if(!isExistCourse) {
+
+            course.addTeacher(teacher);
+            courseRepository.save(course);
+            return true;
+        } else
+            return false;
+    }
 
     public Course findOne(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
@@ -54,31 +67,29 @@ public class CourseService {
         return courseRepository.existCourseName(new CourseSearchCondition(courseId, teacherId));
     }
 
-    @Transactional
-    public boolean createCourse(Course course, Teacher teacher) {
-
-        boolean isExistCourse = courseRepository.existCourseName(new CourseSearchCondition(course.getName()));
-
-        if(!isExistCourse) {
-
-            course.addTeacher(teacher);
-            courseRepository.save(course);
-            return true;
-        } else
-            return false;
-    }
-
     public List<Course> searchCourse(CourseSearchCondition condition, String studentId) {
         return courseRepository.searchCourseByStudent(condition, studentId);
     }
 
+    public List<Course> findByTeacherIdAndAcceptType(String teacherId, AcceptType acceptType) {
+        return courseRepository.findByTeacherIdAndAcceptType(teacherId, acceptType);
+    }
+
+    public List<Course> findCourseByTeacherAndType(String teacherName, AcceptType acceptType) {
+        return courseRepository.findCourseByTeacherAndType(teacherName, acceptType);
+    }
+
+    public boolean existCourseByTeacherIdAndCourseId(Long courseId, String teacherId){
+        return courseRepository.existCourseByTeacherIdAndCourseId(courseId, teacherId);
+    }
+
 
     @Transactional
-    public synchronized Course enrollCourse(String studentId, Long courseId){
+    public synchronized Course enrollCourse(String studentId, Long courseId) {
 
         Course findCourse = courseRepository.findById(courseId).get();
 
-        if(findCourse.getCurrentNumStudent() == findCourse.getMaxNumStudent())
+        if (findCourse.getCurrentNumStudent() == findCourse.getMaxNumStudent())
             return null;
 
         Student findStudent = studentRepository.findById(studentId).get();
@@ -91,14 +102,6 @@ public class CourseService {
         studentCourseRepository.save(studentCourse);
 
         return findCourse;
-    }
-
-    public List<Course> findByTeacherIdAndAcceptType(String teacherId, AcceptType acceptType) {
-        return courseRepository.findByTeacherIdAndAcceptType(teacherId, acceptType);
-    }
-
-    public List<Course> findCourseByTeacherAndType(String teacherName, AcceptType acceptType) {
-        return courseRepository.findCourseByTeacherAndType(teacherName, acceptType);
     }
 
 
@@ -126,8 +129,6 @@ public class CourseService {
         findCourse.updateInfo(updatedCourse);
     }
 
-    public boolean existCourseByTeacherIdAndCourseId(Long courseId, String teacherId){
-        return courseRepository.existCourseByTeacherIdAndCourseId(courseId, teacherId);
-    }
+
 
 }

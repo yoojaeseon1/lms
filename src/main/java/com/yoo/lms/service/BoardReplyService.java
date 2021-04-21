@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -79,16 +78,16 @@ public class BoardReplyService {
     }
 
     @Transactional
-    public void saveWithFile(String title,
-                             String content,
-                             String studentId,
-                             Long boardId,
-                             MultipartFile[] files) throws IOException {
+    public void saveHomeworkWithFile(String title,
+                                     String content,
+                                     String studentId,
+                                     Long boardId,
+                                     MultipartFile[] files) throws IOException {
 
 
         Member member = memberRepository.findById(studentId).get();
 
-        HomeworkBoard posting = homeworkBoardService.findPostingById(boardId, false);
+        HomeworkBoard posting = homeworkBoardService.findPostingById(boardId);
 
         BoardReply boardReply = new BoardReply(title, content, member, posting);
 
@@ -119,6 +118,36 @@ public class BoardReplyService {
         }
     }
 
+    public BoardReply findById(Long boardReplyId){
+
+        Optional<BoardReply> boardReplyOptional = boardReplyRepository.findById(boardReplyId);
+
+        if(boardReplyOptional.isPresent())
+            return boardReplyOptional.get();
+        else
+            return null;
+    }
+
+    public BoardReply findByBoardIdAndStudentId(Long boardId, String studentId) {
+        return boardReplyRepository.findByBoardIdAndStudentId(boardId, studentId);
+    }
+
+    public BoardReply findQuestionReplyByBoardId(Long boardId) {
+        return boardReplyRepository.findQuestionReplyByBoardId(boardId);
+    }
+
+    public List<BoardReply> findHomeworkRepliesByBoardId(Long boardId) {
+        return boardReplyRepository.findHomeworkRepliesByBoardId(boardId);
+    }
+
+    public BoardReply findInquiryReplyByBoardId(Long boardId) {
+        return boardReplyRepository.findInquiryReplyByBoardId(boardId);
+    }
+
+    public boolean existBoardReply(Long boardId, String memberId, BoardType boardType) {
+        return boardReplyRepository.existBoardReply(boardId, memberId, boardType);
+    }
+
     @Transactional
     public void updateBoardReply(Long boardReplyId,
                                   String studentId,
@@ -135,8 +164,6 @@ public class BoardReplyService {
             boardReply = boardReplyOptional.get();
 
         boardReply.updateReply(title, content);
-
-        // 파일이 없으면 게시물만 update하고 종료
 
         if(files == null || files[0].getOriginalFilename().equals(""))
             return;
@@ -169,37 +196,6 @@ public class BoardReplyService {
             courseMaterialRepository.save(new CourseMaterial(boardReply, fileName, savedDirectory));
         }
 
-    }
-
-    public BoardReply findById(Long boardReplyId){
-
-        Optional<BoardReply> boardReplyOptional = boardReplyRepository.findById(boardReplyId);
-
-        if(boardReplyOptional.isPresent())
-            return boardReplyOptional.get();
-        else
-            return null;
-    }
-
-    public BoardReply findByBoardIdAndStudentId(Long boardId, String studentId) {
-        return boardReplyRepository.findByBoardIdAndStudentId(boardId, studentId);
-    }
-
-    public BoardReply findQuestionReplyByBoardId(Long boardId) {
-        return boardReplyRepository.findQuestionReplyByBoardId(boardId);
-    }
-
-    public List<BoardReply> findHomeworkRepliesByBoardId(Long boardId) {
-        return boardReplyRepository.findHomeworkRepliesByBoardId(boardId);
-    }
-
-    public BoardReply findInquiryReplyByBoardId(Long boardId) {
-        return boardReplyRepository.findInquiryReplyByBoardId(boardId);
-    }
-
-
-    public boolean existBoardReply(Long boardId, String memberId, BoardType boardType) {
-        return boardReplyRepository.existBoardReply(boardId, memberId, boardType);
     }
 
     @Transactional

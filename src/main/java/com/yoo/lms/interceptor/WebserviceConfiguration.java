@@ -17,8 +17,8 @@ public class WebserviceConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(memberInterceptor)
                 .addPathPatterns("/courses/**")
-                .addPathPatterns("/inquiryBoard/**")
-                .addPathPatterns("/myPage/**");
+                .addPathPatterns("/inquiry-board/**")
+                .addPathPatterns("/my-page/**");
 
         registry.addInterceptor(adminInterceptor)
                 .addPathPatterns("/admin/**");

@@ -2,12 +2,10 @@ package com.yoo.lms.repository.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yoo.lms.domain.QTeacher;
 import com.yoo.lms.domain.Teacher;
 import com.yoo.lms.domain.enumType.AcceptType;
 import com.yoo.lms.repository.custom.TeacherRepositoryCustom;
 import com.yoo.lms.searchCondition.TeacherSearchCondition;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 

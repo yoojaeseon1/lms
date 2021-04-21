@@ -41,21 +41,6 @@ public class AdminController {
 
     }
 
-    @ResponseBody
-    @PutMapping("/course-apply")
-    public ResponseEntity<String> updateCourseAcceptType(@RequestBody Map<String, String> dataMap) {
-
-        Long courseId = Long.parseLong(dataMap.get("courseId"));
-        String acceptType = dataMap.get("acceptType");
-
-        if(acceptType.equals("ACCEPTED"))
-            courseService.permitCourse(courseId);
-        else
-            courseService.rejectCourse(courseId);
-
-        return new ResponseEntity<>("ok", HttpStatus.OK);
-    }
-
     @GetMapping("/teacher-applications")
     public String listTeacherApplication(@ModelAttribute TeacherSearchCondition searchCondition,
                                          Model model) {
@@ -75,6 +60,23 @@ public class AdminController {
 
         return "/admin/teacherApplications";
     }
+
+    @ResponseBody
+    @PutMapping("/course-apply")
+    public ResponseEntity<String> updateCourseAcceptType(@RequestBody Map<String, String> dataMap) {
+
+        Long courseId = Long.parseLong(dataMap.get("courseId"));
+        String acceptType = dataMap.get("acceptType");
+
+        if(acceptType.equals("ACCEPTED"))
+            courseService.permitCourse(courseId);
+        else
+            courseService.rejectCourse(courseId);
+
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
+
+
 
     @ResponseBody
     @PutMapping("/teacher-applications")

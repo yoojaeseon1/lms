@@ -1,17 +1,13 @@
 package com.yoo.lms.domain;
 
 import com.yoo.lms.domain.enumType.AcceptType;
-import com.yoo.lms.domain.enumType.CourseAcceptType;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -28,15 +28,6 @@ public class CourseController {
 
     private final CourseService courseService;
 
-    @GetMapping("/courses/{courseId}")
-    public String showCourseMain(@PathVariable Long courseId,
-                                 HttpSession session){
-
-        session.setAttribute("sideBarType", "course");
-        session.setAttribute("courseId", courseId);
-
-        return "course/courseMain";
-    }
 
     @GetMapping("/courses/new")
     public String createCourseForm(){
@@ -59,6 +50,15 @@ public class CourseController {
         return entity;
     }
 
+    @GetMapping("/courses/{courseId}")
+    public String showCourseMain(@PathVariable Long courseId,
+                                 HttpSession session){
+
+        session.setAttribute("sideBarType", "course");
+        session.setAttribute("courseId", courseId);
+
+        return "course/courseMain";
+    }
 
 
 
@@ -82,6 +82,7 @@ public class CourseController {
         Member loginMember = (Member)session.getAttribute("loginMember");
 
         List<Course> courses = null;
+
         if(searchCondition.getAcceptType() == null)
             courses = courseService.searchCourse(searchCondition, null);
         else

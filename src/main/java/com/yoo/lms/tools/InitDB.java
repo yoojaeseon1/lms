@@ -23,7 +23,7 @@ public class InitDB {
 
     @PostConstruct
     public void init() {
-        initService.dbInit1();
+//        initService.dbInit1();
 //        initService.dbInit2();
     }
 
@@ -110,7 +110,7 @@ public class InitDB {
 
 
 
-            em.flush();
+//            em.flush();
 
             // create course
 
@@ -196,7 +196,7 @@ public class InitDB {
                 courses[i] = course;
             }
 
-            em.flush();
+//            em.flush();
 
             // enroll course(student)
 
@@ -212,7 +212,7 @@ public class InitDB {
                 studentCourseRepository.save(studentCourse);
             }
 
-            em.flush();
+//            em.flush();
 
             // create attendance
 

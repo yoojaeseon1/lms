@@ -20,6 +20,10 @@ public class TeacherService {
         return teacherRepository.findById(id).get();
     }
 
+    public List<Teacher> searchTeachersBySearchCondition(TeacherSearchCondition searchCondition) {
+        return teacherRepository.searchTeachersBySearchCondition(searchCondition);
+    }
+
     @Transactional
     public void changeAcceptToWaiting(String teacherId) {
         Teacher findTeacher = teacherRepository.findById(teacherId).get();
@@ -38,8 +42,6 @@ public class TeacherService {
         findTeacher.changeAcceptToAccepted();
     }
 
-    public List<Teacher> searchTeachersBySearchCondition(TeacherSearchCondition searchCondition) {
-        return teacherRepository.searchTeachersBySearchCondition(searchCondition);
-    }
+
 
 }

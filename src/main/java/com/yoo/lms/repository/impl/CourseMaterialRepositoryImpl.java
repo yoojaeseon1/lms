@@ -2,7 +2,6 @@ package com.yoo.lms.repository.impl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.CourseMaterial;
-import com.yoo.lms.domain.QCourseMaterial;
 import com.yoo.lms.repository.custom.CourseMaterialRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,11 +12,10 @@ import static com.yoo.lms.domain.QCourseMaterial.*;
 
 public class CourseMaterialRepositoryImpl implements CourseMaterialRepositoryCustom {
 
+    private final EntityManager em;
+    private final JPAQueryFactory queryFactory;
+
     @Autowired
-    private EntityManager em;
-
-    private JPAQueryFactory queryFactory;
-
     public CourseMaterialRepositoryImpl(EntityManager em) {
         this.em = em;
         queryFactory = new JPAQueryFactory(em);

@@ -28,6 +28,30 @@ public class InquiryBoardController {
     private final InquiryBoardService inquiryBoardService;
     private final BoardReplyService boardReplyService;
 
+
+    @GetMapping("/new")
+    public String createInquiryForm(Model model){
+
+        model.addAttribute("canUploadFile", false);
+        model.addAttribute("menuTitle", "문의 작성");
+
+        return "board/boardCreateForm";
+    }
+
+    @PostMapping("/new")
+    public String createInquiry(@RequestParam String title,
+                                @RequestParam String content,
+                                HttpSession session) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        InquiryBoard inquiryBoard = new InquiryBoard(title, content, loginMember);
+
+        inquiryBoardService.save(inquiryBoard);
+
+        return "redirect:/inquiry-board";
+    }
+
     @GetMapping
     public String listBoard(@ModelAttribute BoardSearchCriteria searchCriteria,
                             @RequestParam(defaultValue = "1") int currentPage,
@@ -44,17 +68,11 @@ public class InquiryBoardController {
         Page<BoardListDto> page = null;
 
         if(searchCriteria.getSearchType().equals("all") || searchCriteria.getSearchType().equals("titleAndContent"))
-            // Pageable은 0부터 시작하므로 현재 페이지 번호에서 1을 빼줘야 순서가 맞다.
             page = inquiryBoardService.searchPosting(condition, true,currentPage - 1, 10);
-
-
-         else // Pageable은 0부터 시작하므로 현재 페이지 번호에서 1을 빼줘야 순서가 맞다.
+        else
             page = inquiryBoardService.searchPosting(condition, false,currentPage - 1, 10);
 
-
-
-        // 페이지는 1번부터 넘버링이 되야 하기 때문에 currentPage에 1을 빼지 않는다.
-        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements());
+        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements(),10,10);
 
         Member loginMember = (Member)session.getAttribute("loginMember");
 
@@ -96,29 +114,6 @@ public class InquiryBoardController {
         model.addAttribute("canWriteReply", canWriteReply);
 
         return "/board/boardDetailWithReply";
-    }
-
-    @GetMapping("/new")
-    public String createInquiryForm(Model model){
-
-        model.addAttribute("canUploadFile", false);
-        model.addAttribute("menuTitle", "문의 작성");
-
-        return "board/boardCreateForm";
-    }
-
-    @PostMapping("/new")
-    public String createInquiry(@RequestParam String title,
-                                @RequestParam String content,
-                                HttpSession session) {
-
-        Member loginMember = (Member) session.getAttribute("loginMember");
-
-        InquiryBoard inquiryBoard = new InquiryBoard(title, content, loginMember);
-
-        inquiryBoardService.save(inquiryBoard);
-
-        return "redirect:/inquiry-board";
     }
 
     @GetMapping("/{boardId}/update")

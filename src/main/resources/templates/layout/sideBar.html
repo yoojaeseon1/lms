@@ -40,8 +40,8 @@
                         <span class="opener">마이페이지</span>
                         <ul>
                             <li>
-                                <a href="/myPage/password-check-form">개인 정보 수정</a>
-                                <a href="/myPage/my-attendances">지난 출석 확인</a>
+                                <a href="/my-page/password-check-form">개인 정보 수정</a>
+                                <a href="/my-page/my-attendances">지난 출석 확인</a>
                             </li>
                         </ul>
                     </li>
@@ -69,10 +69,10 @@
                         <span class="opener">마이페이지</span>
                         <ul>
                             <li>
-                                <a href="/myPage/password-check-form">개인 정보 변경</a>
-                                <a href="/myPage/courses">강의 등록 신청 현황</a>
+                                <a href="/my-page/password-check-form">개인 정보 변경</a>
+                                <a href="/my-page/courses">강의 등록 신청 현황</a>
                                 <a th:if="${session.acceptType != T(com.yoo.lms.domain.enumType.AcceptType).ACCEPTED}"
-                                   href="/myPage/teacher-application">강사 허가 신청 현황</a>
+                                   href="/my-page/teacher-application">강사 허가 신청 현황</a>
                             </li>
                         </ul>
                     </li>

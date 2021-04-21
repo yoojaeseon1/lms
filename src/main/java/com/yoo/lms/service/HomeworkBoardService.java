@@ -4,19 +4,14 @@ import com.yoo.lms.domain.*;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.repository.*;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
-import com.yoo.lms.searchType.BoardSearchCriteria;
-import com.yoo.lms.tools.PageMaker;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -49,9 +44,6 @@ public class HomeworkBoardService {
 
         homeworkBoardRepository.save(homeworkBoard);
 
-
-        // 파일이 없으면 게시물만 save하고 종료
-
         if(files[0].getOriginalFilename().equals(""))
             return;
 
@@ -70,6 +62,21 @@ public class HomeworkBoardService {
 
             courseMaterialRepository.save(new CourseMaterial(homeworkBoard, fileName, savedDirectory));
         }
+    }
+
+    public HomeworkBoard findPostingById(Long boardId) {
+
+        HomeworkBoard homeworkBoard = homeworkBoardRepository.findPostingById(boardId);
+
+        return homeworkBoard;
+    }
+
+    public String findTitleByBoardId(Long boardId) {
+        return homeworkBoardRepository.findTitleByBoardId(boardId);
+    }
+
+    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int page, int size) {
+        return homeworkBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(page, size));
     }
 
     @Transactional
@@ -97,8 +104,6 @@ public class HomeworkBoardService {
             homeworkBoard = homeworkBoardOptional.get();
 
         homeworkBoard.updateInfo(title, content);
-
-        // 파일이 없으면 게시물만 update하고 종료
 
         if(files[0].getOriginalFilename().equals(""))
             return;
@@ -132,13 +137,6 @@ public class HomeworkBoardService {
         }
     }
 
-    public HomeworkBoard findPostingById(Long boardId, boolean hasReplies) {
-
-        HomeworkBoard homeworkBoard = homeworkBoardRepository.findPostingById(boardId, hasReplies);
-
-        return homeworkBoard;
-    }
-
     @Transactional
     public void deleteByBoardId(Long boardId) {
 
@@ -165,13 +163,5 @@ public class HomeworkBoardService {
 
         courseMaterialRepository.deleteAllByBoardId(boardId);
         homeworkBoardRepository.deleteById(boardId);
-    }
-
-    public String findTitleByBoardId(Long boardId) {
-        return homeworkBoardRepository.findTitleByBoardId(boardId);
-    }
-
-    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int page, int size) {
-        return homeworkBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(page, size));
     }
 }

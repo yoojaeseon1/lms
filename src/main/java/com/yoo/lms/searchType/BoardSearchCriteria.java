@@ -1,6 +1,5 @@
 package com.yoo.lms.searchType;
 
-
 import lombok.Getter;
 
 @Getter

@@ -3,8 +3,7 @@ package com.yoo.lms.service;
 import com.yoo.lms.domain.Attendance;
 import com.yoo.lms.domain.Course;
 import com.yoo.lms.domain.Student;
-import com.yoo.lms.domain.enumType.AttendanceType;
-import com.yoo.lms.dto.AttendanceListDto;
+import com.yoo.lms.dto.AttendanceCountDto;
 import com.yoo.lms.dto.AttendanceTypeDto;
 import com.yoo.lms.repository.AttendanceRepository;
 import com.yoo.lms.searchCondition.AtSearchCondition;
@@ -39,12 +38,11 @@ public class AttendanceService {
                     course,
                     student,
                     currentTime,
-                    AttendanceType.valueOf(attendanceStateDto.getAttendanceType()));
+                    attendanceStateDto.getAttendanceType());
 
             attendanceRepository.save(attendance);
 
         }
-
     }
 
     /**
@@ -53,7 +51,7 @@ public class AttendanceService {
      * @param courseId
      * @return
      */
-    public List<AttendanceListDto> findStudentAttendList(Long courseId) {
+    public List<AttendanceCountDto> findStudentAttendList(Long courseId) {
         return attendanceRepository.findStudentAttendList(courseId);
     }
 
@@ -62,7 +60,7 @@ public class AttendanceService {
      * @param condition(courseId, startDate, endDate)
      * @return
      */
-    public List<AttendanceListDto> searchCourseAttendList(AtSearchCondition condition) {
+    public List<AttendanceCountDto> searchCourseAttendList(AtSearchCondition condition) {
         return attendanceRepository.searchCourseAttendList(condition);
     }
 
@@ -74,7 +72,7 @@ public class AttendanceService {
      * @param checkedDate
      * @return
      */
-    public List<AttendanceListDto> findUpdateList(Long courseId, LocalDateTime checkedDate){
+    public List<AttendanceCountDto> findUpdateList(Long courseId, LocalDateTime checkedDate){
         return attendanceRepository.searchUpdateList(courseId, checkedDate);
     }
 
@@ -94,7 +92,7 @@ public class AttendanceService {
             if(attendanceOptional.isPresent())
                 attendance = attendanceOptional.get();
 
-            attendance.updateAttendanceType(AttendanceType.valueOf(attendanceTypeDto.getAttendanceType()), modifiedDate);
+            attendance.updateAttendanceType(attendanceTypeDto.getAttendanceType(), modifiedDate);
 
         }
     }

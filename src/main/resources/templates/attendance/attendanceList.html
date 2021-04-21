@@ -8,12 +8,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
+
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
-
-  <title>Ramayana - HTML5 Template</title>
-
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
   <link rel="stylesheet" href="/assets/css/fontawesome.css">
   <link rel="stylesheet" href="/assets/css/templatemo-style.css">
   <link rel="stylesheet" href="/assets/css/owl.css">
@@ -52,7 +49,7 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <tr th:each="attendance: ${attendanceListDtos}">
+                  <tr th:each="attendance: ${attendanceCountDtos}">
                     <form action="attendance/update" method="get">
                         <td th:text="${#temporals.format(attendance.checkedDate, 'yyy-MM-dd HH-mm')}"></td>
                         <td th:text="${attendance.numAttendance}"></td>

@@ -21,10 +21,8 @@ import java.util.List;
 public class BoardReplyController {
 
     private final BoardReplyService boardReplyService;
-    private final QuestionBoardService questionBoardService;
     private final CourseMaterialService courseMaterialService;
     private final HomeworkBoardService homeworkBoardService;
-    private final InquiryBoardService inquiryBoardService;
 
     @GetMapping("/courses/{courseId}/question-board/{boardId}/new")
     public String createQuestionReplyForm(Model model){
@@ -133,7 +131,7 @@ public class BoardReplyController {
                                       HttpSession session) throws IOException {
 
         Member loginMember = (Member) session.getAttribute("loginMember");
-        boardReplyService.saveWithFile(title, content, loginMember.getId(), boardId, files);
+        boardReplyService.saveHomeworkWithFile(title, content, loginMember.getId(), boardId, files);
 
         return "redirect:/courses/"+courseId+"/homework-board/"+boardId;
     }
@@ -212,6 +210,7 @@ public class BoardReplyController {
         return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
+
     @GetMapping("/inquiry-board/{boardId}/new")
     public String createInquiryReplyForm(Model model){
 
@@ -233,15 +232,6 @@ public class BoardReplyController {
         boardReplyService.saveInquiryReply(title, content, loginMember.getId(), boardId);
 
         return "redirect:/inquiry-board/"+boardId;
-    }
-
-    @ResponseBody
-    @DeleteMapping("/inquiry-board/{boardId}/{boardReplyId}")
-    public ResponseEntity<String> deleteInquiryReply(@PathVariable Long boardReplyId) {
-
-        boardReplyService.deleteBoardReply(boardReplyId);
-
-        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
     @GetMapping("/inquiry-board/{boardId}/{boardReplyId}/new")
@@ -272,5 +262,16 @@ public class BoardReplyController {
 
         return "redirect:/inquiry-board/"+ boardId;
     }
+
+    @ResponseBody
+    @DeleteMapping("/inquiry-board/{boardId}/{boardReplyId}")
+    public ResponseEntity<String> deleteInquiryReply(@PathVariable Long boardReplyId) {
+
+        boardReplyService.deleteBoardReply(boardReplyId);
+
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
+
+
 
 }

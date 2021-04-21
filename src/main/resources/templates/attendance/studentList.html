@@ -8,12 +8,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
+
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
-
-  <title>Ramayana - HTML5 Template</title>
-
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
   <link rel="stylesheet" href="/assets/css/fontawesome.css">
   <link rel="stylesheet" href="/assets/css/templatemo-style.css">
   <link rel="stylesheet" href="/assets/css/owl.css">
@@ -62,13 +59,18 @@
                       <td th:text="${attendance.numAbsence}"></td>
                       <td th:text="${attendance.numLateness}"></td>
 
-                    <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ATTENDANCE" type="radio" checked></td>
-                    <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ABSENCE" type="radio"></td>
-                    <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="LATENESS" type="radio"></td>
-                    <input th:name="states+'['+${index.index}+'].studentId'" th:value="${attendance.studentId}" hidden>
-                  </tr>
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'"
+                                 th:value="${T(com.yoo.lms.domain.enumType.AttendanceType).ATTENDANCE}" type="radio" checked></td>
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'"
+                                 th:value="${T(com.yoo.lms.domain.enumType.AttendanceType).ABSENCE}" type="radio"></td>
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'"
+                                 th:value="${T(com.yoo.lms.domain.enumType.AttendanceType).LATENESS}" type="radio"></td>
+
+                      <input th:name="states+'['+${index.index}+'].studentId'"
+                             th:value="${attendance.studentId}" hidden>
+                    </tr>
                     <button type="submit">등록 완료</button>
-                    </form>
+                  </form>
                   <form th:if="${attendances.get(0).attendanceType != null}" th:action="@{../attendance(checkedDate=${checkedDate})}" th:method="put">
                     <tr th:each="attendance, index : ${attendances}">
                       <td th:text="${attendance.studentName}"></td>
@@ -77,9 +79,16 @@
                       <td th:text="${attendance.numAbsence}"></td>
                       <td th:text="${attendance.numLateness}"></td>
 
-                      <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ATTENDANCE" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'ATTENDANCE')}"></td>
-                      <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ABSENCE" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'ABSENCE')}"></td>
-                      <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="LATENESS" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'LATENESS')}"></td>
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'"
+                                 th:value="${T(com.yoo.lms.domain.enumType.AttendanceType).ATTENDANCE}" type="radio"
+                                 th:checked="${attendance.attendanceType == T(com.yoo.lms.domain.enumType.AttendanceType).ATTENDANCE}"></td>
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'"
+                                 th:value="${T(com.yoo.lms.domain.enumType.AttendanceType).ABSENCE}" type="radio"
+                                 th:checked="${attendance.attendanceType == T(com.yoo.lms.domain.enumType.AttendanceType).ABSENCE}"></td>
+                      <td><input th:name="states+'['+${index.index}+'].attendanceType'"
+                                 th:value="${T(com.yoo.lms.domain.enumType.AttendanceType).LATENESS}" type="radio"
+                                 th:checked="${attendance.attendanceType == T(com.yoo.lms.domain.enumType.AttendanceType).LATENESS}"></td>
+
                       <input th:name="states+'['+${index.index}+'].attendanceId'" th:value="${attendance.attendanceId}" hidden>
                     </tr>
                     <button type="submit">수정 완료</button>

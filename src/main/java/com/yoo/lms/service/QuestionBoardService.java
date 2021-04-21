@@ -46,7 +46,6 @@ public class QuestionBoardService {
 
         questionBoardRepository.save(questionBoard);
 
-        // 파일이 없으면 게시물만 save하고 종료
         if(files[0].getOriginalFilename().equals(""))
             return;
 
@@ -65,6 +64,14 @@ public class QuestionBoardService {
 
             courseMaterialRepository.save(new CourseMaterial(questionBoard, fileName, savedDirectory));
         }
+    }
+
+    public QuestionBoard findPostingById(Long boardId) {
+        return questionBoardRepository.findByIdFetchMember(boardId);
+    }
+
+    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int page, int size) {
+        return questionBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(page, size));
     }
 
     @Transactional
@@ -92,7 +99,6 @@ public class QuestionBoardService {
 
         findQuestion.updateInfo(title, content);
 
-        // 파일이 없으면 게시물만 update하고 종료
         if(files[0].getOriginalFilename().equals(""))
             return;
 
@@ -126,10 +132,7 @@ public class QuestionBoardService {
 
     }
 
-    public QuestionBoard findPostingById(Long boardId) {
 
-        return questionBoardRepository.findByIdFetchMember(boardId);
-    }
 
     @Transactional
     public void deleteByBoardId(Long boardId) {
@@ -158,7 +161,5 @@ public class QuestionBoardService {
         questionBoardRepository.deleteById(boardId);
     }
 
-    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int page, int size) {
-        return questionBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(page, size));
-    }
+
 }

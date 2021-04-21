@@ -3,16 +3,13 @@ package com.yoo.lms.repository.impl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.BoardReply;
-import com.yoo.lms.domain.QBoardReply;
 import com.yoo.lms.domain.enumType.BoardType;
 import com.yoo.lms.repository.custom.BoardReplyRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.yoo.lms.domain.QBoardReply.*;
 
@@ -69,7 +66,6 @@ public class BoardReplyRepositoryImpl implements BoardReplyRepositoryCustom {
         Integer fetchFirst = queryFactory
                 .selectOne()
                 .from(boardReply)
-//                .where(boardReply.homeworkBoard.id.eq(boardId),
                 .where(boardIdEq(boardId, boardType),
                         boardReply.createdBy.id.eq(memberId))
                 .fetchFirst();
@@ -90,10 +86,5 @@ public class BoardReplyRepositoryImpl implements BoardReplyRepositoryCustom {
                 return null;
 
         }
-
-//        if(boardType.equals("homework"))
-//            return boardReply.homeworkBoard.id.eq(boardId);
-//        else if()
-
     }
 }

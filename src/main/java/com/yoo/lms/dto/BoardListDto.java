@@ -1,10 +1,6 @@
 package com.yoo.lms.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.querydsl.core.types.dsl.DateTimePath;
-import com.querydsl.core.types.dsl.NumberPath;
-import com.querydsl.core.types.dsl.StringPath;
-import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.View;
 import lombok.Data;
 import lombok.NoArgsConstructor;

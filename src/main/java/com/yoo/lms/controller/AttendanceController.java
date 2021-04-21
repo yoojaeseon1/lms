@@ -1,10 +1,11 @@
 package com.yoo.lms.controller;
 
-import com.yoo.lms.dto.AttendanceListDto;
+import com.yoo.lms.dto.AttendanceCountDto;
 import com.yoo.lms.dto.AttendanceTypeDto;
 import com.yoo.lms.dto.AttendanceTypeListDto;
 import com.yoo.lms.searchCondition.AtSearchCondition;
 import com.yoo.lms.service.AttendanceService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,8 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -28,7 +29,7 @@ public class AttendanceController {
     public String createAttendanceForm(@PathVariable Long courseId,
                                        Model model){
 
-        List<AttendanceListDto> attendances = attendanceService.findStudentAttendList(courseId);
+        List<AttendanceCountDto> attendances = attendanceService.findStudentAttendList(courseId);
 
         model.addAttribute("attendances", attendances);
         model.addAttribute("menuTitle", "출석 등록");
@@ -38,15 +39,28 @@ public class AttendanceController {
 
     @PostMapping("/{courseId}/attendance")
     public String createAttendance(@PathVariable Long courseId,
-                                   AttendanceTypeListDto attendanceStateListDto){
+                                   AttendanceTypeListDto attendanceTypeListDto){
 
-        List<AttendanceTypeDto> states = attendanceStateListDto.getStates();
+        List<AttendanceTypeDto> states = attendanceTypeListDto.getStates();
 
         LocalDateTime currentTime = LocalDateTime.now();
 
         attendanceService.save(courseId, states, currentTime);
 
         return "redirect:/courses/"+courseId+"/attendance";
+    }
+
+
+    @GetMapping("/{courseId}/attendance")
+    public String listAttendance(AtSearchCondition atSearchCondition,
+                                 Model model) {
+
+        List<AttendanceCountDto> attendanceCountDtos = attendanceService.searchCourseAttendList(atSearchCondition);
+
+        model.addAttribute("attendanceCountDtos", attendanceCountDtos);
+
+        return "attendance/attendanceList";
+
     }
 
     @GetMapping("/{courseId}/attendance/update")
@@ -56,14 +70,11 @@ public class AttendanceController {
                                                LocalDateTime checkedDate,
                                        Model model) {
 
-        List<AttendanceListDto> attendances = attendanceService.findUpdateList(courseId, checkedDate);
+        List<AttendanceCountDto> attendances = attendanceService.findUpdateList(courseId, checkedDate);
 
         model.addAttribute("attendances", attendances);
         model.addAttribute("menuTitle", "출석 수정");
-
-        // test용 chekdDate(RequestParam으로 받아야 됨)
-
-        model.addAttribute("checkedDate", LocalDate.now());
+        model.addAttribute("checkedDate", checkedDate);
 
 
         return "attendance/studentList";
@@ -81,17 +92,6 @@ public class AttendanceController {
 
     }
 
-    @GetMapping("/{courseId}/attendance")
-    public String listAttendance(AtSearchCondition atSearchCondition,
-                                 Model model) {
-
-        List<AttendanceListDto> attendanceListDtos = attendanceService.searchCourseAttendList(atSearchCondition);
-
-        model.addAttribute("attendanceListDtos", attendanceListDtos);
-
-        return "attendance/attendanceList";
-
-    }
 
 }
 

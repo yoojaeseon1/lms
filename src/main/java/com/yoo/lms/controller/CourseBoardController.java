@@ -34,6 +34,30 @@ public class CourseBoardController {
     private final CourseMaterialService courseMaterialService;
     private final CourseService courseService;
 
+    @GetMapping("/{courseId}/course-board/new")
+    public String createCourseBoardForm(Model model){
+
+        model.addAttribute("canUploadFile", true);
+        model.addAttribute("formTitle", "강의 공지사항 작성");
+
+        return "board/boardCreateForm";
+    }
+
+    @PostMapping("/{courseId}/course-board/new")
+    public String createCourseBoard(@PathVariable Long courseId,
+                                    String title,
+                                    String content,
+                                    MultipartFile[] files,
+                                    HttpSession session) throws IOException {
+
+        Member member = (Member)session.getAttribute("loginMember");
+
+        courseBoardService.saveCourseBoard(files, courseId, title, content, member);
+
+
+        return "redirect:/courses/"+courseId+"/course-board";
+    }
+
     @GetMapping("/{courseId}/course-board")
     public String listCourseBoard(Model model,
                                   BoardSearchCriteria searchCriteria,
@@ -58,7 +82,7 @@ public class CourseBoardController {
             page = courseBoardService.searchPosting(condition, false, currentPage-1, 10);
 
 
-        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements());
+        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements(),10, 10);
 
         model.addAttribute("page", page);
         model.addAttribute("pageMaker", pageMaker);
@@ -103,30 +127,6 @@ public class CourseBoardController {
 
         return "board/boardDetail";
 
-    }
-
-    @GetMapping("/{courseId}/course-board/new")
-    public String createCourseBoardForm(Model model){
-
-        model.addAttribute("canUploadFile", true);
-        model.addAttribute("formTitle", "강의 공지사항 작성");
-
-        return "board/boardCreateForm";
-    }
-
-    @PostMapping("/{courseId}/course-board/new")
-    public String createCourseBoard(@PathVariable Long courseId,
-                                    String title,
-                                    String content,
-                                    MultipartFile[] files,
-                                    HttpSession session) throws IOException {
-
-        Member member = (Member)session.getAttribute("loginMember");
-
-        courseBoardService.saveCourseBoard(files, courseId, title, content, member);
-
-
-        return "redirect:/courses/"+courseId+"/course-board";
     }
 
 

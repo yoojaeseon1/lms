@@ -3,7 +3,6 @@ package com.yoo.lms.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import com.yoo.lms.domain.enumType.AcceptType;
-import com.yoo.lms.domain.enumType.CourseAcceptType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

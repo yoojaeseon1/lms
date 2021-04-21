@@ -3,7 +3,6 @@ package com.yoo.lms.searchCondition;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,4 +43,5 @@ public class AtSearchCondition {
         if(endDate != null)
             this.endDate = endDate.atTime(23,59,59);
     }
+
 }

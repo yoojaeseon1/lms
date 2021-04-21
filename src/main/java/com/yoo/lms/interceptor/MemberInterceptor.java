@@ -1,9 +1,7 @@
 package com.yoo.lms.interceptor;
 
-import com.yoo.lms.domain.Course;
 import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.Teacher;
-import com.yoo.lms.domain.enumType.AcceptType;
 import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.service.CourseService;
 import com.yoo.lms.service.StudentCourseService;
@@ -11,12 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -28,10 +24,6 @@ public class MemberInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-        log.info("preHandle() requestURI : {}", request.getRequestURI());
-        log.info("preHandle() requestURL : {}", request.getRequestURL());
-
 
 
         HttpSession httpSession = request.getSession();
@@ -65,9 +57,11 @@ public class MemberInterceptor implements HandlerInterceptor {
 
         if(paths[0].equals("courses")) {
 
-            Long courseId = Long.parseLong(paths[1]);
+            Long courseId = null;
+                courseId = Long.parseLong(paths[1]);
 
             if(loginMember.getMemberType() == MemberType.TEACHER) {
+
                 if(!courseService.existCourseByTeacherIdAndCourseId(courseId, loginMember.getId())) {
                     response.sendRedirect("/");
                     return false;

@@ -2,7 +2,7 @@ package com.yoo.lms.repository;
 
 
 import com.yoo.lms.domain.Attendance;
-import com.yoo.lms.dto.AttendanceListDto;
+import com.yoo.lms.dto.AttendanceCountDto;
 import com.yoo.lms.searchCondition.AtSearchCondition;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ class AttendanceRepositoryTest {
 
 
         //when
-        List<AttendanceListDto> attendances = attendanceRepository.searchStudentAttendList(1L);
+        List<AttendanceCountDto> attendances = attendanceRepository.searchStudentAttendList(1L);
 
 //        for (AttendanceListDto attendance : attendances) {
 //            System.out.println("attendance.getStudentName() = " + attendance.getStudentName());
@@ -62,12 +62,12 @@ class AttendanceRepositoryTest {
         AtSearchCondition atSearchCondition = new AtSearchCondition(1L, startDate, endDate);
 
         //when
-        List<AttendanceListDto> courseAttendances = attendanceRepository.searchCourseAttendList(atSearchCondition);
+        List<AttendanceCountDto> courseAttendances = attendanceRepository.searchCourseAttendList(atSearchCondition);
         System.out.println(" ============================== ");
-        for (AttendanceListDto attendanceListDto : courseAttendances) {
-            System.out.println("attendanceListDto.getNumAttendance() = " + attendanceListDto.getNumAttendance());
-            System.out.println("attendanceListDto.getNumAbsence() = " + attendanceListDto.getNumAbsence());
-            System.out.println("attendanceListDto.getNumLateness() = " + attendanceListDto.getNumLateness());
+        for (AttendanceCountDto attendanceCountDto : courseAttendances) {
+            System.out.println("attendanceListDto.getNumAttendance() = " + attendanceCountDto.getNumAttendance());
+            System.out.println("attendanceListDto.getNumAbsence() = " + attendanceCountDto.getNumAbsence());
+            System.out.println("attendanceListDto.getNumLateness() = " + attendanceCountDto.getNumLateness());
             System.out.println(" ============================== ");
         }
 

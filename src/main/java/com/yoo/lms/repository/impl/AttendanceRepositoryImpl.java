@@ -4,14 +4,15 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.*;
 import com.yoo.lms.domain.enumType.AttendanceType;
-import com.yoo.lms.dto.AttendanceListDto;
-import com.yoo.lms.dto.QAttendanceListDto;
+import com.yoo.lms.dto.AttendanceCountDto;
+import com.yoo.lms.dto.QAttendanceCountDto;
 import com.yoo.lms.repository.custom.AttendanceRepositoryCustom;
 import com.yoo.lms.searchCondition.AtSearchCondition;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,12 +22,14 @@ import static com.yoo.lms.domain.QStudent.*;
 import static com.yoo.lms.domain.QStudentCourse.*;
 
 @Getter
+@Slf4j
 public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
 
 
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
+    @Autowired
     public AttendanceRepositoryImpl(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
@@ -39,11 +42,11 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
      * @return
      */
     @Override
-    public List<AttendanceListDto> findStudentAttendList(Long courseId) {
+    public List<AttendanceCountDto> findStudentAttendList(Long courseId) {
 
-        List<AttendanceListDto> attendanceListDtos =
+        List<AttendanceCountDto> attendanceCountDtos =
                 queryFactory
-                .select(new QAttendanceListDto(
+                .select(new QAttendanceCountDto(
                         studentCourse.student.id,
                         studentCourse.student.name,
                         studentCourse.student.birthDate))
@@ -53,24 +56,24 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
                 .orderBy(studentCourse.student.name.asc())
                 .fetch();
 
-        for (AttendanceListDto attendanceListDto : attendanceListDtos) {
+        for (AttendanceCountDto attendanceCountDto : attendanceCountDtos) {
 
             long numAttendance = countStudentAttendance(courseId,
-                    attendanceListDto.getStudentId(),
+                    attendanceCountDto.getStudentId(),
                     AttendanceType.ATTENDANCE);
 
             long numAbsence = countStudentAttendance(courseId,
-                    attendanceListDto.getStudentId(),
+                    attendanceCountDto.getStudentId(),
                     AttendanceType.ABSENCE);
 
             long numLateness = countStudentAttendance(courseId,
-                    attendanceListDto.getStudentId(),
+                    attendanceCountDto.getStudentId(),
                     AttendanceType.LATENESS);
 
-            attendanceListDto.initNumAttendanceState(numAttendance, numAbsence, numLateness);
+            attendanceCountDto.initNumAttendanceState(numAttendance, numAbsence, numLateness);
         }
-        
-        return attendanceListDtos;
+
+        return attendanceCountDtos;
     }
 
 
@@ -97,18 +100,17 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
     }
 
 
-
     /**
      * 해당 과목 수업한 모든 날짜에 대한 출석 상태(출석 / 결석 / 지각) count
      * @param atSearchCondition(courseId, startDate, endDate)
      * @return
      */
     @Override
-    public List<AttendanceListDto> searchCourseAttendList(AtSearchCondition atSearchCondition) {
+    public List<AttendanceCountDto> searchCourseAttendList(AtSearchCondition atSearchCondition) {
 
-        List<AttendanceListDto> attendanceListDtos =
+        List<AttendanceCountDto> attendanceCountDtos =
                 queryFactory
-                .select(new QAttendanceListDto(attendance.checkedDate))
+                .select(new QAttendanceCountDto(attendance.checkedDate))
                 .from(attendance)
                 .where(
                         attendance.course.id.eq(atSearchCondition.getCourseId()),
@@ -118,27 +120,27 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
                 .orderBy(attendance.checkedDate.desc())
                 .fetch();
 
-        for (AttendanceListDto attendanceListDto : attendanceListDtos) {
+        for (AttendanceCountDto attendanceCountDto : attendanceCountDtos) {
 
             long numAttendance = countCourseAttendance(
                     atSearchCondition.getCourseId(),
-                    attendanceListDto.getCheckedDate(),
+                    attendanceCountDto.getCheckedDate(),
                     AttendanceType.ATTENDANCE);
 
             long numAbsence = countCourseAttendance(
                     atSearchCondition.getCourseId(),
-                    attendanceListDto.getCheckedDate(),
+                    attendanceCountDto.getCheckedDate(),
                     AttendanceType.ABSENCE);
 
             long numLateness = countCourseAttendance(
                     atSearchCondition.getCourseId(),
-                    attendanceListDto.getCheckedDate(),
+                    attendanceCountDto.getCheckedDate(),
                     AttendanceType.LATENESS);
 
-            attendanceListDto.initNumAttendanceState(numAttendance, numAbsence, numLateness);
+            attendanceCountDto.initNumAttendanceState(numAttendance, numAbsence, numLateness);
         }
 
-        return attendanceListDtos;
+        return attendanceCountDtos;
     }
 
     @Override
@@ -162,10 +164,11 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
      * @return
      */
     @Override
-    public List<AttendanceListDto> searchUpdateList(Long courseId, LocalDateTime checkedDate) {
+    public List<AttendanceCountDto> searchUpdateList(Long courseId, LocalDateTime checkedDate) {
 
         return queryFactory
-                .select(new QAttendanceListDto(
+//                .select(new QAttendanceListDto(
+                .select(new QAttendanceCountDto(
                         attendance.id,
                         attendance.student.name,
                         attendance.student.birthDate,
@@ -180,6 +183,12 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
                 .orderBy(attendance.student.name.asc())
                 .fetch();
     }
+
+    /**
+     * 본인 출석 검색 용
+     * @param atSearchCondition
+     * @return
+     */
 
     @Override
     public List<Attendance> searchMyAttendances(AtSearchCondition atSearchCondition) {

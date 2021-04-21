@@ -5,8 +5,11 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-@Setter
+/**
+ * 요청으로 받은 AttendanceTypeDto를 리스트로 한 번에 바인딩하기 위한 용도
+ */
+
+@Getter @Setter
 public class AttendanceTypeListDto {
 
     private List<AttendanceTypeDto> states;

@@ -4,18 +4,14 @@ import com.yoo.lms.domain.*;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.repository.*;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
-import com.yoo.lms.searchType.BoardSearchCriteria;
-import com.yoo.lms.tools.PageMaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -32,7 +28,7 @@ public class CourseBoardService {
     private final CourseMaterialRepository courseMaterialRepository;
     private final CourseRepository courseRepository;
     private final ViewRepository viewRepository;
-    private final String baseDirectory = "C:\\Users\\yoo-pc\\Desktop\\uploadedDirectory\\courseBoard\\";;
+    private final String baseDirectory = "C:\\Users\\yoo-pc\\Desktop\\uploadedDirectory\\courseBoard\\";
 
 
     @Transactional
@@ -47,9 +43,6 @@ public class CourseBoardService {
         CourseBoard courseBoard = new CourseBoard(course, title, content, member);
 
         courseBoardRepository.save(courseBoard);
-
-
-        // 파일이 없으면 게시물만 save하고 종료
 
         if(files[0].getOriginalFilename().equals(""))
             return;
@@ -71,6 +64,15 @@ public class CourseBoardService {
         }
 
     }
+
+    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int page, int size) {
+        return courseBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(page, size));
+    }
+
+    public CourseBoard findPostingById(Long boardId) {
+        return courseBoardRepository.findByIdFetchMember(boardId);
+    }
+
 
     @Transactional
     public void addViewCount(Long boardId){
@@ -97,8 +99,6 @@ public class CourseBoardService {
             findCourseBoard = courseBoardOptional.get();
 
         findCourseBoard.updateInfo(title, content);
-
-        // 파일이 없으면 게시물만 update하고 종료
 
         if(files[0].getOriginalFilename().equals(""))
             return;
@@ -133,11 +133,6 @@ public class CourseBoardService {
 
     }
 
-    public CourseBoard findPostingById(Long boardId) {
-
-        return courseBoardRepository.findByIdFetchMember(boardId);
-
-    }
 
     @Transactional
     public void deleteByBoardId(Long boardId) {
@@ -165,9 +160,6 @@ public class CourseBoardService {
         courseBoardRepository.deleteById(boardId);
     }
 
-    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int page, int size) {
 
-        return courseBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(page, size));
-    }
 
 }

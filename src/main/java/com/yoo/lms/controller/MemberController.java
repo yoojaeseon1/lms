@@ -36,9 +36,29 @@ public class MemberController {
     private final AttendanceService attendanceService;
 
 
+    @GetMapping("/courses")
+    public String listAppliedCourse(@RequestParam(required = false) AcceptType acceptType,
+                                    Model model,
+                                    HttpSession session) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        List<Course> courses = courseService.findByTeacherIdAndAcceptType(loginMember.getId(), acceptType);
+
+        model.addAttribute("courses", courses);
+
+        return "/teacher/courseEnrolls";
+    }
+
+
+    @GetMapping("/teacher-application")
+    public String showTeacherAcceptance() {
+
+        return "/teacher/application";
+    }
+
     @GetMapping("/password-check-form")
     public String checkPasswordForm(){
-
 
         return "/myPage/passwordCheckForm";
     }
@@ -61,42 +81,7 @@ public class MemberController {
         return "fail";
     }
 
-    @GetMapping("/information")
-    public String updateInfoForm(HttpServletRequest request,
-                                   Model model){
 
-        HttpSession session = request.getSession();
-
-        Member loginMember = (Member)session.getAttribute("loginMember");
-
-        model.addAttribute("member", loginMember);
-
-
-        return "/myPage/memberInfoUpdateForm";
-
-    }
-
-    @PutMapping("/infomation")
-    @ResponseBody
-    public ResponseEntity<String> updateInfo(@RequestBody Member member,
-                                             HttpServletRequest request){
-
-        HttpSession session = request.getSession();
-
-        Member loginMember = (Member)session.getAttribute("loginMember");
-
-        memberService.updateInfo(loginMember.getId(), member);
-
-        session.removeAttribute("loginMember");
-
-        if(loginMember.getMemberType() == MemberType.STUDENT) {
-            session.setAttribute("loginMember", studentService.findById(loginMember.getId()));
-        } else {
-            session.setAttribute("loginMember", teacherService.findById(loginMember.getId()));
-        }
-
-        return new ResponseEntity<>("ok", HttpStatus.OK);
-    }
 
     @GetMapping("/my-attendances")
     public String checkMyAttendance(@RequestParam(required = false)
@@ -132,27 +117,6 @@ public class MemberController {
         return "/myPage/myAttendances";
     }
 
-    @GetMapping("/courses")
-    public String listAppliedCourse(@RequestParam(required = false) AcceptType acceptType,
-                                    Model model,
-                                    HttpSession session) {
-
-        Member loginMember = (Member) session.getAttribute("loginMember");
-
-        List<Course> courses = courseService.findByTeacherIdAndAcceptType(loginMember.getId(), acceptType);
-
-        model.addAttribute("courses", courses);
-
-        return "/teacher/courseEnrolls";
-    }
-
-
-    @GetMapping("/teacher-application")
-    public String showTeacherAcceptance() {
-
-        return "/teacher/application";
-    }
-
     @PostMapping("/teacher-application")
     public String requestPermitTeacher(HttpSession session) {
 
@@ -166,6 +130,42 @@ public class MemberController {
         return "redirect:/teacher-application";
     }
 
+    @GetMapping("/information")
+    public String updateInfoForm(HttpServletRequest request,
+                                 Model model){
+
+        HttpSession session = request.getSession();
+
+        Member loginMember = (Member)session.getAttribute("loginMember");
+
+        model.addAttribute("member", loginMember);
+
+
+        return "/myPage/memberInfoUpdateForm";
+
+    }
+
+    @PutMapping("/infomation")
+    @ResponseBody
+    public ResponseEntity<String> updateInfo(@RequestBody Member member,
+                                             HttpServletRequest request){
+
+        HttpSession session = request.getSession();
+
+        Member loginMember = (Member)session.getAttribute("loginMember");
+
+        memberService.updateInfo(loginMember.getId(), member);
+
+        session.removeAttribute("loginMember");
+
+        if(loginMember.getMemberType() == MemberType.STUDENT) {
+            session.setAttribute("loginMember", studentService.findById(loginMember.getId()));
+        } else {
+            session.setAttribute("loginMember", teacherService.findById(loginMember.getId()));
+        }
+
+        return new ResponseEntity<>("ok", HttpStatus.OK);
+    }
 
 
 }

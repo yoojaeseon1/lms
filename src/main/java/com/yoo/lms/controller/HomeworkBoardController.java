@@ -34,6 +34,32 @@ public class HomeworkBoardController {
     private final BoardReplyService boardReplyService;
     private final CourseMaterialService courseMaterialService;
 
+
+    @GetMapping("/{courseId}/homework-board/new")
+    public String createHomeworkForm(Model model){
+
+        model.addAttribute("canUploadFile", true);
+        model.addAttribute("menuTitle", "과제 공지 작성");
+
+        return "board/boardCreateForm";
+    }
+
+    @PostMapping("/{courseId}/homework-board/new")
+    public String createHomework(@PathVariable Long courseId,
+                                 String title,
+                                 String content,
+                                 MultipartFile[] files,
+                                 HttpSession session
+    ) throws IOException {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        homeworkBoardService.saveHomework(files, courseId, title,content,loginMember);
+
+        return "redirect:/courses/"+courseId+"/homework-board";
+    }
+
+
     @GetMapping("/{courseId}/homework-board")
     public String listHomework(@PathVariable Long courseId,
                                @RequestParam(defaultValue = "1") int currentPage,
@@ -44,13 +70,9 @@ public class HomeworkBoardController {
         BoardSearchCondition condition = new BoardSearchCondition(courseId);
 
 
-        // searchCriteria.keyword가 빈칸으로 넘어가면 "" 빈문자열이 되기 때문에 동적 쿼리를 위해 null로 다시 초기화
-        // 최초 페이지 이동시에는 null 이므로 null 체크 필요
-
         if(searchCriteria.getKeyword() == null && searchCriteria.getSearchType() == null)
             searchCriteria = new BoardSearchCriteria("","");
 
-        // searchType, keyword가 null이면 switch문 실행 불가
         condition.initCondition(searchCriteria);
 
         Page<BoardListDto> page = null;
@@ -61,7 +83,7 @@ public class HomeworkBoardController {
         else
             page = homeworkBoardService.searchPosting(condition, false, currentPage - 1, 10);
 
-        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements());
+        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements(),10,10);
 
         Member loginMember = (Member)session.getAttribute("loginMember");
 
@@ -89,7 +111,7 @@ public class HomeworkBoardController {
 
 
         Member loginMember = (Member) session.getAttribute("loginMember");
-        HomeworkBoard homeworkBoard = homeworkBoardService.findPostingById(boardId, false);
+        HomeworkBoard homeworkBoard = homeworkBoardService.findPostingById(boardId);
         BoardReply boardReply = boardReplyService.findByBoardIdAndStudentId(boardId, loginMember.getId());
 
         List<CourseMaterial> submitMaterials = null;
@@ -123,36 +145,12 @@ public class HomeworkBoardController {
 
     }
 
-    @GetMapping("/{courseId}/homework-board/new")
-    public String createHomeworkForm(Model model){
-
-        model.addAttribute("canUploadFile", true);
-        model.addAttribute("menuTitle", "과제 공지 작성");
-
-        return "board/boardCreateForm";
-    }
-
-    @PostMapping("/{courseId}/homework-board/new")
-    public String createHomework(@PathVariable Long courseId,
-                                 String title,
-                                 String content,
-                                 MultipartFile[] files,
-                                 HttpSession session
-                                 ) throws IOException {
-
-        Member loginMember = (Member) session.getAttribute("loginMember");
-
-        homeworkBoardService.saveHomework(files, courseId, title,content,loginMember);
-
-        return "redirect:/courses/"+courseId+"/homework-board";
-    }
-
 
     @GetMapping("/{courseId}/homework-board/{boardId}/update")
     public String updateHomeworkForm(@PathVariable Long boardId,
                                      Model model) {
 
-        HomeworkBoard homeworkBoard = homeworkBoardService.findPostingById(boardId, false);
+        HomeworkBoard homeworkBoard = homeworkBoardService.findPostingById(boardId);
         List<CourseMaterial> courseMaterials = courseMaterialService.findByBoardId(boardId);
 
 
@@ -179,8 +177,7 @@ public class HomeworkBoardController {
 
     @ResponseBody
     @DeleteMapping("/{courseId}/homework-board/{boardId}")
-    public ResponseEntity<String> deleteHomework(@PathVariable Long boardId,
-                                                @PathVariable Long courseId) {
+    public ResponseEntity<String> deleteHomework(@PathVariable Long boardId) {
 
         homeworkBoardService.deleteByBoardId(boardId);
 

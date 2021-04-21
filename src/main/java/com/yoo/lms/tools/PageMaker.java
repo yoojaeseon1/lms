@@ -1,42 +1,43 @@
 package com.yoo.lms.tools;
 
-import com.yoo.lms.searchType.BoardSearchCriteria;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 
 @Getter
 @NoArgsConstructor
 @Component
 public class PageMaker {
-
+    
     private int currentPage;
     private int startPage;
     private int endPage;
     private boolean prev;
     private boolean next;
-    private long numTotalContent;
+    private long numTotalElement;
     private int numTotalPage;
+    private int pageSize;
+    private int numDisplayPage;
+    
 
-    private int pageSize; // 한 페이지 당 데이터 개수
-    private int numDisplayPage; // 페이지 번호의 개수(밑에 10개의 페이지를 이동가능한 버튼의 개수)
+    /**
+     *
+     * @param currentPage 현재 페이지
+     * @param numTotalElement 전체 데이터 개수
+     * @param pageSize 페이지 당 데이터 개수
+     * @param numDisplayPage 하단 페이지 버튼 개수
+     */
 
-    public PageMaker(int currentPage, long totalCount) {
+    public PageMaker(int currentPage, long numTotalElement, int pageSize, int numDisplayPage) {
         this.currentPage = currentPage;
-        this.numTotalContent = totalCount;
-        this.pageSize = 10;
-        this.numDisplayPage = 10;
-        this.numTotalPage = (int) (Math.ceil(totalCount / (double) pageSize));
-        calcData();
+        this.numTotalElement = numTotalElement;
+        this.pageSize = pageSize;
+        this.numDisplayPage = numDisplayPage;
+        this.numTotalPage = (int) (Math.ceil(numTotalElement / (double) pageSize));
+        calculatePage();
     }
 
-    private void calcData() {
+    private void calculatePage() {
 
         endPage = (int) (Math.ceil(currentPage / (double) numDisplayPage)) * numDisplayPage;
 
@@ -45,9 +46,8 @@ public class PageMaker {
         if (endPage > numTotalPage)
             endPage = numTotalPage;
 
-        prev = startPage == 1 ? false : true;
-
-        next = endPage * pageSize >= numTotalContent ? false : true;
+        prev = startPage != 1;
+        next = (endPage * pageSize) < numTotalElement;
     }
 
 }

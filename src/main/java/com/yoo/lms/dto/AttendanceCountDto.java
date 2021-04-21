@@ -1,8 +1,6 @@
 package com.yoo.lms.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.yoo.lms.domain.Member;
-import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.enumType.AttendanceType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,34 +10,22 @@ import java.time.LocalDateTime;
 
 
 /**
- * 강사의 출석 등록 / 수정 용
+ * 강사의 출석 등록 / 수정 용 목록
  */
 
 @Getter
 @NoArgsConstructor
-public class AttendanceListDto {
+public class AttendanceCountDto {
 
     private Long attendanceId;
-
-    // 기존 출석 정보
     private LocalDateTime checkedDate;
-
-    // 출석체크 목록(등록용)
     private String studentId;
     private String studentName;
     private LocalDate birthDate;
-
-    // 기존 출석정보(해당 날짜 전체 count)
-    // 출석체크 목록(해당 학생의 count)
     private long numAttendance;
     private long numAbsence;
     private long numLateness;
-    
-    // 출석체크 목록(수정용)
     private AttendanceType attendanceType;
-
-
-    // 생성자들 여기서는 안쓰지만 Q생성자에서 쓰기 때문에 있어야 한다.
 
     /**
      * 출석 등록
@@ -48,7 +34,7 @@ public class AttendanceListDto {
      * @param birthDate view 출력
      */
     @QueryProjection
-    public AttendanceListDto(String studentId, String studentName, LocalDate birthDate) {
+    public AttendanceCountDto(String studentId, String studentName, LocalDate birthDate) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.birthDate = birthDate;
@@ -62,7 +48,7 @@ public class AttendanceListDto {
      * @param attendanceType view 출력 + controller 전송
      */
     @QueryProjection
-    public AttendanceListDto(Long attendanceId,String studentName, LocalDate birthDate, AttendanceType attendanceType) {
+    public AttendanceCountDto(Long attendanceId, String studentName, LocalDate birthDate, AttendanceType attendanceType) {
         this.attendanceId = attendanceId;
         this.studentId = studentId;
         this.studentName = studentName;
@@ -71,7 +57,7 @@ public class AttendanceListDto {
     }
 
     @QueryProjection
-    public AttendanceListDto(LocalDateTime checkedDate) {
+    public AttendanceCountDto(LocalDateTime checkedDate) {
         this.checkedDate = checkedDate;
     }
 
@@ -81,10 +67,6 @@ public class AttendanceListDto {
         this.numAbsence = numAbsence;
         this.numLateness = numLateness;
 
-    }
-
-    public String changeTypeToString() {
-        return this.getAttendanceType().toString();
     }
 
 }

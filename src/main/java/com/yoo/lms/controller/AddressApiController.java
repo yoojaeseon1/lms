@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,13 +14,13 @@ import javax.servlet.http.HttpServletRequest;
 public class AddressApiController {
 
     @GetMapping("/juso-popup")
-    public String jusoPopup(){
+    public String jusoPopup(@RequestParam String confmKey){
 
         return "/jusoPopup";
     }
 
     @PostMapping("/juso-popup")
-    public String jusoPopupPost(HttpServletRequest request, Model model){
+    public String jusoPopup(HttpServletRequest request, Model model){
 
         String roadFullAddr = request.getParameter("roadFullAddr");
         String inputYn = request.getParameter("inputYn");
@@ -27,7 +28,6 @@ public class AddressApiController {
         String roadAddrPart1 = request.getParameter("roadAddrPart1");
         String addrDetail = request.getParameter("addrDetail");
         String roadAddrPart2 = request.getParameter("roadAddrPart2");
-
 
         model.addAttribute("roadFullAddr", roadFullAddr);
         model.addAttribute("inputYn", inputYn);

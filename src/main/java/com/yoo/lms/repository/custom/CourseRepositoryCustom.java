@@ -2,11 +2,8 @@ package com.yoo.lms.repository.custom;
 
 import com.yoo.lms.domain.Course;
 import com.yoo.lms.domain.enumType.AcceptType;
-import com.yoo.lms.domain.enumType.CourseAcceptType;
 import com.yoo.lms.dto.CourseListDto;
 import com.yoo.lms.searchCondition.CourseSearchCondition;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
