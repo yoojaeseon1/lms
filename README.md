@@ -2,6 +2,13 @@
 
 ### 강사 / 학생 / 관리자의 입장에서 학원 이용 / 관리에 필요한 서비스를 제공
 
+### 기술 스택
+
+- Back-End : Java(Spring Boot)
+- Template Engine : Thymeleaf
+- DBMS : MySQL
+- Persistence Framework : JPA(Spring Data JPA, Querydsl)
+
 ### 기능
 
 #### 공통
