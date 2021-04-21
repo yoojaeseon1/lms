@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+  <title>Ramayana - HTML5 Template</title>
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/assets/css/fontawesome.css">
+  <link rel="stylesheet" href="/assets/css/templatemo-style.css">
+  <link rel="stylesheet" href="/assets/css/owl.css">
+
+</head>
+
+<body class="is-preload">
+
+<div id="wrapper">
+  <div id="main">
+    <div class="inner">
+      <header id="header">
+        <div class="logo">
+          <a href="index.html">LMS System</a>
+        </div>
+      </header>
+
+      <section class="tables">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="section-heading">
+                <h2>지난 출석 확인</h2>
+                <form action="/myPage/my-attendances" method="get">
+                  <table>
+                    <tr>
+                      <th>
+                        <select name="courseId">
+                          <div th:each="myCourseDto : ${myCourseDtos}">
+                            <option th:text="${myCourseDto.courseName}" th:value="${myCourseDto.courseId}"></option>
+                          </div>
+                        </select>
+                      </th>
+                      <th>
+                        시작일
+                          <input name="startDate" type="date">
+                      </th>
+                      <th>
+                        종료일
+                        <input name="endDate" type="date">
+                      </th>
+                      <button type="submit">검색</button>
+                    </tr>
+                  </table>
+                </form>
+              </div>
+              <div class="enroll-course-table">
+                <table id="courseListTable">
+                  <thead>
+                    <tr>
+                      <th>날짜</th>
+                      <th>출석 상태</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  <tr th:each="attendance : ${attendances}">
+                      <td th:text="${#temporals.format(attendance.checkedDate, 'yyyy-MM-dd HH:mm')}"></td>
+                      <div th:switch="${attendance.attendanceType}">
+                          <td th:case="${T(com.yoo.lms.domain.enumType.AttendanceType).ATTENDANCE}">출석</td>
+                          <td th:case="${T(com.yoo.lms.domain.enumType.AttendanceType).ABSENCE}">결석</td>
+                          <td th:case="${T(com.yoo.lms.domain.enumType.AttendanceType).LATENESS}">지각</td>
+                      </div>
+
+
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="sidebar" th:include="layout/sideBar.html">
+
+  </div>
+</div>
+
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/transition.js"></script>
+<script src="/assets/js/owl-carousel.js"></script>
+<script src="/assets/js/custom.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+  <title>Ramayana - HTML5 Template</title>
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/fontawesome.css">
+  <link rel="stylesheet" href="/assets/css/templatemo-style.css">
+  <link rel="stylesheet" href="/assets/css/owl.css">
+
+</head>
+
+<body class="is-preload">
+
+<div id="wrapper">
+  <div id="main">
+    <div class="inner">
+      <header id="header">
+        <div class="logo">
+          <a href="index.html">LMS System</a>
+        </div>
+      </header>
+
+      <section class="tables">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="section-heading">
+                <h2>과제 제출 목록</h2>
+                <h2 th:text="|과제명 : ${title}|"></h2>
+              </div>
+              <div class="enroll-course-table">
+                <table id="courseListTable">
+                  <thead>
+                  <tr>
+                    <th>제출자명</th>
+                    <th>제출일</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                  <tr th:each="submit : ${submits}">
+                    <td>
+                      <a th:text="${submit.createdBy.name}" th:href="@{./submits/{boardReplyId}(boardReplyId=${submit.id})}"></a>
+                    </td>
+                    <td th:text="${submit.createdDate}"></td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="sidebar" th:include="layout/sideBar.html">
+
+  </div>
+</div>
+
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/transition.js"></script>
+<script src="/assets/js/owl-carousel.js"></script>
+<script src="/assets/js/custom.js"></script>
+</body>
+</html>

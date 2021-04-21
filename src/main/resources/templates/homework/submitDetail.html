@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+    <title>Ramayana - HTML5 Template</title>
+
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/assets/css/templatemo-style.css">
+    <link rel="stylesheet" href="/assets/css/owl.css">
+
+</head>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+
+    </script>
+</th:block>
+
+<body class="is-preload">
+
+<div id="wrapper">
+    <div id="main">
+        <div class="inner">
+            <header id="header">
+                <div class="logo">
+                    <a href="index.html">LMS System</a>
+                </div>
+            </header>
+                제출된 과제
+                    <table class="table table-hover">
+                        <tr>
+                            <th>제목</th>
+                            <td th:text="${boardSubmit.title}"></td>
+                        </tr>
+                        <tr>
+                            <th>작성자</th>
+                            <td th:text="${boardSubmit.createdBy.id}"></td>
+                        </tr>
+                        <tr>
+                            <th>작성일</th>
+                            <td th:text="${#temporals.format(boardSubmit.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
+                        </tr>
+                        <tr>
+                            <th>내용</th>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <div class="board-content" th:text="${boardSubmit.content}"></div>
+                    <div>
+                        <table class="table-hover">
+                            <thead>
+                            <tr>
+                                <th>첨부 파일</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <ul th:each="submitMaterial: ${submitMaterials}">
+                                    <a th:href="@{/download(filePath=${submitMaterial.getDirectory()},fileName=${submitMaterial.filename})}"
+                                       th:text="${#strings.substring(submitMaterial.getFilename(), #strings.indexOf(submitMaterial.filename, '_')+1)}"></a>
+                                </ul>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <button onclick="location.href='./'">뒤로</button>
+                    </div>
+        </div>
+    </div>
+
+    <div id="sidebar" th:include="layout/sideBar.html"></div>
+
+</div>
+
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/transition.js"></script>
+<script src="/assets/js/owl-carousel.js"></script>
+<script src="/assets/js/custom.js"></script>
+</body>
+
+
+</body>
+
+</html>

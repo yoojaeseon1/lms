@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+
+  <title>Ramayana - HTML5 Template</title>
+
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/assets/css/fontawesome.css">
+  <link rel="stylesheet" href="/assets/css/templatemo-style.css">
+  <link rel="stylesheet" href="/assets/css/owl.css">
+
+</head>
+
+<body class="is-preload">
+
+<div id="wrapper">
+
+  <div id="main">
+    <div class="inner">
+      <header id="header">
+        <div class="logo">
+          <a href="index.html">LMS System</a>
+        </div>
+      </header>
+      <th:block layout:fragment="script">
+        <script type="text/javascript">
+
+
+          function changeAcceptType(teacherId, acceptType){
+
+            let data = {
+              teacherId : teacherId,
+              acceptType : acceptType
+            };
+
+            let wantsChange = false;
+
+            if(acceptType == 'ACCEPTED')
+              wantsChange = confirm("정말 허가 하시겠습니까?");
+            else
+              wantsChange = confirm("정말 거절 하시겠습니까?");
+
+            if(wantsChange) {
+
+              $.ajax({
+                type: "put",
+                url: "/admin/teacher-applications",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                success: function(data) {
+                  alert("정상적으로 변경되었습니다.");
+                  location.href="/admin/teacher-applications";
+                }
+              });
+
+
+            }
+
+          }
+
+        </script>
+      </th:block>
+
+      <section class="tables">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12"><div class="section-heading">
+              <h2>강사 등록 허가 현황</h2>
+              <form action="/admin//teacher-applications" method="get">
+                <table>
+                  <tr>
+                    <th>
+                      검색 조건
+                      <select name="acceptType">
+                        <option th:value="${null}">전체</option>
+                        <option th:value="${T(com.yoo.lms.domain.enumType.AcceptType).ACCEPTED}">허가</option>
+                        <option th:value="${T(com.yoo.lms.domain.enumType.AcceptType).WAITING}">심사중</option>
+                        <option th:value="${T(com.yoo.lms.domain.enumType.AcceptType).REJECTED}">거절</option>
+                      </select>
+                    </th>
+                    <div>강사명<input th:name="name"/></div>
+                    <div>강사 아이디<input th:name="id"/></div>
+                    <button type="submit">검색</button>
+                  </tr>
+                </table>
+              </form>
+            </div>
+              <div class="enroll-course-table">
+                <table id="courseListTable">
+                  <thead>
+                    <tr>
+                      <th>강사명</th>
+                      <th>강사 아이디</th>
+                      <th>처리 현황</th>
+                      <th>상태 변경</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr th:each="teacher : ${teachers}">
+                      <td th:text="${teacher.name}"></td>
+                      <td th:text="${teacher.id}"></td>
+                      <div th:switch="${teacher.acceptType}">
+                        <td th:case="${T(com.yoo.lms.domain.enumType.AcceptType).ACCEPTED}">허가</td>
+                        <td th:case="${T(com.yoo.lms.domain.enumType.AcceptType).REJECTED}">거절</td>
+                        <td th:case="${T(com.yoo.lms.domain.enumType.AcceptType).WAITING}">심사중</td>
+                      </div>
+                      <td th:data-teacherId="|${teacher.id}|">
+                        <button th:if="${teacher.acceptType != T(com.yoo.lms.domain.enumType.AcceptType).ACCEPTED}"
+                                th:onclick="changeAcceptType([[${teacher.id}]], 'ACCEPTED')">허가</button>
+                        <button th:if="${teacher.acceptType != T(com.yoo.lms.domain.enumType.AcceptType).REJECTED}"
+                                th:onclick="changeAcceptType([[${teacher.id}]], 'REJECTED')">거절</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="sidebar" th:include="layout/sideBar.html">
+
+  </div>
+</div>
+
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script src="/assets/js/browser.min.js"></script>
+<script src="/assets/js/breakpoints.min.js"></script>
+<script src="/assets/js/transition.js"></script>
+<script src="/assets/js/owl-carousel.js"></script>
+<script src="/assets/js/custom.js"></script>
+</body>
+</html>
