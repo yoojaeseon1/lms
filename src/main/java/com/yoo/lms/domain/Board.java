@@ -18,11 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 public abstract class Board{
 
-    public Board(String title, String content) {
-        this.title = title;
-        this.content = content;
-    }
-
     @Id @GeneratedValue
     @Column(name="board_id")
     private Long id;
@@ -30,20 +25,32 @@ public abstract class Board{
     @OneToMany(mappedBy = "board")
     private List<CourseMaterial> courseMaterials = new ArrayList<>();
 
-    private int viewCount;
+    @OneToMany(mappedBy = "board")
+    private List<View> views = new ArrayList<>();
+
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime createdDate;
+
+    @LastModifiedDate
+    private LocalDateTime lastModifiedDate;
+
     private String title;
     private String content;
 
-    public void updateInfo(Board updated) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="content_member_id")
+    private Member createdBy;
 
-        if(!this.title.equals(updated.getTitle())){
-            this.title = updated.getTitle();
-        }
+    public Board(String title, String content, Member createdBy) {
+        this.title = title;
+        this.content = content;
+        this.createdBy = createdBy;
+    }
 
-        if(!this.content.equals(updated.getContent())) {
-            this.content = updated.getContent();
-        }
-
+    public void updateInfo(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
 }

@@ -10,6 +10,8 @@ public interface MemberRepositoryCustom {
 
     Member searchMember(MemberSearchCondition searchCondition);
 
-    Optional<MemberType> searchMemberType(MemberSearchCondition searchCondition);
+    boolean isExistId(String id);
+
+    MemberType searchMemberType(MemberSearchCondition searchCondition);
 
 }

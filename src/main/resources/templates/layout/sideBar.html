@@ -1,16 +1,17 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:http="http://www.w3.org/1999/xhtml">
     <div class="inner">
 
-        <!-- Search Box -->
-        <!-- 수강 / 강의 중인 과목 selectBox 넣자 -->
         <section id="search" class="alt">
             <form method="get" action="#">
                 <li>
-                    <span class="opener">드롭다운</span>
                     <ul>
-                        <li><a href="#">First Sub Menu</a></li>
-                        <li><a href="#">Second Sub Menu</a></li>
-                        <li><a href="#">Third Sub Menu</a></li>
+                        <li th:if="${session.loginMember == null}"><a href="/login-form">로그인</a></li>
+                        <li th:if="${session.loginMember != null}"><a href="/logout">로그아웃</a></li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <a href="/">메인 페이지</a>
+                        </li>
                     </ul>
                 </li>
             </form>
@@ -19,70 +20,87 @@
         <nav id="menu">
             <ul th:if="${session.memberType == null}">
                 <div>
-                    <li><a href="/loginForm">로그인</a></li>
-                    <li><a href="simple_page.html">공지사항</a></li>
+                    <li><a href="/inquiry-board">문의 게시판</a></li>
                     <li><a href="shortcodes.html">과목 검색</a></li>
                 </div>
             </ul>
             <ul th:if="${session.memberType == T(com.yoo.lms.domain.enumType.MemberType).STUDENT}">
                 <div th:if="${session.sideBarType} == 'home'">
-                    <li><a href="simple_page.html">공지사항</a></li>
+                    <li><a href="/inquiry-board">문의 게시판</a></li>
                     <li>
                         <span class="opener">수강 과목</span>
                         <ul>
                             <li th:each="course : ${session.courseListDtos}">
-                                <a th:href="@{/course/{courseId}(courseId=${course.id})}" th:text="${course.name}"></a>
+                                <a th:href="@{/courses/{courseId}(courseId=${course.id})}" th:text="${course.name}"></a>
                             </li>
                         </ul>
                     </li>
-                    <li><a href="shortcodes.html">마이페이지</a></li>
+                    <li><a href="/student/enroll-courses">수강 신청</a></li>
+                    <li>
+                        <span class="opener">마이페이지</span>
+                        <ul>
+                            <li>
+                                <a href="/myPage/password-check-form">개인 정보 수정</a>
+                                <a href="/myPage/my-attendances">지난 출석 확인</a>
+                            </li>
+                        </ul>
+                    </li>
                 </div>
                 <div th:if="${session.sideBarType} == 'course'">
-                    <!--<li><a th:href="@{__${#httpServletRequest.requestURI}__/courseBoard(page=1,searchType='',keyword='')}">공지사항zz</a></li>-->
-<!--                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">공지사항</a></li>
-                    <li><a href="simple_page.html">강의 자료</a></li>
-                    <li><a th:href="@{/course/{courseId}/question(courseId=${courseId},page=1,searchType='',keyword='')}">질문 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId},page=1,searchType='',keyword='')}">과제 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">출석</a></li>-->
-                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId})}">공지사항</a></li>
-                    <li><a href="simple_page.html">강의 자료</a></li>
-                    <li><a th:href="@{/course/{courseId}/question(courseId=${courseId})}">질문 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId})}">과제 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId})}">출석</a></li>
+                    <li><a th:href="@{/courses/{courseId}/course-board(courseId=${session.courseId})}">공지사항</a></li>
+                    <li><a th:href="@{/courses/{courseId}/question-board(courseId=${session.courseId})}">질문 게시판</a></li>
+                    <li><a th:href="@{/courses/{courseId}/homework-board(courseId=${session.courseId})}">과제 게시판</a></li>
+                    <li><a th:href="@{/courses/{courseId}/course-board(courseId=${session.courseId})}">출석</a></li>
                 </div>
             </ul>
 
-            <ul th:if="${session.memberType == 'TEACHER'}">
+            <ul th:if="${session.memberType == T(com.yoo.lms.domain.enumType.MemberType).TEACHER}">
                 <div th:if="${session.sideBarType} == 'home'">
-                    <li><a href="index.html">선생</a></li>
+                    <li><a href="/inquiry-board">문의 게시판</a></li>
                     <li>
-                        <span class="opener">강의 과목</span>
-                        <ul >
+                        <span th:if="${session.acceptType == T(com.yoo.lms.domain.enumType.AcceptType).ACCEPTED}" class="opener">강의 과목</span>
+                        <ul>
                             <li th:each="course : ${session.courseListDtos}">
-                                <a th:href="@{/course/{courseId}(courseId=${course.id})}" th:text="${course.name}"></a>
+                                <a th:href="@{/courses/{courseId}(courseId=${course.id})}" th:text="${course.name}"></a>
                             </li>
                         </ul>
                     </li>
-                    <li><a href="simple_page.html">공지사항</a></li>
-                    <li><a href="shortcodes.html">과목 검색</a></li>
+                    <li>
+                        <span class="opener">마이페이지</span>
+                        <ul>
+                            <li>
+                                <a href="/myPage/password-check-form">개인 정보 변경</a>
+                                <a href="/myPage/courses">강의 등록 신청 현황</a>
+                                <a th:if="${session.acceptType != T(com.yoo.lms.domain.enumType.AcceptType).ACCEPTED}"
+                                   href="/myPage/teacher-application">강사 허가 신청 현황</a>
+                            </li>
+                        </ul>
+                    </li>
+
                 </div>
                 <div th:if="${session.sideBarType} == 'course'">
-<!--                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId},page=1,searchType='',keyword='')}">공지사항</a></li>
-                    <li><a href="simple_page.html">강의 자료</a></li>
-                    <li><a th:href="@{/course/{courseId}/question(courseId=${courseId},page=1,searchType='',keyword='')}">질문 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId},page=1,searchType='',keyword='')}">과제 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/attendance(courseId=${courseId},startDate='',endDate='')}">출석</a></li>-->
-                    <li><a th:href="@{/course/{courseId}/courseBoard(courseId=${courseId})}">공지사항</a></li>
-                    <li><a href="simple_page.html">강의 자료</a></li>
-                    <li><a th:href="@{/course/{courseId}/question(courseId=${courseId})}">질문 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/homework(courseId=${courseId})}">과제 게시판</a></li>
-                    <li><a th:href="@{/course/{courseId}/attendance(courseId=${courseId})}">출석</a></li>
+                    <li><a th:href="@{/courses/{courseId}/course-board(courseId=${session.courseId})}">공지사항</a></li>
+                    <li><a th:href="@{/courses/{courseId}/question-board(courseId=${session.courseId})}">질문 게시판</a></li>
+                    <li><a th:href="@{/courses/{courseId}/homework-board(courseId=${session.courseId})}">과제 게시판</a></li>
+                    <li><a th:href="@{/courses/{courseId}/attendance(courseId=${session.courseId})}">출석</a></li>
+                </div>
+            </ul>
+
+
+            <ul th:if="${session.memberType == T(com.yoo.lms.domain.enumType.MemberType).ADMIN}">
+                <div th:if="${session.sideBarType} == 'home'">
+                    <li><a href="/inquiry-board">문의 게시판</a></li>
+                    <li>
+                        <a href="/admin/course-apply">과목 신청 현황</a>
+                    </li>
+                    <li>
+                        <a href="/admin/teacher-applications">강사 신청 현황</a>
+                    </li>
                 </div>
             </ul>
         </nav>
 
 
-        <!-- Footer -->
         <footer id="footer">
             <p class="copyright">Copyright &copy; 2019 Company Name
                 <br>Designed by <a rel="nofollow" href="https://www.facebook.com/templatemo">Template Mo</a></p>
@@ -91,59 +109,3 @@
     </div>
 </html>
 
-
-<!-- Sidebar -->
-<!--
-<div id="sidebar">
-
-    <div class="inner">
-
-        &lt;!&ndash; Search Box &ndash;&gt;
-        &lt;!&ndash; 수강 / 강의 중인 과목 selectBox 넣자 &ndash;&gt;
-        <section id="search" class="alt">
-            <form method="get" action="#">
-                <li>
-                    <span class="opener">Dropdown One</span>
-                    <ul>
-                        <li><a href="#">First Sub Menu</a></li>
-                        <li><a href="#">Second Sub Menu</a></li>
-                        <li><a href="#">Third Sub Menu</a></li>
-                    </ul>
-                </li>
-            </form>
-        </section>
-
-        &lt;!&ndash; Menu &ndash;&gt;
-        <nav id="menu">
-            <ul>
-                <li><a href="index.html">Homepage</a></li>
-                <li><a href="simple_page.html">Simple Page</a></li>
-                <li><a href="shortcodes.html">Shortcodes</a></li>
-                <li>
-                    <span class="opener">Dropdown One</span>
-                    <ul>
-                        <li><a href="#">First Sub Menu</a></li>
-                        <li><a href="#">Second Sub Menu</a></li>
-                        <li><a href="#">Third Sub Menu</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <span class="opener">Dropdown Two</span>
-                    <ul>
-                        <li><a href="#">Sub Menu #1</a></li>
-                        <li><a href="#">Sub Menu #2</a></li>
-                        <li><a href="#">Sub Menu #3</a></li>
-                    </ul>
-                </li>
-                <li><a href="https://www.google.com">External Link</a></li>
-            </ul>
-        </nav>
-
-        &lt;!&ndash; Footer &ndash;&gt;
-        <footer id="footer">
-            <p class="copyright">Copyright &copy; 2019 Company Name
-                <br>Designed by <a rel="nofollow" href="https://www.facebook.com/templatemo">Template Mo</a></p>
-        </footer>
-
-    </div>
-</div>-->

@@ -12,15 +12,8 @@
 
   <title>Ramayana - HTML5 Template</title>
 
-  <!-- Bootstrap core CSS -->
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-  <!--
-  Ramayana CSS Template
-  https://templatemo.com/tm-529-ramayana
-  -->
-
-  <!-- Additional CSS Files -->
   <link rel="stylesheet" href="/assets/css/fontawesome.css">
   <link rel="stylesheet" href="/assets/css/templatemo-style.css">
   <link rel="stylesheet" href="/assets/css/owl.css">
@@ -29,27 +22,22 @@
 
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
 
-  <!-- Main -->
   <div id="main">
     <div class="inner">
 
-      <!-- Header -->
       <header id="header">
         <div class="logo">
           <a href="index.html">LMS System</a>
         </div>
       </header>
 
-      <!-- Tables -->
       <section class="tables">
         <div class="container-fluid">
           <div class="row">
             <div class="col-md-12">
               <div class="section-heading">
-                <!--<h2 th:text="${menuTitle}"></h2>-->
               </div>
               <div class="default-table">
                 <button id="createPosting" type="submit" onclick="location.href='attendance/new'">출석 등록</button>
@@ -65,16 +53,15 @@
                   </thead>
                   <tbody>
                   <tr th:each="attendance: ${attendanceListDtos}">
-                    <!--<form th:action="@{attendance/update(checkedDate=${attendance.getCheckedDate()})}" th:method="get">-->
                     <form action="attendance/update" method="get">
-                      <td th:text="${attendance.getCheckedDate()}"></td>
-                      <td th:text="${attendance.getNumAttendance()}"></td>
-                      <td th:text="${attendance.getNumAbsence()}"></td>
-                      <td th:text="${attendance.getNumLateness()}"></td>
+                        <td th:text="${#temporals.format(attendance.checkedDate, 'yyy-MM-dd HH-mm')}"></td>
+                        <td th:text="${attendance.numAttendance}"></td>
+                        <td th:text="${attendance.numAbsence}"></td>
+                        <td th:text="${attendance.numLateness}"></td>
                       <td>
                         <button type="submit">수정</button>
                       </td>
-                        <input type="hidden" name="checkedDate" th:value="${attendance.getCheckedDate()}">
+                        <input type="hidden" name="checkedDate" th:value="${attendance.checkedDate}">
                     </form>
                   </tr>
                   </tbody>
@@ -87,14 +74,10 @@
     </div>
   </div>
 
-  <!-- Sidebar -->
   <div id="sidebar" th:include="layout/sideBar.html">
 
   </div>
 </div>
-
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 

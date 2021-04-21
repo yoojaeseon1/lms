@@ -32,11 +32,30 @@ public class CourseMaterialRepositoryImpl implements CourseMaterialRepositoryCus
     }
 
     @Override
+    public List<CourseMaterial> findByBoardReplyId(Long boardReplyId) {
+
+        return queryFactory
+                .selectFrom(courseMaterial)
+                .where(courseMaterial.reply.id.eq(boardReplyId))
+                .orderBy(courseMaterial.filename.asc())
+                .fetch();
+
+    }
+
+    @Override
     public long deleteAllByBoardId(Long boardId) {
         return queryFactory
                 .delete(courseMaterial)
                 .where(courseMaterial.board.id.eq(boardId))
                 .execute();
 
+    }
+
+    @Override
+    public long deleteAllByBoardReplyId(Long boardReplyId) {
+        return queryFactory
+                .delete(courseMaterial)
+                .where(courseMaterial.reply.id.eq(boardReplyId))
+                .execute();
     }
 }

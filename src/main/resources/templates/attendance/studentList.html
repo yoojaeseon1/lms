@@ -12,15 +12,8 @@
 
   <title>Ramayana - HTML5 Template</title>
 
-  <!-- Bootstrap core CSS -->
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-  <!--
-  Ramayana CSS Template
-  https://templatemo.com/tm-529-ramayana
-  -->
-
-  <!-- Additional CSS Files -->
   <link rel="stylesheet" href="/assets/css/fontawesome.css">
   <link rel="stylesheet" href="/assets/css/templatemo-style.css">
   <link rel="stylesheet" href="/assets/css/owl.css">
@@ -29,28 +22,22 @@
 
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
 
-  <!-- Main -->
   <div id="main">
     <div class="inner">
-
-      <!-- Header -->
       <header id="header">
         <div class="logo">
           <a href="index.html">LMS System</a>
         </div>
       </header>
 
-      <!-- Tables -->
       <section class="tables">
         <div class="container-fluid">
           <div class="row">
             <div class="col-md-12">
               <div class="section-heading">
-<!--                <h2 th:text="${menuTitle}"></h2>-->
-                <h2 th:text="${attendances.get(0).getCheckedDate()}">haha</h2>
+                <h2 th:text="${attendances.get(0).checkedDate}">haha</h2>
               </div>
               <div class="default-table">
                 <table>
@@ -67,39 +54,33 @@
                   </tr>
                   </thead>
                   <tbody>
-                  <form th:if="${attendances.get(0).getAttendanceType() == null}" action="./" method="post">
-                  <tr th:each="attendance, index : ${attendances}">
-                    <td th:text="${attendance.getStudentName()}"></td>
-                    <td th:text="${attendance.getBirthDate()}"></td>
-                    <td th:text="${attendance.getNumAttendance()}"></td>
-                    <td th:text="${attendance.getNumAbsence()}"></td>
-                    <td th:text="${attendance.getNumLateness()}"></td>
+                  <form th:if="${attendances.get(0).attendanceType == null}" action="./" method="post">
+                    <tr th:each="attendance, index : ${attendances}">
+                      <td th:text="${attendance.studentName}"></td>
+                      <td th:text="${attendance.birthDate}"></td>
+                      <td th:text="${attendance.numAttendance}"></td>
+                      <td th:text="${attendance.numAbsence}"></td>
+                      <td th:text="${attendance.numLateness}"></td>
 
                     <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ATTENDANCE" type="radio" checked></td>
                     <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ABSENCE" type="radio"></td>
                     <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="LATENESS" type="radio"></td>
-<!--                    <td><input name="attendState" value="lateness" type="radio"></td>-->
-                    <input th:name="states+'['+${index.index}+'].studentId'" th:value="${attendance.getStudentId()}" hidden>
-                    <!--<td><a href="#" th:href="@{/items/{id}/edit (id=${item.id})}"
-                           class="btn btn-primary" role="button">수정</a></td>-->
+                    <input th:name="states+'['+${index.index}+'].studentId'" th:value="${attendance.studentId}" hidden>
                   </tr>
                     <button type="submit">등록 완료</button>
                     </form>
-                  <form th:if="${attendances.get(0).getAttendanceType() != null}" th:action="@{../attendance(checkedDate=${checkedDate})}" th:method="put">
+                  <form th:if="${attendances.get(0).attendanceType != null}" th:action="@{../attendance(checkedDate=${checkedDate})}" th:method="put">
                     <tr th:each="attendance, index : ${attendances}">
-                      <td th:text="${attendance.getStudentName()}"></td>
-                      <td th:text="${attendance.getBirthDate()}"></td>
-                      <td th:text="${attendance.getNumAttendance()}"></td>
-                      <td th:text="${attendance.getNumAbsence()}"></td>
-                      <td th:text="${attendance.getNumLateness()}"></td>
+                      <td th:text="${attendance.studentName}"></td>
+                      <td th:text="${attendance.birthDate}"></td>
+                      <td th:text="${attendance.numAttendance}"></td>
+                      <td th:text="${attendance.numAbsence}"></td>
+                      <td th:text="${attendance.numLateness}"></td>
 
                       <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ATTENDANCE" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'ATTENDANCE')}"></td>
                       <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="ABSENCE" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'ABSENCE')}"></td>
                       <td><input th:name="states+'['+${index.index}+'].attendanceType'" value="LATENESS" type="radio" th:checked="${#strings.equals(attendance.changeTypeToString(), 'LATENESS')}"></td>
-                      <!--                    <td><input name="attendState" value="lateness" type="radio"></td>-->
-                      <input th:name="states+'['+${index.index}+'].attendanceId'" th:value="${attendance.getAttendanceId()}" hidden>
-                      <!--<td><a href="#" th:href="@{/items/{id}/edit (id=${item.id})}"
-                             class="btn btn-primary" role="button">수정</a></td>-->
+                      <input th:name="states+'['+${index.index}+'].attendanceId'" th:value="${attendance.attendanceId}" hidden>
                     </tr>
                     <button type="submit">수정 완료</button>
                   </form>
@@ -115,14 +96,11 @@
 
   <td><input name="attendanceState" value="lateness" type="radio"></td>
 
-  <!-- Sidebar -->
   <div id="sidebar" th:include="layout/sideBar.html">
 
   </div>
 </div>
 
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 

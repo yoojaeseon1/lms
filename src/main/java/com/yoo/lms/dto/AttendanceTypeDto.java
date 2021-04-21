@@ -13,9 +13,4 @@ public class AttendanceTypeDto {
     private String studentId;
     private Long attendanceId;
     private String attendanceType;
-
-    public AttendanceTypeDto(String studentId, String attendState) {
-        this.studentId = studentId;
-        this.attendanceType = attendState;
-    }
 }

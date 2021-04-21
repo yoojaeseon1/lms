@@ -8,6 +8,11 @@ public interface CourseMaterialRepositoryCustom {
 
     List<CourseMaterial> findByBoardId(Long boardId);
 
+    List<CourseMaterial> findByBoardReplyId(Long boardReplyId);
+
     long deleteAllByBoardId(Long boardId);
+
+    long deleteAllByBoardReplyId(Long boardReplyId);
+
 
 }

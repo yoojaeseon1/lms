@@ -36,7 +36,7 @@ public class CourseMaterial {
         this.directory = directory;
     }
 
-    public CourseMaterial(String filename, String directory, BoardReply reply) {
+    public CourseMaterial(BoardReply reply, String filename, String directory) {
         this.filename = filename;
         this.directory = directory;
         this.reply = reply;

@@ -12,15 +12,8 @@
 
     <title>Ramayana - HTML5 Template</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <!--
-    Ramayana CSS Template
-    https://templatemo.com/tm-529-ramayana
-    -->
-
-    <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/assets/css/templatemo-style.css">
     <link rel="stylesheet" href="/assets/css/owl.css">
@@ -51,10 +44,6 @@
                 return;
             }
 
-            if(!checkName(name)){
-                return;
-            }
-
             if(!checkBirthDate(birthDate)) {
                 return;
             }
@@ -77,8 +66,6 @@
                                 }
                             };
 
-            // let joinForm = JSON.stringify($("#joinForm").val());
-            console.log("execute ajax");
             $.ajax({
                 type: "post",
                 url: "/join/"+$("#memberType").val(),
@@ -87,7 +74,6 @@
                 dataType: "text",
                 success: function(data) {
                    alert("회원가입이 완료되었습니다.");
-                   // console.log("success : " + data);
                    location.href = "/";
                 },
                 error: function(request, status, error) {
@@ -104,14 +90,9 @@
 
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
-
-    <!-- Main -->
     <div id="main">
         <div class="inner">
-
-            <!-- Header -->
             <header id="header">
                 <div class="logo">
                     <a href="index.html">LMS System</a>
@@ -122,7 +103,7 @@
                     <tr>
                         <th>아이디</th>
                         <td>
-                            <input id="id" />
+                            <input id="id" /> 영어 소문자, 숫자조합 4~15자
                         </td>
                         <td>
                             <button type="button" onclick="checkId()">중복확인</button>
@@ -130,7 +111,9 @@
                     </tr>
                     <tr>
                         <th>비밀번호</th>
-                        <td><input type="password" id="password"/></td>
+                        <td>
+                            <input type="password" id="password"/> 영어 대/소문자, 숫자, 특수문자 조합 8~12자
+                        </td>
                     </tr>
                     <tr>
                         <th>비밀번호 확인</th>
@@ -164,7 +147,6 @@
                         <th>상세주소</th>
                         <td>
                             <input type="text" id="detailAddress" style="width:80%" value="">
-                            <!--                <input type="text" id="roadAddrPart2"  style="width:40%" value="">-->
                         </td>
                     </tr>
                 </table>
@@ -176,15 +158,12 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div id="sidebar" th:include="layout/sideBar.html">
 
 
     </div>
 </div>
 
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/assets/js/browser.min.js"></script>

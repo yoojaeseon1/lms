@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 @Slf4j
 public class AddressApiController {
 
-    @GetMapping("/jusoPopup")
+    @GetMapping("/juso-popup")
     public String jusoPopup(){
 
         return "/jusoPopup";
     }
 
-    @PostMapping("/jusoPopup")
+    @PostMapping("/juso-popup")
     public String jusoPopupPost(HttpServletRequest request, Model model){
 
         String roadFullAddr = request.getParameter("roadFullAddr");
@@ -28,8 +28,6 @@ public class AddressApiController {
         String addrDetail = request.getParameter("addrDetail");
         String roadAddrPart2 = request.getParameter("roadAddrPart2");
 
-        log.info("roadFullAddr : " + roadFullAddr);
-        log.info("inputYn : " + inputYn);
 
         model.addAttribute("roadFullAddr", roadFullAddr);
         model.addAttribute("inputYn", inputYn);
@@ -39,17 +37,5 @@ public class AddressApiController {
         model.addAttribute("roadAddrPart2", roadAddrPart2);
 
         return "/jusoPopup";
-    }
-
-    @GetMapping("/sample")
-    public String sample(){
-
-        return "/sample";
-    }
-
-    @PostMapping("/sample")
-    public String samplePost(){
-
-        return "/sample";
     }
 }

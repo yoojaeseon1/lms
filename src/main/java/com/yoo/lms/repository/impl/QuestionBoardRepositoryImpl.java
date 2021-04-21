@@ -1,14 +1,18 @@
 package com.yoo.lms.repository.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.yoo.lms.domain.QQuestionBoard;
 import com.yoo.lms.domain.QuestionBoard;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.dto.QBoardListDto;
 import com.yoo.lms.repository.custom.QBoardRepositoryCustom;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -21,6 +25,7 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
+    @Autowired
     public QuestionBoardRepositoryImpl(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
@@ -37,116 +42,36 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
     }
 
     @Override
-    public long deletePostingById(Long boardId) {
-        return queryFactory
-                .delete(questionBoard)
-                .where(questionBoard.id.eq(boardId))
-                .execute();
-    }
+    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, Pageable pageable) {
 
-    @Override
-    public List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size) {
-
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        return queryFactory
+        JPAQuery<BoardListDto> contentBeforeWhere = queryFactory
                 .select(new QBoardListDto(
                         questionBoard.id,
                         questionBoard.title,
-                        questionBoard.dateValue.createdDate,
-                        questionBoard.createdBy.id,
-                        questionBoard.viewCount
+                        questionBoard.createdDate,
+                        questionBoard.createdBy.name,
+                        questionBoard.views.size()
                 ))
-                .from(questionBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle()),
-                        contentContains(condition.getContent()),
-                        createdByIdContains(condition.getMemberId())
-                        )
+                .from(questionBoard);
+
+        JPAQuery<BoardListDto> contentToWhere = makeWhereCondition(contentBeforeWhere, condition, isMultipleCriteria);
+
+        List<BoardListDto> boardListDtos = contentToWhere
                 .orderBy(questionBoard.id.desc())
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
-    }
-
-    @Override
-    public long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-
-        if(numCurrentPageContent < size) {
-            if(page == 0)
-                return (long)numCurrentPageContent;
-            else
-                return (long)(page * size) + numCurrentPageContent;
-        }
 
 
-        return queryFactory
-                .selectFrom(questionBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle()),
-                        contentContains(condition.getContent()),
-                        createdByIdContains(condition.getMemberId())
-                )
-                .fetchCount();
-    }
+        JPAQuery<BoardListDto> countBeforeWhere = queryFactory
+                .select(new QBoardListDto(questionBoard.id))
+                .from(questionBoard);
 
+        JPAQuery<BoardListDto> countToWhere = makeWhereCondition(countBeforeWhere, condition, isMultipleCriteria);
 
-    @Override
-    public List<BoardListDto> searchPostingAllCriteria(BoardSearchCondition condition, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        long totalCount = countToWhere.fetchCount();
 
-        return queryFactory
-                .select(new QBoardListDto(
-                        questionBoard.id,
-                        questionBoard.title,
-//                        questionBoard.replyDateValue.contentCreatedDate,
-                        questionBoard.dateValue.createdDate,
-                        questionBoard.createdBy.id,
-                        questionBoard.viewCount
-                ))
-                .from(questionBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle())
-                            .or(contentContains(condition.getContent()))
-                            .or(createdByIdContains(condition.getMemberId()))
-                )
-                .orderBy(questionBoard.id.desc())
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
-                .fetch();
-    }
-
-    @Override
-    public long countTotalAllCriteria(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-        if(numCurrentPageContent < size) {
-            if(page == 0)
-                return (long)numCurrentPageContent;
-            else
-                return (long)(page * size) + numCurrentPageContent;
-        }
-
-
-        return queryFactory
-                .select(new QBoardListDto(
-                        questionBoard.id,
-                        questionBoard.title,
-//                        questionBoard.replyDateValue.contentCreatedDate,
-                        questionBoard.dateValue.createdDate,
-//                        questionBoard.contentCreatedBy.id,
-                        questionBoard.createdBy.id,
-                        questionBoard.viewCount
-                ))
-                .from(questionBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle())
-                                .or(contentContains(condition.getContent()))
-                                .or(createdByIdContains(condition.getMemberId()))
-                )
-                .fetchCount();
+        return new PageImpl<>(boardListDtos, pageable, totalCount);
     }
 
     private BooleanExpression courseIdEq(Long courseId) {
@@ -163,6 +88,26 @@ public class QuestionBoardRepositoryImpl implements QBoardRepositoryCustom {
 
     private BooleanExpression createdByIdContains(String writer) {
         return writer == null ? null : questionBoard.createdBy.id.containsIgnoreCase(writer);
+    }
+
+    private JPAQuery<BoardListDto> makeWhereCondition(JPAQuery<BoardListDto> beforeWhere, BoardSearchCondition condition, boolean isMultipleCriteria) {
+        JPAQuery<BoardListDto> toWhere = null;
+
+        if(isMultipleCriteria) {
+            toWhere = beforeWhere
+                    .where(courseIdEq(condition.getCourseId()),
+                            titleContains(condition.getTitle())
+                            .or(contentContains(condition.getContent()))
+                            .or(createdByIdContains(condition.getMemberId())));
+        } else {
+            toWhere = beforeWhere
+                    .where(courseIdEq(condition.getCourseId()),
+                            titleContains(condition.getTitle()),
+                            contentContains(condition.getContent()),
+                            createdByIdContains(condition.getMemberId()));
+        }
+
+        return toWhere;
     }
 
 }

@@ -12,37 +12,19 @@
 
     <title>Ramayana - HTML5 Template</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!--
-    Ramayana CSS Template
-    https://templatemo.com/tm-529-ramayana
-    -->
-
-    <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/assets/css/templatemo-style.css">
     <link rel="stylesheet" href="/assets/css/owl.css">
 
 </head>
 
-<th:block layout:fragment="script">
-    <script type="text/javascript">
-
-    </script>
-</th:block>
-
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
 
-    <!-- Main -->
     <div id="main">
         <div class="inner">
-
-            <!-- Header -->
             <header id="header">
                 <div class="logo">
                     <a href="index.html">LMS System</a>
@@ -53,8 +35,8 @@
                 <tr>
                     <th th:if="${#strings.length(hiddenID) > 0}">
                         <div th:text="|아이디는 ${hiddenID} 입니다.|"></div>
-                        <button type="button" onclick="location.href='/loginForm'">로그인 페이지로 이동</button>
-                        <form action="/findFullID" method="get">
+                        <button type="button" onclick="location.href='/login-form'">로그인 페이지로 이동</button>
+                        <form action="/find-full-id" method="get">
                             <input type="hidden" name="id" th:value="${id}">
                         <button type="submit">전체 아이디 이메일로 전송 받기</button>
                         </form>
@@ -66,15 +48,12 @@
 
     </div>
 
-    <!-- Sidebar -->
     <div id="sidebar" th:include="layout/sideBar.html">
 
 
     </div>
 </div>
 
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 

@@ -9,6 +9,8 @@ import com.yoo.lms.tools.PageMaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,76 +28,25 @@ import java.util.UUID;
 @Slf4j
 public class CourseBoardService {
 
-    private CourseBoardRepository courseBoardRepository;
-    private CourseMaterialRepository courseMaterialRepository;
-    private CourseRepository courseRepository;
-    private StudentRepository studentRepository;
-    private EntityManager em;
-    private String baseDirectory;
+    private final CourseBoardRepository courseBoardRepository;
+    private final CourseMaterialRepository courseMaterialRepository;
+    private final CourseRepository courseRepository;
+    private final ViewRepository viewRepository;
+    private final String baseDirectory = "C:\\Users\\yoo-pc\\Desktop\\uploadedDirectory\\courseBoard\\";;
 
-
-    @Autowired
-    public CourseBoardService(CourseBoardRepository courseBoardRepository,
-                              CourseRepository courseRepository,
-                              CourseMaterialRepository courseMaterialRepository,
-                              StudentRepository studentRepository,
-                              EntityManager em) {
-
-        this.courseMaterialRepository = courseMaterialRepository;
-        this.courseRepository = courseRepository;
-        this.studentRepository = studentRepository;
-        this.courseBoardRepository = courseBoardRepository;
-        this.em = em;
-        this.baseDirectory = "C:\\Users\\yoo-pc\\Desktop\\uploadedDirectory\\courseBoard\\";
-    }
-
-
-//    @Transactional
-//    public void creatCourseBoard(CourseBoard courseBoard) {
-//        courseBoardRepository.save(courseBoard);
-//    }
-
-    @Transactional
-    public void save(Long courseId,
-                     String title,
-                     String content
-    ) {
-
-        Course course = courseRepository.findById(courseId).get();
-
-        //--- session에서 받아와야 함
-
-        Student student = studentRepository.findById("studentId1").get();
-
-        //---
-
-        CourseBoard courseBoard = new CourseBoard(course, title, content, student);
-
-        courseBoardRepository.save(courseBoard);
-    }
 
     @Transactional
     public void saveCourseBoard(MultipartFile[] files,
-                             Long courseId,
-                             String title,
-                             String content,
-                                Member member
-    ) throws IOException {
+                                Long courseId,
+                                String title,
+                                String content,
+                                Member member) throws IOException {
 
         Course course = courseRepository.findById(courseId).get();
-
-        // session에서 받아와야 함--
-
-
-
-//        Student student = studentRepository.findById("teacher").get();
-
-        //---
 
         CourseBoard courseBoard = new CourseBoard(course, title, content, member);
 
         courseBoardRepository.save(courseBoard);
-        em.flush();
 
 
         // 파일이 없으면 게시물만 save하고 종료
@@ -122,11 +73,20 @@ public class CourseBoardService {
     }
 
     @Transactional
+    public void addViewCount(Long boardId){
+        CourseBoard courseBoard = courseBoardRepository.findById(boardId).get();
+        View view = new View(courseBoard);
+
+        viewRepository.save(view);
+
+        view.addViewCount(courseBoard);
+    }
+
+    @Transactional
     public void updateCourseBoard(Long boardId,
                                String title,
                                String content,
-                               MultipartFile[] files
-    ) throws IOException {
+                               MultipartFile[] files) throws IOException {
 
 
         Optional<CourseBoard> courseBoardOptional = courseBoardRepository.findById(boardId);
@@ -149,10 +109,9 @@ public class CourseBoardService {
 
             File deletedFile = new File(material.getDirectory()+material.getFilename());
 
-            if(deletedFile.exists()) {
-                log.info("file exist!!!");
+            if(deletedFile.exists())
                 deletedFile.delete();
-            }
+
         }
 
         courseMaterialRepository.deleteAllByBoardId(boardId);
@@ -176,12 +135,11 @@ public class CourseBoardService {
 
     public CourseBoard findPostingById(Long boardId) {
 
-        CourseBoard courseBoard = courseBoardRepository.findPostingById(boardId);
+        return courseBoardRepository.findByIdFetchMember(boardId);
 
-
-        return courseBoard;
     }
 
+    @Transactional
     public void deleteByBoardId(Long boardId) {
 
         List<CourseMaterial> materials = courseMaterialRepository.findByBoardId(boardId);
@@ -195,45 +153,21 @@ public class CourseBoardService {
             }
         }
 
-        File directory = new File(materials.get(0).getDirectory());
+        if(materials.size()>0) {
+            File directory = new File(materials.get(0).getDirectory());
 
-        if(directory.exists())
-            directory.delete();
-
-        courseMaterialRepository.deleteAllByBoardId(boardId);
-        courseBoardRepository.deletePostingById(boardId);
-
-    }
-
-    public List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size) {
-        return courseBoardRepository.searchPosting(condition, page, size);
-    }
-
-    public long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-        return courseBoardRepository.countTotalPosting(condition, page, size, numCurrentPageContent);
-    }
-
-    public List<BoardListDto> searchPostingAllCriteria(BoardSearchCondition condition, int page, int size) {
-
-        List<BoardListDto> boardListDtos = courseBoardRepository.searchPostingAllCriteria(condition, page, size);
-
-        for (BoardListDto boardListDto : boardListDtos) {
-            log.info("boardListDto.getTitle() : " + boardListDto.getTitle());
+            if (directory.exists())
+                directory.delete();
         }
 
-        return boardListDtos;
+        courseMaterialRepository.deleteAllByBoardId(boardId);
+        viewRepository.deleteAllByBoardId(boardId);
+        courseBoardRepository.deleteById(boardId);
     }
 
-    public long countTotalAllCriteria(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-        return courseBoardRepository.countTotalAllCriteria(condition, page, size, numCurrentPageContent);
+    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, int page, int size) {
+
+        return courseBoardRepository.searchPosting(condition, isMultipleCriteria, PageRequest.of(page, size));
     }
-
-    public PageMaker makePageMaker(int page, long totalCount, BoardSearchCriteria searchCriteria) {
-
-        return new PageMaker(page, totalCount, searchCriteria);
-
-    }
-
-
 
 }

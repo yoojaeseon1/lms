@@ -3,17 +3,18 @@ package com.yoo.lms.repository.impl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.*;
-import com.yoo.lms.domain.enumType.CourseAcceptType;
+import com.yoo.lms.domain.enumType.AcceptType;
 import com.yoo.lms.dto.CourseListDto;
 import com.yoo.lms.dto.QCourseListDto;
-import com.yoo.lms.repository.CourseRepository;
 import com.yoo.lms.repository.StudentCourseRepository;
 import com.yoo.lms.repository.custom.CourseRepositoryCustom;
 import com.yoo.lms.searchCondition.CourseSearchCondition;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.yoo.lms.domain.QCourse.*;
@@ -27,6 +28,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final StudentCourseRepository studentCourseRepository;
 
+    @Autowired
     public CourseRepositoryImpl(EntityManager em, StudentCourseRepository studentCourseRepository) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
@@ -38,12 +40,10 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
 //    public List<Course> searchCourseByStudent(CourseSearchCondition condition, boolean canApplicable) {
     public List<Course> searchCourseByStudent(CourseSearchCondition condition, String studentId) {
 
+        List<Long> courseIds = new ArrayList<>();
 
-        List<Long> courseIds = studentCourseRepository.findCourseId(studentId);
-//
-//        for (Long courseId : courseIds) {
-//            System.out.println("courseId = " + courseId);
-//        }
+        if(studentId != null)
+            courseIds = studentCourseRepository.findCourseIds(studentId);
 
         return queryFactory
                 .selectFrom(course)
@@ -53,11 +53,23 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
                         courseNameContains(condition.getCourseName()),
                         teacherNameContains(condition.getTeacherName()),
                         acceptTypeEq(condition.getAcceptType()),
+//                        acceptTypeEq(condition.getAcceptType()),
                         startDateGoe(condition.getStartDate()),
                         endDateLoe(condition.getEndDate())
 //                        currentNumStudentLtMaxNumStudent(canApplicable)
                 )
                 .orderBy(course.name.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<Course> findCourseByTeacherAndType(String teacherName, AcceptType acceptType) {
+        return queryFactory
+                .selectFrom(course)
+                .join(course.teacher, teacher).fetchJoin()
+                .where(teacherNameContains(teacherName),
+                        acceptTypeEq(acceptType))
+                .orderBy(course.acceptType.asc())
                 .fetch();
     }
 
@@ -86,6 +98,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
                 .select(new QCourseListDto(
                         course.id,
                         course.name
+//                        course.acceptType
                         ))
                 .from(course)
                 .where(course.teacher.id.eq(teacherId))
@@ -104,21 +117,74 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
                 .fetch();
     }
 
+//    @Override
+//    public boolean existCourseName(Long courseId, String teacherId) {
+//
+//        Integer fetchFirst = queryFactory
+//                .selectOne()
+//                .from(course)
+//                .where(course.id.eq(courseId)
+//                        .and(course.teacher.id.eq(teacherId)))
+//                .fetchFirst();
+//
+//        return fetchFirst != null;
+//    }
+
     @Override
-    public String findCourseName(Long courseId, String teacherId) {
-        return queryFactory
-                .select(course.name)
+    public boolean existCourseName(CourseSearchCondition condition) {
+
+        Integer fetchFirst = queryFactory
+                .selectOne()
                 .from(course)
-                .where(course.id.eq(courseId)
-                .and(course.teacher.id.eq(teacherId))
-                )
-                .fetchOne();
+                .where(courseIdEq(condition.getCourseId()),
+                        courseTeacherIdEq(condition.getTeacherId()),
+                        courseNameEq(condition.getCourseName()))
+                .fetchFirst();
+
+        return fetchFirst != null;
+    }
+
+    @Override
+    public List<Course> findByTeacherIdAndAcceptType(String teacherId, AcceptType acceptType) {
+        return queryFactory
+                .selectFrom(course)
+                .where(acceptTypeEq(acceptType),
+                        course.teacher.id.eq(teacherId))
+                .orderBy(course.acceptType.asc())
+                .fetch();
+    }
+
+    @Override
+    public boolean existCourseByTeacherIdAndCourseId(Long courseId, String teacherId) {
+
+        Integer fetchFirst = queryFactory
+                .selectOne()
+                .from(course)
+                .where(course.teacher.id.eq(teacherId)
+                        .and(course.id.eq(courseId)))
+                .fetchFirst();
+
+        return fetchFirst != null;
+    }
+
+    private BooleanExpression acceptTypeEq(AcceptType acceptType) {
+        return acceptType == null ? null : course.acceptType.eq(acceptType);
     }
 
     private BooleanExpression courseNameContains(String courseName) {
-
         return courseName == null ? null : course.name.containsIgnoreCase(courseName);
+    }
 
+    private BooleanExpression courseIdEq(Long courseId) {
+        return courseId == null ? null : course.id.eq(courseId);
+    }
+
+    private BooleanExpression courseNameEq(String courseName) {
+        return courseName == null ? null : course.name.eq(courseName);
+    }
+
+    private BooleanExpression courseTeacherIdEq(String teacherId) {
+        return teacherId == null ? null : course.teacher.id.eq(teacherId);
     }
 
     private BooleanExpression teacherNameContains(String teacherName) {
@@ -133,9 +199,9 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
         return endDate == null ? null : course.endDate.loe(endDate);
     }
 
-    private BooleanExpression acceptTypeEq(CourseAcceptType acceptType) {
-        return acceptType == null ? null : course.acceptType.eq(acceptType);
-    }
+//    private BooleanExpression courseAcceptType(CourseAcceptType acceptType) {
+//        return acceptType == null ? null : course.acceptType.eq(acceptType);
+//    }
 
     private BooleanExpression studentIdNotIn(List<Long> studentIds) {
         return studentIds.size() == 0 ? null : course.id.notIn(studentIds);

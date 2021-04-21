@@ -12,6 +12,7 @@ import lombok.Getter;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.yoo.lms.domain.QAttendance.*;
@@ -38,7 +39,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
      * @return
      */
     @Override
-    public List<AttendanceListDto> searchStudentAttendList(Long courseId) {
+    public List<AttendanceListDto> findStudentAttendList(Long courseId) {
 
         List<AttendanceListDto> attendanceListDtos =
                 queryFactory
@@ -141,7 +142,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
     }
 
     @Override
-    public long countCourseAttendance(Long courseId, LocalDate checkedDate, AttendanceType attendanceType) {
+    public long countCourseAttendance(Long courseId, LocalDateTime checkedDate, AttendanceType attendanceType) {
 
         return queryFactory
                 .selectFrom(attendance)
@@ -161,7 +162,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
      * @return
      */
     @Override
-    public List<AttendanceListDto> searchUpdateList(Long courseId, LocalDate checkedDate) {
+    public List<AttendanceListDto> searchUpdateList(Long courseId, LocalDateTime checkedDate) {
 
         return queryFactory
                 .select(new QAttendanceListDto(
@@ -181,7 +182,7 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
     }
 
     @Override
-    public List<Attendance> searchMyAttend(AtSearchCondition atSearchCondition) {
+    public List<Attendance> searchMyAttendances(AtSearchCondition atSearchCondition) {
         return queryFactory
                 .selectFrom(attendance)
                 .where(
@@ -194,11 +195,11 @@ public class AttendanceRepositoryImpl implements AttendanceRepositoryCustom{
                 .fetch();
     }
 
-    private BooleanExpression checkedDateGoe(LocalDate checkedDate) {
+    private BooleanExpression checkedDateGoe(LocalDateTime checkedDate) {
         return checkedDate == null ? null : attendance.checkedDate.goe(checkedDate);
     }
 
-    private BooleanExpression checkedDateLoe(LocalDate checkedDate) {
+    private BooleanExpression checkedDateLoe(LocalDateTime checkedDate) {
         return checkedDate == null ? null : attendance.checkedDate.loe(checkedDate);
     }
 

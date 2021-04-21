@@ -12,15 +12,8 @@
 
     <title>Ramayana - HTML5 Template</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <!--
-    Ramayana CSS Template
-    https://templatemo.com/tm-529-ramayana
-    -->
-
-    <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/assets/css/templatemo-style.css">
     <link rel="stylesheet" href="/assets/css/owl.css">
@@ -39,37 +32,63 @@
             return parsedFileName;
         }
 
+        function deleteQuestion(requestURL, boardId) {
+
+            const result = confirm("정말 삭제하시겠습니까");
+
+
+            if(result) {
+
+                $.ajax({
+                    type: "delete",
+                    url: requestURL + "/" + boardId,
+                    success: function (data) {
+                        alert("정상적으로 삭제되었습니다");
+                        location.href = requestURL;
+                    }
+                });
+
+            }
+        }
+
+
     </script>
 </th:block>
 
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
 
-    <!-- Main -->
     <div id="main">
         <div class="inner">
 
-            <!-- Header -->
             <header id="header">
                 <div class="logo">
                     <a href="index.html">LMS System</a>
                 </div>
             </header>
+            <div></div>
             <div th:text="${menuTitle}"></div>
+            <div>
+                <button onclick="location.href='./'">뒤로
+                </button>
+            </div>
             <table class="table table-hover">
                 <tr>
                     <th>글번호</th>
-                    <td th:text="${posting.getId()}"></td>
+                    <td th:text="${posting.id}"></td>
                 </tr>
                 <tr>
                     <th>제목</th>
-                    <td th:text="${posting.getTitle()}"></td>
+                    <td th:text="${posting.title}"></td>
+                </tr>
+                <tr>
+                    <th>작성자</th>
+                    <td th:text="${posting.createdBy.name}"></td>
                 </tr>
                 <tr>
                     <th>작성일</th>
-                    <td th:text="${posting.getCreatedBy()}"></td>
+                    <td th:text="${#temporals.format(posting.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
                 </tr>
                 <tr>
                     <th>내용</th>
@@ -77,70 +96,129 @@
                 </tr>
             </table>
             <div class="panel panel-default" id="content">
-                <div class="board-content" th:text="${posting.getContent()}"></div>
+                <div class="board-content" th:text="${posting.content}"></div>
             </div>
             <div>
-            <table class="table-hover">
+            <table class="table-hover" th:if="${courseMaterials != null and courseMaterials.size() > 0}">
                 <thead>
                     <tr>
                         <th>첨부 파일</th>
                     </tr>
                 </thead>
                 <tbody>
-<!--                    <tr th:each="courseMaterial: ${courseMaterials}">-->
-<!--                        <td>-->
-<!--                            <a th:href="@{/download(filePath=${courseMaterial.getDirectory()},fileName=${courseMaterial.getFilename()})}"-->
-<!--                               th:text="${#strings.substring(courseMaterial.getFilename(), #strings.indexOf(courseMaterial.getFilename(), '_')+1)}"></a>-->
-<!--                        </td>-->
-<!--                    </tr>-->
                     <tr>
                         <ul th:each="courseMaterial: ${courseMaterials}">
-                            <a th:href="@{/download(filePath=${courseMaterial.getDirectory()},fileName=${courseMaterial.getFilename()})}"
-                               th:text="${#strings.substring(courseMaterial.getFilename(), #strings.indexOf(courseMaterial.getFilename(), '_')+1)}"></a>
+                            <a th:href="@{/download(filePath=${courseMaterial.directory},fileName=${courseMaterial.filename})}"
+                               th:text="${#strings.substring(courseMaterial.filename, #strings.indexOf(courseMaterial.filename, '_')+1)}"></a>
                         </ul>
                     </tr>
                 </tbody>
             </table>
             </div>
             <div>
-            <button>수정</button>
-            <button>삭제</button>
+            <button th:if="${posting.createdBy.id == session.loginMember.id}"
+                    th:onclick="'location.href=\''+@{./{boardId}/update(boardId=${posting.id})}+'\''">수정</button>
+                <div th:if="${posting.createdBy.id == session.loginMember.id}">
+                    <button th:if="${boardType} != 'inquiry-board'"
+                            th:onclick="deleteQuestion('/courses/'+[[${session.courseId}]]+'/'+ [[${boardType}]], [[${posting.id}]]);">삭제</button>
+                    <button th:if="${boardType} == 'inquiry-board'"
+                            th:onclick="deleteQuestion('/inquiry-board', [[${posting.id}]]);">삭제</button>
+                </div>
+
+            <button th:if="${canWriteReply}"
+                    th:onclick="'location.href=\''+@{./{boardId}/new(boardId=${posting.id})}+'\''">답변</button>
+            <button th:if="${canCheckHomewroks != null and canCheckHomewroks}"
+                    th:onclick="'location.href=\''+@{./{boardId}/submits(boardId=${posting.id})}+'\''">과제 제출 목록</button>
             </div>
-            <div th:if="${posting.getReply() != null}">
-                <table class="table table-hover">
-                    <tr>
-                        <th>작성자</th>
-                        <td th:text="${posting.getReply().getCreatedBy().getId()}"></td>
-                        <!--<td th:text="${findQuestion.getReplyCreatedBy().getId()}"></td>-->
-                    </tr>
-                    <tr>
-                        <th>제목</th>
-                        <td th:text="${posting.getReply().getTitle()}"></td>
-                    </tr>
-                    <tr>
-                        <th>작성일</th>
-                        <td th:text="${posting.getReply().getDateValue().getCreatedDate()}"></td>
-                    </tr>
-                    <tr>
-                        <th>내용</th>
-                        <td></td>
-                    </tr>
-                </table>
-                <div class="board-content" th:text="${findQuestion.getReply().getContent()}"></div>
+            <div th:if="${not #strings.equals(menuTitle, '과제 게시물')}">
+                <div th:if="${posting.reply != null}">
+                    <br>
+                    <br>
+                    <div>답변</div>
+                    <table class="table table-hover">
+                        <tr>
+                            <th>작성자</th>
+                            <td th:text="${posting.reply.createdBy.id}"></td>
+                        </tr>
+                        <tr>
+                            <th>제목</th>
+                            <td th:text="${posting.reply.title}"></td>
+                        </tr>
+                        <tr>
+                            <th>작성일</th>
+                            <td th:text="${#temporals.format(posting.reply.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
+                        </tr>
+                        <tr>
+                            <th>내용</th>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <div class="panel panel-default" id="content">
+                        <div class="board-content" th:text="${posting.reply.content}"></div>
+                    </div>
+                    <button th:if="${posting.reply.createdBy.id == session.loginMember.id}"
+                            th:onclick="'location.href=\''+@{./{boardId}/{boardReplyId}/new(boardId=${posting.id},boardReplyId=${posting.reply.id})}+'\''">수정</button>
+                    <button th:if="${posting.getReply().createdBy.id == session.loginMember.id and boardType != 'inquiry-board'}"
+                            th:onclick="deleteQuestion('/courses/'+[[${session.courseId}]]+'/'+[[${boardType}]]+'/'+[[${posting.id}]], [[${posting.reply.id}]])">삭제</button>
+                    <button th:if="${posting.reply.createdBy.id == session.loginMember.id and boardType == 'inquiry-board'}"
+                            th:onclick="|javascript:deleteQuestion('/inquiry-board/${posting.id}','${posting.reply.id}')|">삭제</button>
+                </div>
+            </div>
+            <div>------------------------------------------------------------------------------------------------------</div>
+            <div th:if="${#strings.equals(menuTitle, '과제 게시물')}">
+                제출된 과제
+                <div th:if="${boardReply != null}">
+                    <table class="table table-hover">
+                        <tr>
+                            <th>제목</th>
+                            <td th:text="${boardReply.title}"></td>
+                        </tr>
+                        <tr>
+                            <th>작성자</th>
+                            <td th:text="${boardReply.createdBy.id}"></td>
+                        </tr>
+                        <tr>
+                            <th>작성일</th>
+                            <td th:text="${#temporals.format(boardReply.createdDate, 'yyyy-MM-dd HH:mm')}"></td>
+                        </tr>
+                        <tr>
+                            <th>내용</th>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <div class="board-content" th:text="${boardReply.content}"></div>
+                    <div>
+                        <table class="table-hover">
+                            <thead>
+                            <tr>
+                                <th>첨부 파일</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <ul th:each="submitMaterial: ${submitMaterials}">
+                                    <a th:href="@{/download(filePath=${submitMaterial.directory},fileName=${submitMaterial.filename})}"
+                                       th:text="${#strings.substring(submitMaterial.filename, #strings.indexOf(submitMaterial.filename, '_')+1)}"></a>
+                                </ul>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <button th:if="${boardReply.createdBy.id == session.loginMember.id}"
+                                th:onclick="'location.href=\''+@{./{boardId}/{boardReplyId}/new(boardId=${posting.id},boardReplyId=${boardReply.id})}+'\''">수정</button>
+                        <button th:if="${boardReply.createdBy.id == session.loginMember.id}"
+                                th:onclick="deleteQuestion('/courses/'+[[${session.courseId}]]+'/'+[[${boardType}]]+'/'+[[${posting.id}]],[[${boardReply.id}]])">삭제</button>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
 
-    <!-- Sidebar -->
     <div id="sidebar" th:include="layout/sideBar.html">
-
-
     </div>
 </div>
 
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 

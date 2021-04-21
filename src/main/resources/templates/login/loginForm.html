@@ -12,46 +12,18 @@
 
     <title>Ramayana - HTML5 Template</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!--
-    Ramayana CSS Template
-    https://templatemo.com/tm-529-ramayana
-    -->
-
-    <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/assets/css/templatemo-style.css">
     <link rel="stylesheet" href="/assets/css/owl.css">
 
 </head>
 
-<th:block layout:fragment="script">
-    <script type="text/javascript">
-
-        function parseFileName(fileName) {
-
-            const parsedFileName = fileName.indexOf('_');
-
-            console.log(parsedFileName);
-
-            return parsedFileName;
-        }
-
-    </script>
-</th:block>
-
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
-
-    <!-- Main -->
     <div id="main">
         <div class="inner">
-
-            <!-- Header -->
             <header id="header">
                 <div class="logo">
                     <a href="index.html">LMS System</a>
@@ -79,26 +51,22 @@
                     <button type="submit">로그인</button>
                 </tr>
                 <tr>
-                    <button type="button" onclick="location.href='/join/joinTypeChoise'">회원 가입</button>
-                    <button type="button" onclick="location.href='/findIDForm'">아이디 찾기</button>
-                    <button type="button" onclick="location.href='/findPasswordForm'">비밀번호 찾기</button>
+                    <button type="button" onclick="location.href='/join/join-type-choise'">회원 가입</button>
+                    <button type="button" onclick="location.href='/find-id-form'">아이디 찾기</button>
+                    <button type="button" onclick="location.href='/find-password-form'">비밀번호 찾기</button>
                 </tr>
                 </form>
             </table>
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div id="sidebar" th:include="layout/sideBar.html">
 
     </div>
 </div>
 
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
 <script src="/assets/js/browser.min.js"></script>
 <script src="/assets/js/breakpoints.min.js"></script>
 <script src="/assets/js/transition.js"></script>

@@ -52,7 +52,7 @@
                     <td>
                       <a th:text="${submit.createdBy.name}" th:href="@{./submits/{boardReplyId}(boardReplyId=${submit.id})}"></a>
                     </td>
-                    <td th:text="${submit.createdDate}"></td>
+                    <td th:text="${#temporals.format(submit.createdDate,'yyyy-MM-dd HH-mm')}"></td>
                   </tr>
                   </tbody>
                 </table>

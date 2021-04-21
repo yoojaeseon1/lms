@@ -1,13 +1,18 @@
 package com.yoo.lms.repository.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.*;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.dto.QBoardListDto;
 import com.yoo.lms.repository.custom.CourseBoardRepositoryCustom;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 
@@ -24,133 +29,46 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
+    @Autowired
     public CourseBoardRepositoryImpl(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    @Override
-    public CourseBoard findPostingById(Long boardId) {
-
-        return queryFactory
-                .selectFrom(courseBoard)
-                .where(courseBoard.id.eq(boardId))
-                .fetchOne();
-
-    }
 
     @Override
-    public long deletePostingById(Long boardId) {
-        return queryFactory
-                .delete(courseBoard)
-                .where(courseBoard.id.eq(boardId))
-                .execute();
-    }
+    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, Pageable pageable) {
 
-    @Override
-    public List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        return queryFactory
+        JPAQuery<BoardListDto> contentBeforeWhere = queryFactory
                 .select(new QBoardListDto(
                         courseBoard.id,
                         courseBoard.title,
-                        courseBoard.dateValue.createdDate,
-                        courseBoard.createdBy.id,
-                        courseBoard.viewCount
+                        courseBoard.createdDate,
+                        courseBoard.createdBy.name,
+                        courseBoard.views.size()
                 ))
-                .from(courseBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle()),
-                        contentContains(condition.getContent()),
-                        createdByIdContains(condition.getMemberId())
-                        )
-                .orderBy(courseBoard.id.desc())
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
+                .from(courseBoard);
+
+        JPAQuery<BoardListDto> contentToWhere = makeWhereCondition(contentBeforeWhere, condition, isMultipleCriteria);
+
+        List<BoardListDto> boardListDtos = contentToWhere.orderBy(courseBoard.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+
+        JPAQuery<BoardListDto> countBeforeWhere = queryFactory
+                .select(new QBoardListDto(courseBoard.id))
+                .from(courseBoard);
+
+        JPAQuery<BoardListDto> countToWhere = makeWhereCondition(countBeforeWhere, condition, isMultipleCriteria);
+
+        long totalCount = countToWhere.fetchCount();
+
+        return new PageImpl<>(boardListDtos, pageable, totalCount);
     }
 
-    @Override
-    public long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-
-        if (numCurrentPageContent < size) {
-            if (page == 0)
-                return (long) numCurrentPageContent;
-            else
-                return (long) (page * size) + numCurrentPageContent;
-        }
-
-        return queryFactory
-                .selectFrom(courseBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle()),
-                        contentContains(condition.getContent()),
-                        createdByIdContains(condition.getMemberId())
-                        )
-                .fetchCount();
-
-    }
-
-    @Override
-    public List<BoardListDto> searchPostingAllCriteria(BoardSearchCondition condition, int page, int size) {
-
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        return queryFactory
-                .select(new QBoardListDto(
-                        courseBoard.id,
-                        courseBoard.title,
-//                        questionBoard.replyDateValue.contentCreatedDate,
-                        courseBoard.dateValue.createdDate,
-                        courseBoard.createdBy.id,
-                        courseBoard.viewCount
-                ))
-                .from(courseBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle())
-                                .or(contentContains(condition.getContent()))
-                                .or(createdByIdContains(condition.getMemberId()))
-                )
-                .orderBy(courseBoard.id.desc())
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
-                .fetch();
-    }
-
-    @Override
-    public long countTotalAllCriteria(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-        if(numCurrentPageContent < size) {
-            if(page == 0)
-                return (long)numCurrentPageContent;
-            else
-                return (long)(page * size) + numCurrentPageContent;
-        }
-
-
-        return queryFactory
-                .select(new QBoardListDto(
-                        courseBoard.id,
-                        courseBoard.title,
-//                        questionBoard.replyDateValue.contentCreatedDate,
-                        courseBoard.dateValue.createdDate,
-//                        questionBoard.contentCreatedBy.id,
-                        courseBoard.createdBy.id,
-                        courseBoard.viewCount
-                ))
-                .from(courseBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle())
-                                .or(contentContains(condition.getContent()))
-                                .or(createdByIdContains(condition.getMemberId()))
-                )
-                .fetchCount();
-    }
 
     private BooleanExpression courseIdEq(Long courseId) {
         return courseId == null ? null : courseBoard.course.id.eq(courseId);
@@ -168,7 +86,26 @@ public class CourseBoardRepositoryImpl implements CourseBoardRepositoryCustom {
         return writer == null ? null : courseBoard.createdBy.id.containsIgnoreCase(writer);
     }
 
+    private JPAQuery<BoardListDto> makeWhereCondition(JPAQuery<BoardListDto> toJoin, BoardSearchCondition condition, boolean isMultipleCriteria) {
 
+        JPAQuery<BoardListDto> toWhere = null;
+
+        if(isMultipleCriteria) {
+            toWhere = toJoin
+                    .where(courseIdEq(condition.getCourseId()),
+                            titleContains(condition.getTitle())
+                            .or(contentContains(condition.getContent()))
+                            .or(createdByIdContains(condition.getMemberId())));
+        } else {
+            toWhere = toJoin
+                    .where(courseIdEq(condition.getCourseId()),
+                            titleContains(condition.getTitle()),
+                            contentContains(condition.getContent()),
+                            createdByIdContains(condition.getMemberId()));
+        }
+
+        return toWhere;
+    }
 
 
 }

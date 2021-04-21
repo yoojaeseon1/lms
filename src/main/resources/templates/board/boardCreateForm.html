@@ -12,15 +12,8 @@
 
     <title>Ramayana - HTML5 Template</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <!--
-    Ramayana CSS Template
-    https://templatemo.com/tm-529-ramayana
-    -->
-
-    <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/assets/css/templatemo-style.css">
     <link rel="stylesheet" href="/assets/css/owl.css">
@@ -45,21 +38,17 @@
 
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
 
-    <!-- Main -->
     <div id="main">
         <div class="inner">
-
-            <!-- Header -->
             <header id="header">
                 <div class="logo">
                     <a href="index.html">LMS System</a>
                 </div>
             </header>
             <div th:text="${menuTitle}"></div>
-            <form action="./" method="post" enctype="multipart/form-data">
+            <form action="new" method="post" enctype="multipart/form-data">
             <table class="table table-hover">
                 <tr>
                     <th>제목</th>
@@ -90,14 +79,11 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div id="sidebar" th:include="layout/sideBar.html">
 
     </div>
 </div>
 
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 

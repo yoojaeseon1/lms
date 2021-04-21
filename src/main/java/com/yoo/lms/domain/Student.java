@@ -46,7 +46,5 @@ public class Student extends Member{
     @OneToMany(mappedBy="student")
     private List<Attendance> attendances = new ArrayList<>();
 
-    @OneToMany(mappedBy = "createdBy")
-    private List<CounselBoard> counselBoards = new ArrayList<>();
 
 }

@@ -1,20 +1,21 @@
 package com.yoo.lms.searchCondition;
 
-import com.yoo.lms.domain.enumType.CourseAcceptType;
+import com.yoo.lms.domain.enumType.AcceptType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.tomcat.jni.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
-@Getter @Setter
 @NoArgsConstructor
+@Getter @Setter
 public class CourseSearchCondition {
 
     private String courseName;
     private String teacherName;
+    private Long courseId;
+    private String teacherId;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
@@ -22,14 +23,24 @@ public class CourseSearchCondition {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    private CourseAcceptType acceptType;
+    private AcceptType acceptType;
 
 
-    public CourseSearchCondition(String courseName, String teacherName, LocalDate startDate, LocalDate endDate, CourseAcceptType acceptType) {
+    public CourseSearchCondition(String courseName, String teacherName, LocalDate startDate, LocalDate endDate, AcceptType acceptType) {
         this.courseName = courseName;
         this.teacherName = teacherName;
         this.startDate = startDate;
         this.endDate = endDate;
         this.acceptType = acceptType;
+    }
+
+    public CourseSearchCondition(String courseName) {
+        this.courseName = courseName;
+    }
+
+
+    public CourseSearchCondition(Long courseId, String teacherId) {
+        this.courseId = courseId;
+        this.teacherId = teacherId;
     }
 }

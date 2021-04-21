@@ -8,6 +8,7 @@ import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.repository.custom.MemberRepositoryCustom;
 import com.yoo.lms.searchCondition.MemberSearchCondition;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 
@@ -21,6 +22,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
+    @Autowired
     public MemberRepositoryImpl(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
@@ -39,9 +41,24 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                 .fetchOne();
     }
 
+//    @Override
+//    public Optional<MemberType> searchMemberType(MemberSearchCondition searchCondition) {
+//        return Optional.ofNullable(queryFactory
+//                .select(member.memberType)
+//                .from(member)
+//                .where(
+//                        idEq(searchCondition.getId()),
+//                        passwordEq(searchCondition.getPassword()),
+//                        nameEq(searchCondition.getName()),
+//                        emailEq(searchCondition.getEmail())
+//                )
+//                .fetchOne()
+//        );
+//    }
+
     @Override
-    public Optional<MemberType> searchMemberType(MemberSearchCondition searchCondition) {
-        return Optional.ofNullable(queryFactory
+    public MemberType searchMemberType(MemberSearchCondition searchCondition) {
+        return queryFactory
                 .select(member.memberType)
                 .from(member)
                 .where(
@@ -50,8 +67,20 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
                         nameEq(searchCondition.getName()),
                         emailEq(searchCondition.getEmail())
                 )
-                .fetchOne()
-        );
+                .fetchOne();
+
+    }
+
+    @Override
+    public boolean isExistId(String id) {
+
+        Integer fetchFirst = queryFactory
+                .selectOne()
+                .from(member)
+                .where(member.id.eq(id))
+                .fetchFirst();
+
+        return fetchFirst != null;
     }
 
     private BooleanExpression idEq(String id){

@@ -4,7 +4,9 @@ import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.Teacher;
 import com.yoo.lms.domain.enumType.MemberType;
+import com.yoo.lms.dto.CourseListDto;
 import com.yoo.lms.searchCondition.MemberSearchCondition;
+import com.yoo.lms.service.CourseService;
 import com.yoo.lms.service.MemberService;
 import com.yoo.lms.service.StudentService;
 import com.yoo.lms.service.TeacherService;
@@ -18,28 +20,29 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class LoginController {
 
     private final MemberService memberService;
     private final StudentService studentService;
     private final TeacherService teacherService;
+    private final CourseService courseService;
 
 
-    @GetMapping("/join/joinTypeChoise")
+    @GetMapping("/join/join-type-choise")
     public String chooseMemberTypeForm(Model model) {
 
         return "login/joinTypeChoise";
     }
 
     @GetMapping("/join/{memberType}")
-    public String joinForm(Model model,
-                           @PathVariable("memberType") String memberType
-    ) {
+    public String joinForm(@PathVariable String memberType,
+                           Model model) {
 
         model.addAttribute("memberType", memberType);
 
@@ -49,28 +52,20 @@ public class LoginController {
 
     @PostMapping("/join/{memberType}")
     @ResponseBody
-    public ResponseEntity<String> join(@RequestBody Member member,
-                                       @PathVariable("memberType") String memberType) {
-
-        log.info("postNumber : " + member.getAddress().getPostNumber());
-
-        ResponseEntity<String> entity = new ResponseEntity<>("success", HttpStatus.OK);
+    public ResponseEntity<String> join(@PathVariable String memberType,
+                                       @RequestBody Member member) {
 
         if(memberType.equals("student"))
             memberService.joinStduent(new Student(member));
         else
             memberService.joinTeacher(new Teacher(member));
 
-        log.info("insert success============");
-
-        return entity;
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
     @ResponseBody
-    @GetMapping("/join/checkDuplicationId")
+    @GetMapping("/join/check-duplication-id")
     public ResponseEntity<String> checkDuplicationID(String id) {
-
-        log.info("id : " + id);
 
         boolean isDuplicated = memberService.checkDuplicationID(id);
 
@@ -84,78 +79,87 @@ public class LoginController {
         return entity;
     }
 
-    @GetMapping("/loginForm")
+    @GetMapping("/login-form")
     public String loginForm(Model model){
 
         model.addAttribute("loginRetry", false);
-
 
         return "login/loginForm";
     }
 
 
-//    public String login(@RequestParam("id") String id,
-//                        @RequestParam("password") String password) {
     @GetMapping("/login")
     public String login(MemberSearchCondition searchCondition,
-                        HttpServletRequest request,
-                        Model model
-                        ) {
+                        HttpSession session,
+                        Model model) {
 
-        log.info("login - id : " + searchCondition.getId());
-        log.info("login - password : " + searchCondition.getPassword());
-        log.info("login - name : " + searchCondition.getName());
-        log.info("login - email : " + searchCondition.getEmail());
+        MemberType memberType = memberService.searchMemberType(searchCondition);
 
-        HttpSession session = request.getSession();
-        Optional<MemberType> memberTypeOptional = memberService.searchMemberType(searchCondition);
-
-//        if(memberType == null) {
-//
-//        } else {
-//            session.setAttribute("loginMember", member);
-//            return "redirect:/";
-//        }
-
-        if(memberTypeOptional.isEmpty()) {
+        if(memberType == null) {
             model.addAttribute("loginRetry", true);
-//            return "redirect:/loginForm";
-            return "login/loginForm";
+            return "/login/loginForm";
         }
 
-        MemberType memberType = memberTypeOptional.get();
+        List<CourseListDto> courseListDtos = null;
 
         if(memberType == MemberType.STUDENT) {
 
-            log.info("login(student) - id : " + searchCondition.getId());
-
-
             Student member = studentService.findById(searchCondition.getId());
+            courseListDtos = courseService.findCListDtosStudent(member.getId());
+
             session.setAttribute("loginMember", member);
-            session.setAttribute("memberType", memberType);
+            session.setAttribute("courseListDtos", courseListDtos);
 
-        } else {
 
-            log.info("login(teacher) - id : " + searchCondition.getId());
+        } else if (memberType == MemberType.TEACHER) {
 
             Teacher member = teacherService.findById(searchCondition.getId());
-            session.setAttribute("loginMember", member);
-            session.setAttribute("memberType", memberType);
+            courseListDtos = courseService.findCListDtosTeacher(member.getId());
 
+            session.setAttribute("loginMember", member);
+            session.setAttribute("acceptType", member.getAcceptType());
+            session.setAttribute("courseListDtos", courseListDtos);
+
+        } else{
+
+            Member member = memberService.findById(searchCondition.getId());
+
+            session.setAttribute("loginMember", member);
         }
+
+        session.setAttribute("memberType", memberType);
+        session.setAttribute("sideBarType", "home");
+
 
         return "redirect:/";
 
     }
 
-    @GetMapping("/findIDForm")
+    @GetMapping("/logout")
+    public String logout(HttpSession session){
+
+        session.removeAttribute("loginMember");
+        session.removeAttribute("memberType");
+        session.removeAttribute("acceptType");
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/find-id-form")
     public String findIdForm(){
 
 
         return "/login/idFindForm";
     }
 
-    @GetMapping("/findID")
+    /**
+     * 일부분만 보여주는 아이디 출력
+     * @param searchCondition
+     * @param model
+     * @return
+     */
+
+    @GetMapping("/find-id")
     public String findID(MemberSearchCondition searchCondition,
                          Model model) {
 
@@ -167,16 +171,19 @@ public class LoginController {
             hiddenID.setCharAt(hiddenI,'*');
         }
 
-//        log.info("findId - id's length == 0: " + (id.length()==0));
-//        log.info("findId - id is null : " + (id==null));
-
         model.addAttribute("hiddenID", hiddenID);
         model.addAttribute("id", id);
 
         return "/login/idFindResult";
     }
 
-    @GetMapping("/findFullID")
+    /**
+     * 가리지 않은 전체 아이디 email 전송
+     * @param searchCondition
+     * @return
+     */
+
+    @GetMapping("/find-full-id")
     public String findFullID(MemberSearchCondition searchCondition) {
 
         memberService.sendEmailFullID(searchCondition);
@@ -184,13 +191,13 @@ public class LoginController {
         return "redirect:/";
     }
 
-    @GetMapping("/findPasswordForm")
+    @GetMapping("/find-password-form")
     public String findPasswordForm(){
 
         return "login/passwordFindForm";
     }
 
-    @GetMapping("/findPassword")
+    @GetMapping("/find-password")
     public String findPassword(MemberSearchCondition searchCondition,
                                Model model){
 

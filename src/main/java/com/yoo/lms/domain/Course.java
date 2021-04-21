@@ -1,10 +1,12 @@
 package com.yoo.lms.domain;
 
+import com.yoo.lms.domain.enumType.AcceptType;
 import com.yoo.lms.domain.enumType.CourseAcceptType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@EntityListeners(AuditingEntityListener.class)
 public class Course {
 
     @Id @GeneratedValue
@@ -30,7 +33,7 @@ public class Course {
     private int currentNumStudent;
 
     @Enumerated(EnumType.STRING)
-    private CourseAcceptType acceptType;
+    private AcceptType acceptType;
 
     @CreatedDate
     private LocalDate createdDate;
@@ -56,12 +59,9 @@ public class Course {
     @OneToMany(mappedBy = "course")
     private List<HomeworkBoard> homeworkBoards = new ArrayList<>();
 
-    @OneToMany(mappedBy="course")
-    private List<CourseSchedule> courseSchedules = new ArrayList<>();
-
     public Course() {
         this.currentNumStudent = 0;
-        this.acceptType = CourseAcceptType.WAITING;
+        this.acceptType = AcceptType.WAITING;
     }
 
     public Course(String name, int maxNumStudent, LocalDate startDate, LocalDate endDate) {
@@ -70,17 +70,7 @@ public class Course {
         this.startDate = startDate;
         this.endDate = endDate;
         this.currentNumStudent = 0;
-        this.acceptType = CourseAcceptType.WAITING;
-    }
-
-    public Course(String name, Teacher teacher, int maxNumStudent, LocalDate startDate, LocalDate endDate) {
-        this.name = name;
-        this.teacher = teacher;
-        this.maxNumStudent = maxNumStudent;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.currentNumStudent = 0;
-        this.acceptType = CourseAcceptType.WAITING;
+        this.acceptType = AcceptType.WAITING;
     }
 
     public void addTeacher(Teacher teacher) {
@@ -89,11 +79,11 @@ public class Course {
     }
 
     public void acceptCourse() {
-        this.acceptType = CourseAcceptType.ACCEPTED;
+        this.acceptType = AcceptType.ACCEPTED;
     }
 
     public void rejectCourse() {
-        this.acceptType = CourseAcceptType.REJECTED;
+        this.acceptType = AcceptType.REJECTED;
     }
 
     /**

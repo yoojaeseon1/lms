@@ -5,36 +5,30 @@ import com.yoo.lms.domain.Course;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.StudentCourse;
 import com.yoo.lms.domain.Teacher;
+import com.yoo.lms.domain.enumType.AcceptType;
 import com.yoo.lms.dto.CourseListDto;
 import com.yoo.lms.repository.CourseRepository;
 import com.yoo.lms.repository.StudentCourseRepository;
 import com.yoo.lms.repository.StudentRepository;
 import com.yoo.lms.searchCondition.CourseSearchCondition;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly=true)
+@Slf4j
 public class CourseService {
 
     private final StudentRepository studentRepository;
-
     private final TeacherService teacherService;
-
     private final CourseRepository courseRepository;
-
     private final StudentCourseRepository studentCourseRepository;
-
-    private final int pageSize = 10;
 
     public Course findOne(Long courseId) {
         Optional<Course> courseOptional = courseRepository.findById(courseId);
@@ -44,10 +38,6 @@ public class CourseService {
             course = courseOptional.get();
 
         return course;
-    }
-
-    public List<Course> findAll(){
-        return courseRepository.findAll();
     }
 
     public List<CourseListDto> findCListDtosStudent(String studentId) {
@@ -60,42 +50,36 @@ public class CourseService {
                 .findCListDtosByTeacher(teacherId);
     }
 
-    public String findName(Long courseId, String teacherId) {
-        return courseRepository
-                .findCourseName(courseId, teacherId);
+    public boolean existCourseName(Long courseId, String teacherId) {
+        return courseRepository.existCourseName(new CourseSearchCondition(courseId, teacherId));
     }
 
     @Transactional
-    public boolean createCourse(Course course, String teacherId) {
+    public boolean createCourse(Course course, Teacher teacher) {
 
-        List<Course> findCourse = courseRepository.findByNameContaining(course.getName());
+        boolean isExistCourse = courseRepository.existCourseName(new CourseSearchCondition(course.getName()));
 
-        if(findCourse.size() == 0) {
-
-            Teacher teacher = teacherService.findById(teacherId);
+        if(!isExistCourse) {
 
             course.addTeacher(teacher);
-
             courseRepository.save(course);
             return true;
-        }
-        else
+        } else
             return false;
     }
 
-    @Transactional
     public List<Course> searchCourse(CourseSearchCondition condition, String studentId) {
         return courseRepository.searchCourseByStudent(condition, studentId);
     }
 
 
     @Transactional
-    public synchronized boolean enrollCourse(String studentId, Long courseId){
+    public synchronized Course enrollCourse(String studentId, Long courseId){
 
         Course findCourse = courseRepository.findById(courseId).get();
 
         if(findCourse.getCurrentNumStudent() == findCourse.getMaxNumStudent())
-            return false;
+            return null;
 
         Student findStudent = studentRepository.findById(studentId).get();
 
@@ -106,15 +90,32 @@ public class CourseService {
         findCourse.addCurStudentNum();
         studentCourseRepository.save(studentCourse);
 
-        return true;
+        return findCourse;
+    }
+
+    public List<Course> findByTeacherIdAndAcceptType(String teacherId, AcceptType acceptType) {
+        return courseRepository.findByTeacherIdAndAcceptType(teacherId, acceptType);
+    }
+
+    public List<Course> findCourseByTeacherAndType(String teacherName, AcceptType acceptType) {
+        return courseRepository.findCourseByTeacherAndType(teacherName, acceptType);
+    }
+
+
+    @Transactional
+    public void permitCourse(Long courseId) {
+
+        Course findCourse = courseRepository.findById(courseId).get();
+
+        findCourse.acceptCourse();
     }
 
     @Transactional
-    public void permitCourse(Course course) {
+    public void rejectCourse(Long courseId) {
 
-        Course findCourse = courseRepository.findById(course.getId()).get();
+        Course findCourse = courseRepository.findById(courseId).get();
 
-        findCourse.acceptCourse();
+        findCourse.rejectCourse();
     }
 
     @Transactional
@@ -125,13 +126,8 @@ public class CourseService {
         findCourse.updateInfo(updatedCourse);
     }
 
-    @Transactional
-    public void cancelEnrolledCourse(Long courseId, String studentId) {
-        studentCourseRepository.deleteStudentCourse(courseId, studentId);
+    public boolean existCourseByTeacherIdAndCourseId(Long courseId, String teacherId){
+        return courseRepository.existCourseByTeacherIdAndCourseId(courseId, teacherId);
     }
 
-    @Transactional
-    public void deleteCourse(Course course) {
-        courseRepository.deleteById(course.getId());
-    }
 }

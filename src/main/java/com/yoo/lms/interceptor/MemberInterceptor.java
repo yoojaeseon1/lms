@@ -42,7 +42,6 @@ public class MemberInterceptor implements HandlerInterceptor {
             return false;
         }
 
-//        String[] paths = request.getRequestURI().split("/");
         String requestURI = request.getRequestURI();
 
         StringBuilder path = new StringBuilder();

@@ -4,13 +4,15 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.yoo.lms.domain.HomeworkBoard;
-import com.yoo.lms.domain.QuestionBoard;
 import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.dto.BoardListDto;
 import com.yoo.lms.dto.QBoardListDto;
-import com.yoo.lms.repository.custom.HBoardRepositoryCumstom;
+import com.yoo.lms.repository.custom.HomeworkBoardRepositoryCumstom;
 import com.yoo.lms.searchCondition.BoardSearchCondition;
-import org.springframework.data.domain.PageRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -18,9 +20,8 @@ import java.util.List;
 import static com.yoo.lms.domain.QBoardReply.boardReply;
 import static com.yoo.lms.domain.QHomeworkBoard.*;
 import static com.yoo.lms.domain.QMember.member;
-import static com.yoo.lms.domain.QQuestionBoard.questionBoard;
-
-public class HomeworkBoardRepositoryImpl implements HBoardRepositoryCumstom {
+@Slf4j
+public class HomeworkBoardRepositoryImpl implements HomeworkBoardRepositoryCumstom {
 
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
@@ -31,101 +32,43 @@ public class HomeworkBoardRepositoryImpl implements HBoardRepositoryCumstom {
     }
 
     @Override
-    public List<BoardListDto> searchPosting(BoardSearchCondition condition, int page, int size) {
+    public Page<BoardListDto> searchPosting(BoardSearchCondition condition, boolean isMultipleCriteria, Pageable pageable) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        return queryFactory
+        JPAQuery<BoardListDto> contentBeforeWhere = queryFactory
                 .select(new QBoardListDto(
                         homeworkBoard.id,
                         homeworkBoard.title,
-                        homeworkBoard.dateValue.createdDate,
-                        homeworkBoard.createdBy.id,
-                        homeworkBoard.viewCount
+                        homeworkBoard.createdDate,
+                        homeworkBoard.createdBy.name,
+                        homeworkBoard.views.size()
                 ))
-                .from(homeworkBoard)
-                .join(homeworkBoard.createdBy, member)
-                .where(titleContains(condition.getTitle()),
-                        contentContains(condition.getContent()),
-                        contentCreatedByIdContains(condition.getMemberId()),
-                        memberTypeEq(condition.getMemberType()))
+                .from(homeworkBoard);
+
+        JPAQuery<BoardListDto> contentToWhere = makeWhereCondition(contentBeforeWhere, condition, isMultipleCriteria);
+
+        List<BoardListDto> boardListDtos = contentToWhere
                 .orderBy(homeworkBoard.id.desc())
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+        JPAQuery<BoardListDto> countBeforeWhere = queryFactory
+                .select(new QBoardListDto(homeworkBoard.id))
+                .from(homeworkBoard);
+
+        JPAQuery<BoardListDto> countToWhere = makeWhereCondition(countBeforeWhere, condition, isMultipleCriteria);
+
+        long totalCount = countToWhere.fetchCount();
+
+        return new PageImpl<>(boardListDtos, pageable, totalCount);
     }
 
-    @Override
-    public long countTotalPosting(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-
-        if(numCurrentPageContent < size) {
-            if(page == 0)
-                return (long)numCurrentPageContent;
-            else
-                return (long)(page * size) + numCurrentPageContent;
-        }
-
-
-        return queryFactory
-                .selectFrom(homeworkBoard)
-                .join(homeworkBoard.createdBy, member)
-                .where(titleContains(condition.getTitle()),
-                        contentContains(condition.getContent()),
-                        contentCreatedByIdContains(condition.getMemberId()),
-                        memberTypeEq(condition.getMemberType()))
-                .fetchCount();
-    }
-
-
-    @Override
-    public List<BoardListDto> searchPostingAllCriteria(BoardSearchCondition condition, int page, int size) {
-
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        return queryFactory
-                .select(new QBoardListDto(
-                        homeworkBoard.id,
-                        homeworkBoard.title,
-//                        questionBoard.replyDateValue.contentCreatedDate,
-                        homeworkBoard.dateValue.createdDate,
-                        homeworkBoard.createdBy.id,
-                        homeworkBoard.viewCount
-                ))
-                .from(homeworkBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle())
-                                .or(contentContains(condition.getContent()))
-                                .or(createdByIdContains(condition.getMemberId()))
-                )
-                .orderBy(homeworkBoard.id.desc())
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
-                .fetch();
-    }
-
-    @Override
-    public long countTotalAllCriteria(BoardSearchCondition condition, int page, int size, int numCurrentPageContent) {
-
-        if(numCurrentPageContent < size) {
-            if(page == 0)
-                return (long)numCurrentPageContent;
-            else
-                return (long)(page * size) + numCurrentPageContent;
-        }
-
-
-        return queryFactory
-                .selectFrom(homeworkBoard)
-                .where(
-                        courseIdEq(condition.getCourseId()),
-                        titleContains(condition.getTitle())
-                                .or(contentContains(condition.getContent()))
-                                .or(createdByIdContains(condition.getMemberId()))
-                )
-                .fetchCount();
-    }
-
+    /**
+     * 
+     * @param boardId
+     * @param hasReplies true : 해당 게시물의 과제들 즉시로딩, false : 지연로딩
+     * @return
+     */
 
     @Override
     public HomeworkBoard findPostingById(Long boardId, boolean hasReplies) {
@@ -134,18 +77,17 @@ public class HomeworkBoardRepositoryImpl implements HBoardRepositoryCumstom {
                 .selectFrom(homeworkBoard);
 
         if(hasReplies) {
-            jpaQuery.leftJoin(homeworkBoard.replies, boardReply)
+            jpaQuery = jpaQuery
+                    .leftJoin(homeworkBoard.replies, boardReply)
                     .fetchJoin();
         }
 
-        return jpaQuery.where(homeworkBoard.id.eq(boardId))
+        return jpaQuery
+                .join(homeworkBoard.createdBy, member)
+                .fetchJoin()
+                .where(homeworkBoard.id.eq(boardId))
                 .fetchOne();
 
-    }
-
-    @Override
-    public long deletePostingById(Long boardId) {
-        return 0;
     }
 
 
@@ -172,6 +114,27 @@ public class HomeworkBoardRepositoryImpl implements HBoardRepositoryCumstom {
 
     private BooleanExpression createdByIdContains(String writer) {
         return writer == null ? null : homeworkBoard.createdBy.id.containsIgnoreCase(writer);
+    }
+
+    private JPAQuery<BoardListDto> makeWhereCondition(JPAQuery<BoardListDto> beforeWhere, BoardSearchCondition condition, boolean isMultipleCriteria) {
+        JPAQuery<BoardListDto> toWhere = null;
+
+        if(isMultipleCriteria) {
+            toWhere = beforeWhere
+                    .where(courseIdEq(condition.getCourseId()),
+                            titleContains(condition.getTitle())
+                            .or(contentContains(condition.getContent()))
+                            .or(createdByIdContains(condition.getMemberId())));
+        } else {
+            toWhere = beforeWhere
+                    .where(courseIdEq(condition.getCourseId()),
+                            titleContains(condition.getTitle()),
+                            contentContains(condition.getContent()),
+                            createdByIdContains(condition.getMemberId()));
+//                            memberTypeEq(condition.getMemberType()));
+        }
+
+        return toWhere;
     }
 
 }

@@ -154,7 +154,7 @@ function convertDate(date) {
 }
 
 function goPopup(){
-    var pop = window.open("/jusoPopup","pop","width=570,height=420, scrollbars=yes, resizable=yes");
+    var pop = window.open("/juso-popup","pop","width=570,height=420, scrollbars=yes, resizable=yes");
 }
 
 function jusoCallBack(roadAddrPart1,addrDetail,roadAddrPart2,zipNo){

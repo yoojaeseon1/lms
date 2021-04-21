@@ -11,12 +11,14 @@ import com.yoo.lms.service.CourseService;
 import com.yoo.lms.tools.PageMaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/courses")
 @Slf4j
 public class CourseBoardController {
 
@@ -31,90 +34,79 @@ public class CourseBoardController {
     private final CourseMaterialService courseMaterialService;
     private final CourseService courseService;
 
-    @GetMapping("/course/{courseId}/courseBoard")
+    @GetMapping("/{courseId}/course-board")
     public String listCourseBoard(Model model,
-                               BoardSearchCriteria searchCriteria,
-                               @PathVariable("courseId") Long courseId,
-                               @RequestParam(name = "page", defaultValue = "1") int page,
+                                  BoardSearchCriteria searchCriteria,
+                                  @PathVariable("courseId") Long courseId,
+                                  @RequestParam(defaultValue = "1") int currentPage,
                                   HttpSession session) {
 
         BoardSearchCondition condition = new BoardSearchCondition(courseId);
 
-//        log.info("========================");
-//        log.info("courseId : "+ courseId);
-//        log.info("page : " + page);
-//        log.info("searchType : " + searchCriteria.getSearchType());
-//        log.info("keyword : " + searchCriteria.getKeyword().equals(""));
-//        log.info("keyword : " + (searchCriteria.getKeyword()==null));
-//        log.info("========================");
 
         if(searchCriteria.getKeyword() == null && searchCriteria.getSearchType() == null)
             searchCriteria = new BoardSearchCriteria("","");
 
         condition.initCondition(searchCriteria);
 
-        List<BoardListDto> postings = null;
-        long totalCount = 0;
+        Page<BoardListDto> page = null;
 
-        if(searchCriteria.getSearchType().equals("all") || searchCriteria.getSearchType().equals("titleAndContent")) {
+        if(searchCriteria.getSearchType().equals("all") || searchCriteria.getSearchType().equals("titleAndContent"))
+            page = courseBoardService.searchPosting(condition, true, currentPage-1, 10);
 
-            postings = courseBoardService.searchPostingAllCriteria(condition, page-1, 10);
-            totalCount = courseBoardService.countTotalAllCriteria(condition, page-1, 10, postings.size());
-
-        } else {
-
-            postings = courseBoardService.searchPosting(condition, page-1, 10);
-            totalCount = courseBoardService.countTotalPosting(condition, page-1, 10, postings.size());
-        }
+        else
+            page = courseBoardService.searchPosting(condition, false, currentPage-1, 10);
 
 
-        PageMaker pageMaker = courseBoardService.makePageMaker(page, totalCount, searchCriteria);
+        PageMaker pageMaker = new PageMaker(currentPage, page.getTotalElements());
 
-        model.addAttribute("postings", postings);
+        model.addAttribute("page", page);
         model.addAttribute("pageMaker", pageMaker);
         model.addAttribute("searchCriteria", searchCriteria);
         model.addAttribute("courseId", courseId);
-        model.addAttribute("action","courseBoard");
+        model.addAttribute("action","course-board");
         model.addAttribute("menuTitle", "강의 공지사항");
 
 
 
-        String memberType = (String)session.getAttribute("memberType");
+        MemberType memberType = (MemberType)session.getAttribute("memberType");
 
         boolean canWritePosting = false;
-        if(memberType.equals("TEACHER")) {
+
+        if(memberType == MemberType.TEACHER) {
             Teacher member = (Teacher) session.getAttribute("loginMember");
-            String name = courseService.findName(courseId, member.getId());
-            if(name != null)
+            boolean isExistCourseName = courseService.existCourseName(courseId, member.getId());
+
+            if(isExistCourseName)
                 canWritePosting = true;
         }
 
         model.addAttribute("canWritePosting", canWritePosting);
 
 
-        return "board/boardList";
+        return "/board/boardList";
     }
 
-    @GetMapping("/course/{courseId}/courseBoard/{boardId}")
-    public String showCourseBoard(Model model,
-                               @PathVariable("boardId") Long boardId) {
+    @GetMapping("/{courseId}/course-board/{boardId}")
+    public String showCourseBoard(@PathVariable Long boardId,
+                                  Model model) {
 
         CourseBoard posting = courseBoardService.findPostingById(boardId);
-
+        courseBoardService.addViewCount(boardId);
 
         List<CourseMaterial> courseMaterials = courseMaterialService.findByBoardId(boardId);
 
+
         model.addAttribute("posting", posting);
         model.addAttribute("courseMaterials", courseMaterials);
+        model.addAttribute("boardType", "course-board");
 
         return "board/boardDetail";
 
     }
 
-    @GetMapping("/course/{courseId}/courseBoard/new")
-    public String createCourseBoardForm(Model model,
-                                     @PathVariable("courseId") Long courseId,
-                                     HttpServletRequest request){
+    @GetMapping("/{courseId}/course-board/new")
+    public String createCourseBoardForm(Model model){
 
         model.addAttribute("canUploadFile", true);
         model.addAttribute("formTitle", "강의 공지사항 작성");
@@ -122,36 +114,32 @@ public class CourseBoardController {
         return "board/boardCreateForm";
     }
 
-    @PostMapping("/course/{courseId}/courseBoard")
-    public String createCourseBoard(@PathVariable("courseId") Long courseId,
-                                 String title,
-                                 String content,
-                                 MultipartFile[] files,
-                                    HttpSession session
-    ) throws IOException {
+    @PostMapping("/{courseId}/course-board/new")
+    public String createCourseBoard(@PathVariable Long courseId,
+                                    String title,
+                                    String content,
+                                    MultipartFile[] files,
+                                    HttpSession session) throws IOException {
 
         Member member = (Member)session.getAttribute("loginMember");
 
         courseBoardService.saveCourseBoard(files, courseId, title, content, member);
 
 
-        return "redirect:/course/"+courseId+"/courseBoard";
+        return "redirect:/courses/"+courseId+"/course-board";
     }
 
 
-    @GetMapping("/course/{courseId}/courseBoard/{boardId}/update")
-    public String updateCourseBoardForm(Model model,
-                                     @PathVariable("boardId") Long boardId) {
+    @GetMapping("/{courseId}/course-board/{boardId}/update")
+    public String updateCourseBoardForm(@PathVariable Long boardId,
+                                        Model model) {
 
         CourseBoard findCourseBoard = courseBoardService.findPostingById(boardId);
         List<CourseMaterial> courseMaterials = courseMaterialService.findByBoardId(boardId);
-//        List<String> fileNames = courseMaterialService.parseFileName(courseMaterials);
 
 
         model.addAttribute("posting", findCourseBoard);
         model.addAttribute("courseMaterials", courseMaterials);
-//        model.addAttribute("fileNames", fileNames);
-//        model.addAttribute("boardId", boardId);
 
         model.addAttribute("menuTitle", "강의 공지사항 수정");
         model.addAttribute("canUploadFile", true);
@@ -159,25 +147,26 @@ public class CourseBoardController {
         return "/board/boardUpdateForm";
     }
 
-    @PutMapping("/course/{courseId}/courseBoard/{boardId}/")
-    public String updateCourseBoard(@PathVariable("boardId") Long boardId,
-                                    @PathVariable("courseId") Long courseId,
-                                 String title,
-                                 String content,
-                                 MultipartFile[] files) throws IOException{
+    @PutMapping("/{courseId}/course-board/{boardId}")
+    public String updateCourseBoard(@PathVariable Long boardId,
+                                    @PathVariable Long courseId,
+                                    @RequestParam String title,
+                                    @RequestParam String content,
+                                    MultipartFile[] files) throws IOException{
 
         courseBoardService.updateCourseBoard(boardId, title, content, files);
 
-        return "redirect:/course/"+courseId+"/courseBoard";
+        return "redirect:/courses/"+courseId+"/course-board";
 
     }
 
-    @DeleteMapping("/course/{courseId}/courseBoard/{boardId}")
-    public String deleteCourseBoard(@PathVariable("boardId") Long boardId,
-                                    @PathVariable("courseId") Long courseId) {
+    @ResponseBody
+    @DeleteMapping("/{courseId}/course-board/{boardId}")
+    public ResponseEntity<String> deleteCourseBoard(@PathVariable Long boardId) {
 
         courseBoardService.deleteByBoardId(boardId);
 
-        return "redirect:/course/"+courseId+"/courseBoard";
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 }
+

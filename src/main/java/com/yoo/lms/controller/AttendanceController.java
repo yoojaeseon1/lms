@@ -7,33 +7,28 @@ import com.yoo.lms.searchCondition.AtSearchCondition;
 import com.yoo.lms.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.jni.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
-@Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/courses")
+@Slf4j
 public class AttendanceController {
 
     private final AttendanceService attendanceService;
 
-    @GetMapping("/course/{courseId}/attendance/new")
-    public String createAttendanceForm(@PathVariable("courseId") Long courseId,
-                                       Model model
-                                       ){
+    @GetMapping("/{courseId}/attendance/new")
+    public String createAttendanceForm(@PathVariable Long courseId,
+                                       Model model){
 
-        List<AttendanceListDto> attendances = attendanceService.searchStudentAttendList(courseId);
-
-        log.info("====================");
-        log.info("check null attendance type : " + (attendances.get(0).getAttendanceType() == null));
-//        log.info("check string attendance type : " + (AttendanceType.ATTENDANCE.toString().equals("ATTENDANCE")));
-        log.info("====================");
+        List<AttendanceListDto> attendances = attendanceService.findStudentAttendList(courseId);
 
         model.addAttribute("attendances", attendances);
         model.addAttribute("menuTitle", "출석 등록");
@@ -41,45 +36,27 @@ public class AttendanceController {
         return "attendance/studentList";
     }
 
-    @PostMapping("/course/{courseId}/attendance")
-    public String createAttendance(@PathVariable("courseId") Long courseId,
-                                   AttendanceTypeListDto attendanceStateListDto
-                                    ){
+    @PostMapping("/{courseId}/attendance")
+    public String createAttendance(@PathVariable Long courseId,
+                                   AttendanceTypeListDto attendanceStateListDto){
 
         List<AttendanceTypeDto> states = attendanceStateListDto.getStates();
 
+        LocalDateTime currentTime = LocalDateTime.now();
 
-        log.info("=============");
-        log.info("into createAttendance(post)");
-        log.info("=============");
+        attendanceService.save(courseId, states, currentTime);
 
-//        for (AttendanceStateDto state : states) {
-//            log.info(state.getStudentId());
-//            log.info(state.getAttendState());
-//            log.info("=============");
-//        }
-
-        attendanceService.save(courseId, states);
-
-        return "redirect:/course/"+courseId+"/attendance";
+        return "redirect:/courses/"+courseId+"/attendance";
     }
 
-    @GetMapping("/course/{courseId}/attendance/update")
-    public String updateAttendanceForm(@PathVariable("courseId") Long courseId,
-                                       @RequestParam("checkedDate")
-                                       @DateTimeFormat(pattern="yyyy-MM-dd")
-                                               LocalDate checkedDate,
-                                       Model model
-                                       ) {
+    @GetMapping("/{courseId}/attendance/update")
+    public String updateAttendanceForm(@PathVariable Long courseId,
+                                       @RequestParam
+                                       @DateTimeFormat(iso= DateTimeFormat.ISO.DATE_TIME)
+                                               LocalDateTime checkedDate,
+                                       Model model) {
 
-        log.info("checkedDate : " + checkedDate);
-
-        List<AttendanceListDto> attendances = attendanceService.searchUpdateList(courseId, checkedDate);
-
-        log.info("====================");
-        log.info("execute updateAttendanceForm");
-        log.info("check null attendance type : " + (attendances.get(0).getAttendanceType() == null));
-        log.info("====================");
+        List<AttendanceListDto> attendances = attendanceService.findUpdateList(courseId, checkedDate);
 
         model.addAttribute("attendances", attendances);
         model.addAttribute("menuTitle", "출석 수정");
@@ -92,70 +69,30 @@ public class AttendanceController {
         return "attendance/studentList";
     }
 
-//    @PutMapping("{courseId}/attendance")
-//    public String updateAttendance(@PathVariable("courseId") Long courseId,
-//                                   @RequestParam("checkedDate")
-//                                   @DateTimeFormat(pattern="yyyy-MM-dd")
-//                                           LocalDate checkedDate,
-//                                   AttendanceTypeListDto AttendanceTypeListDto
-//                                   ) {
-    @PutMapping("/course/{courseId}/attendance")
-    public String updateAttendance(AttendanceTypeListDto AttendanceTypeListDto,
-                                   @PathVariable("courseId") Long courseId
-                                   ) {
+    @PutMapping("/{courseId}/attendance")
+    public String updateAttendance(@PathVariable Long courseId,
+                                   AttendanceTypeListDto AttendanceTypeListDto) {
 
-        log.info("=================");
-        log.info("execute updateAttendance(put)");
-        log.info("=================");
-
-
-//        for (AttendanceStateDto state : states) {
-//            log.info("state.attendanceId : " + state.getAttendanceId());
-//            log.info("state.attendanceState : " + state.getAttendState());
-//            log.info("=============");
-//        }
-
-//        List<AttendanceTypeDto> states = attendanceStateListDto.getStates();
 
         attendanceService.updateAttendance(AttendanceTypeListDto.getStates());
 
 
-        return "redirect:/course/"+courseId+"/attendance";
+        return "redirect:/courses/"+courseId+"/attendance";
 
     }
 
-    @GetMapping("/course/{courseId}/attendance")
-    public String listAttendance(@PathVariable("courseId") Long courseId,
-                                 @RequestParam(name = "startDate", required = false)
-                                 @DateTimeFormat(pattern="yyyy-MM-dd")
-                                         LocalDate startDate,
-                                 @RequestParam(name = "endDate", required = false)
-                                 @DateTimeFormat(pattern="yyyy-MM-dd")
-                                         LocalDate endDate,
-                                 Model model
-                                 ) {
-
-
-//        log.info("startDate : " + startDate);
-//        log.info("endDate : " + endDate);
-
-
-        AtSearchCondition atSearchCondition = new AtSearchCondition(courseId, startDate, endDate);
+    @GetMapping("/{courseId}/attendance")
+    public String listAttendance(AtSearchCondition atSearchCondition,
+                                 Model model) {
 
         List<AttendanceListDto> attendanceListDtos = attendanceService.searchCourseAttendList(atSearchCondition);
 
-//        for (AttendanceListDto attendanceListDto : attendanceListDtos) {
-//            log.info("getAttendanceId() : " + attendanceListDto.getAttendanceId());
-//        }
-
-
         model.addAttribute("attendanceListDtos", attendanceListDtos);
-//        model.addAttribute("checkedDate", LocalDate.of(2021,2,7));
-//        model.addAttribute("checkedDate", attendanceListDtos.get(0).getCheckedDate());
 
         return "attendance/attendanceList";
-//        return "redirect:/";
 
     }
 
 }
+
+

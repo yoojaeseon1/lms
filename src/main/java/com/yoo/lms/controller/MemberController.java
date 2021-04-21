@@ -1,14 +1,14 @@
 package com.yoo.lms.controller;
 
-import com.yoo.lms.domain.Member;
-import com.yoo.lms.domain.Student;
-import com.yoo.lms.domain.Teacher;
+import com.yoo.lms.domain.*;
+import com.yoo.lms.domain.enumType.AcceptType;
 import com.yoo.lms.domain.enumType.MemberType;
-import com.yoo.lms.service.MemberService;
-import com.yoo.lms.service.StudentService;
-import com.yoo.lms.service.TeacherService;
+import com.yoo.lms.dto.MyCourseDto;
+import com.yoo.lms.searchCondition.AtSearchCondition;
+import com.yoo.lms.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,53 +19,49 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/my-page")
 @Slf4j
 public class MemberController {
 
     private final MemberService memberService;
     private final StudentService studentService;
     private final TeacherService teacherService;
+    private final StudentCourseService studentCourseService;
+    private final CourseService courseService;
+    private final AttendanceService attendanceService;
 
 
-    @GetMapping("/myPage/passwordCheckForm")
+    @GetMapping("/password-check-form")
     public String checkPasswordForm(){
 
 
-        return "myPage/passwordCheckForm";
+        return "/myPage/passwordCheckForm";
     }
 
-    @PostMapping("/myPage/passwordCheck")
+    @PostMapping("/password-check")
     @ResponseBody
     public String checkPassword(@RequestBody String password,
-                                HttpServletRequest request
-                                ) throws UnsupportedEncodingException {
+                                HttpServletRequest request) throws UnsupportedEncodingException {
 
         String decodedPassword = URLDecoder.decode(password,"utf-8");
-
         password = decodedPassword.substring(0, decodedPassword.length()-1);
-//        log.info("checkPassword - decodedPassword : " + decodedPassword);
-//        log.info("checkPassword - password : " + password);
-//        log.info("checkPassword - password(equals 3333=)" + (password.equals("3333=")));
 
         HttpSession session = request.getSession();
 
-//        MemberType memberType = (MemberType) session.getAttribute("memberType");
-
         Member loginMember = (Member)session.getAttribute("loginMember");
-        log.info("checkPassword - member.addresss.postNumber : " + loginMember.getAddress().getPostNumber());
-        log.info("checkPassword - member.addresss.roadAddress : " + loginMember.getAddress().getRoadAddress());
-        log.info("checkPassword - member.addresss.detailAddress : " + loginMember.getAddress().getDetailAddress());
 
         if(loginMember.getPassword().equals(password))
-            return "success";
+            return "ok";
 
         return "fail";
     }
 
-    @GetMapping("/myPage/memberInfo")
+    @GetMapping("/information")
     public String updateInfoForm(HttpServletRequest request,
                                    Model model){
 
@@ -80,15 +76,10 @@ public class MemberController {
 
     }
 
-    @PutMapping("/myPage/infomation")
+    @PutMapping("/infomation")
     @ResponseBody
-    public String updateInfo(@RequestBody Member member,
-                             HttpServletRequest request
-                             ){
-
-        log.info("updateInfo - password : " + member.getPassword());
-        log.info("updateInfo - name : " + member.getName());
-        log.info("updateInfo - postNumber : " + member.getAddress().getPostNumber());
+    public ResponseEntity<String> updateInfo(@RequestBody Member member,
+                                             HttpServletRequest request){
 
         HttpSession session = request.getSession();
 
@@ -104,9 +95,76 @@ public class MemberController {
             session.setAttribute("loginMember", teacherService.findById(loginMember.getId()));
         }
 
-        return "success";
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
 
+    @GetMapping("/my-attendances")
+    public String checkMyAttendance(@RequestParam(required = false)
+                                    @DateTimeFormat(iso= DateTimeFormat.ISO.DATE)
+                                        LocalDate startDate,
+                                    @RequestParam(required = false)
+                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                            LocalDate endDate,
+                                    @RequestParam(required = false) Long courseId,
+                                    HttpSession session,
+                                    Model model) {
+
+            Member member = (Member) session.getAttribute("loginMember");
+
+            if(member.getMemberType() == MemberType.STUDENT){
+                member = (Student)member;
+
+                List<MyCourseDto> myCourseDtos = studentCourseService.findMyCourseDto(member.getId());
+
+                model.addAttribute("myCourseDtos", myCourseDtos);
+
+
+                if(courseId != null) {
+                    AtSearchCondition atSearchCondition = new AtSearchCondition(courseId, member.getId(), startDate, endDate);
+
+                    List<Attendance> attendances = attendanceService.searchMyAttendances(atSearchCondition);
+
+                    model.addAttribute("attendances", attendances);
+
+                }
+        }
+
+        return "/myPage/myAttendances";
+    }
+
+    @GetMapping("/courses")
+    public String listAppliedCourse(@RequestParam(required = false) AcceptType acceptType,
+                                    Model model,
+                                    HttpSession session) {
+
+        Member loginMember = (Member) session.getAttribute("loginMember");
+
+        List<Course> courses = courseService.findByTeacherIdAndAcceptType(loginMember.getId(), acceptType);
+
+        model.addAttribute("courses", courses);
+
+        return "/teacher/courseEnrolls";
+    }
+
+
+    @GetMapping("/teacher-application")
+    public String showTeacherAcceptance() {
+
+        return "/teacher/application";
+    }
+
+    @PostMapping("/teacher-application")
+    public String requestPermitTeacher(HttpSession session) {
+
+        Teacher loginMember = (Teacher) session.getAttribute("loginMember");
+
+        teacherService.changeAcceptToWaiting(loginMember.getId());
+        loginMember.changeAcceptToWaiting();
+        session.setAttribute("acceptType", loginMember.getAcceptType());
+
+
+        return "redirect:/teacher-application";
+    }
 
 
 

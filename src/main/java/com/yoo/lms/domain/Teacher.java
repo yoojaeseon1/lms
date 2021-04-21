@@ -1,5 +1,6 @@
 package com.yoo.lms.domain;
 
+import com.yoo.lms.domain.enumType.AcceptType;
 import com.yoo.lms.domain.enumType.MemberType;
 import com.yoo.lms.domain.valueType.Address;
 import lombok.Getter;
@@ -18,6 +19,7 @@ public class Teacher extends Member{
 
     public Teacher(String id, String password, String name, String email, Address address, LocalDate birthDate, MemberType memberType) {
         super(id, password, name, email, address, birthDate, memberType);
+        this.acceptType = AcceptType.REJECTED;
     }
 
     public Teacher(Member member) {
@@ -29,14 +31,26 @@ public class Teacher extends Member{
                 member.getBirthDate(),
                 member.getMemberType()
         );
+        this.acceptType = AcceptType.REJECTED;
     }
 
+    @Enumerated(EnumType.STRING)
+    private AcceptType acceptType;
 
     @OneToMany(mappedBy = "teacher")
     private List<Course> courses = new ArrayList<>();
 
-    @OneToMany(mappedBy = "createdBy")
-    private List<CounselBoard> counselBoards = new ArrayList<>();
 
+    public void changeAcceptToAccepted() {
+        this.acceptType = AcceptType.ACCEPTED;
+    }
+
+    public void changeAcceptToReject(){
+        this.acceptType = AcceptType.REJECTED;
+    }
+
+    public void changeAcceptToWaiting(){
+        this.acceptType = AcceptType.WAITING;
+    }
 
 }

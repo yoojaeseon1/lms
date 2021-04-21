@@ -1,47 +1,31 @@
 package com.yoo.lms.domain;
 
-import com.yoo.lms.domain.valueType.DateValue;
-import com.yoo.lms.domain.valueType.ReplyDateValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Entity
 @DiscriminatorValue("Q")
 @NoArgsConstructor
 @Getter
+@EntityListeners(AuditingEntityListener.class)
 public class QuestionBoard extends Board{
 
     public QuestionBoard(Course course, String title, String content, Member createdBy) {
+        super(title, content, createdBy);
         this.course = course;
-        this.title = title;
-        this.content = content;
-        this.createdBy = createdBy;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="course_id")
     private Course course;
 
-    private String title;
-    private String content;
-
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="content_member_id")
-    private Member createdBy;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="reply_id")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "questionBoard")
     private BoardReply reply;
 
-    private DateValue dateValue;
-
-    public void updateInfo(String title, String content) {
-        this.title = title;
-        this.content = content;
+    public void setReply(BoardReply reply) {
+        this.reply = reply;
     }
-
 }

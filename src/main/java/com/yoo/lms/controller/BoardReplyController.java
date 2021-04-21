@@ -148,7 +148,7 @@ public class BoardReplyController {
         model.addAttribute("submits", submits);
         model.addAttribute("title", title);
 
-        return "/homework-board/submits";
+        return "/homework/submits";
     }
 
     @GetMapping("/courses/{courseId}/homework-board/{boardId}/submits/{boardReplyId}")
@@ -221,7 +221,7 @@ public class BoardReplyController {
         return "board/boardCreateForm";
     }
 
-    @PostMapping("/inquiryBoard/{boardId}/new")
+    @PostMapping("/inquiry-board/{boardId}/new")
     public String createInquiryReply(@PathVariable Long boardId,
                                       String title,
                                       String content,
@@ -270,7 +270,7 @@ public class BoardReplyController {
 
         boardReplyService.updateBoardReply(boardReplyId, loginMember.getId(), title, content, null);
 
-        return "redirect:/inquiry-boardgi/"+ boardId;
+        return "redirect:/inquiry-board/"+ boardId;
     }
 
 }

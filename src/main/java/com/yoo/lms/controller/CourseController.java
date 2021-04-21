@@ -5,6 +5,7 @@ import com.yoo.lms.domain.Member;
 import com.yoo.lms.domain.Student;
 import com.yoo.lms.domain.Teacher;
 import com.yoo.lms.domain.enumType.MemberType;
+import com.yoo.lms.dto.CourseListDto;
 import com.yoo.lms.searchCondition.CourseSearchCondition;
 import com.yoo.lms.service.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -27,113 +29,108 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping("/courses/{courseId}")
-    public String showCourseMain(@PathVariable("courseId") Long courseId,
-                                 HttpSession session
-                                 ){
+    public String showCourseMain(@PathVariable Long courseId,
+                                 HttpSession session){
 
         session.setAttribute("sideBarType", "course");
-
-//        request.setAttribute("sideBarType", "course");
+        session.setAttribute("courseId", courseId);
 
         return "course/courseMain";
     }
 
-    @GetMapping("/createCourseForm")
+    @GetMapping("/courses/new")
     public String createCourseForm(){
 
-
-
-        return "course/createCourseForm";
+        return "teacher/createCourseForm";
     }
 
-    @PostMapping("/courses")
+    @PostMapping("/courses/new")
     @ResponseBody
     public ResponseEntity<String> createCourse(@RequestBody Course course,
-                                               HttpServletRequest request
-                                               ) {
+                                               HttpSession session) {
 
-        log.info("createCourse - course.name : " + course.getName());
-        log.info("createCourse - course.maxNumStudnet : " + course.getMaxNumStudent());
-        log.info("createCourse - course.startDate : " + course.getStartDate());
-        log.info("createCourse - course.endDate : " + course.getEndDate());
-
-        HttpSession session = request.getSession();
 
         Teacher loginMember = (Teacher)session.getAttribute("loginMember");
 
-        log.info("createCourse - loginMember.id : " + loginMember.getId());
+        courseService.createCourse(course, loginMember);
 
-//        course.addTeacher(loginMember);
-
-        courseService.createCourse(course, loginMember.getId());
-
-        ResponseEntity<String> entity = new ResponseEntity<>("success", HttpStatus.OK);
+        ResponseEntity<String> entity = new ResponseEntity<>("ok", HttpStatus.OK);
 
         return entity;
     }
 
 
-    @GetMapping("/student/courseList")
+
+
+    @GetMapping("/student/enroll-courses")
     public String listCourse(CourseSearchCondition searchCondition,
                              String category,
                              String keyword,
                              Model model,
-                             HttpSession session
-                             ) {
+                             HttpSession session) {
 
-        log.info("accecpt type : " + searchCondition.getAcceptType());
 
-        if(category != null) {
+        if(keyword != null) {
 
             if (category.equals("courseName") && keyword.length() > 0) {
                 searchCondition.setCourseName(keyword);
             } else if (category.equals("teacherName") && keyword.length() > 0) {
                 searchCondition.setTeacherName(keyword);
             }
-
         }
 
         Member loginMember = (Member)session.getAttribute("loginMember");
 
-        List<Course> courses = courseService.searchCourse(searchCondition, loginMember.getId());
+        List<Course> courses = null;
+        if(searchCondition.getAcceptType() == null)
+            courses = courseService.searchCourse(searchCondition, null);
+        else
+            courses = courseService.searchCourse(searchCondition, loginMember.getId());
 
-//        log.info("listCourse - searchCondition.courseName : " + searchCondition.getCourseName());
-//        log.info("listCourse - searchCondition.teacherName : " + searchCondition.getTeacherName());
-//        log.info("listCourse - searchCondition.startDate : " + searchCondition.getStartDate());
-//        log.info("listCourse - searchCondition.endDate : " + searchCondition.getEndDate());
-//        log.info("listCourse - searchCondition.acceptType : " + searchCondition.getAcceptType());
-//        log.info("listCourse - category : " + category);
-//        log.info("listCourse - keyword : " + keyword.length());
-//        log.info("listCourse - canApplicable : " + canApplicable);
+        List<CourseListDto> courseListDtos = (ArrayList<CourseListDto>)session.getAttribute("courseListDtos");
 
-//        for (Course cours : courses) {
-//            log.info("listCourse - course.name : " + cours.getName());
-//        }
+        if(courseListDtos != null) {
+            List<Long> courseIds = new ArrayList<>();
 
-//        courseService.permitCourse(courses.get(0));
+            for (CourseListDto courseListDto : courseListDtos) {
+                courseIds.add(courseListDto.getId());
+            }
+            model.addAttribute("courseIds", courseIds);
+        }
 
         model.addAttribute("courses", courses);
 
         return "/course/courseList";
     }
 
-    @PostMapping("/student/enrollCourse")
-    public String enrollCourse(Long courseId,
-                               HttpServletRequest request
-                               ) {
 
-        HttpSession session = request.getSession();
-
-        MemberType memberType = (MemberType)session.getAttribute("memberType");
+    @ResponseBody
+    @PostMapping("/student/enroll-course")
+    public ResponseEntity<String> enrollCourse(@RequestBody Map<String, Object> paramMap,
+                                                HttpSession session) {
 
 
 
-        if(memberType == MemberType.STUDENT) {
-            Student loginMember = (Student) session.getAttribute("loginMember");
-            courseService.enrollCourse(loginMember.getId(), courseId);
+        Long courseId = Long.parseLong((String)paramMap.get("courseId"));
+
+        Member loginMember = (Member)session.getAttribute("loginMember");
+
+        if(loginMember.getMemberType() == MemberType.STUDENT) {
+
+            loginMember = (Student) loginMember;
+
+            Course course = courseService.enrollCourse(loginMember.getId(), courseId);
+
+            if(course == null)
+                return new ResponseEntity<>("fail", HttpStatus.OK);
+
+            List<CourseListDto> courseListDtos = (ArrayList<CourseListDto>)session.getAttribute("courseListDtos");
+            courseListDtos.add(new CourseListDto(course.getId(), course.getName()));
+
         }
 
-
-        return "redirect:./courseList";
+        return new ResponseEntity<>("ok", HttpStatus.OK);
     }
+
+
 }

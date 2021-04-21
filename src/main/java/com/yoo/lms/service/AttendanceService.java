@@ -9,16 +9,18 @@ import com.yoo.lms.dto.AttendanceTypeDto;
 import com.yoo.lms.repository.AttendanceRepository;
 import com.yoo.lms.searchCondition.AtSearchCondition;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Slf4j
 public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
@@ -26,7 +28,7 @@ public class AttendanceService {
     private final CourseService courseService;
 
     @Transactional
-    public void save(Long courseId, List<AttendanceTypeDto> attendanceStateDtos) {
+    public void save(Long courseId, List<AttendanceTypeDto> attendanceStateDtos, LocalDateTime currentTime) {
 
         Course course = courseService.findOne(courseId);
 
@@ -36,7 +38,7 @@ public class AttendanceService {
             Attendance attendance = new Attendance(
                     course,
                     student,
-                    LocalDate.now(),
+                    currentTime,
                     AttendanceType.valueOf(attendanceStateDto.getAttendanceType()));
 
             attendanceRepository.save(attendance);
@@ -51,8 +53,8 @@ public class AttendanceService {
      * @param courseId
      * @return
      */
-    public List<AttendanceListDto> searchStudentAttendList(Long courseId) {
-        return attendanceRepository.searchStudentAttendList(courseId);
+    public List<AttendanceListDto> findStudentAttendList(Long courseId) {
+        return attendanceRepository.findStudentAttendList(courseId);
     }
 
     /**
@@ -72,16 +74,18 @@ public class AttendanceService {
      * @param checkedDate
      * @return
      */
-    public List<AttendanceListDto> searchUpdateList(Long courseId, LocalDate checkedDate){
+    public List<AttendanceListDto> findUpdateList(Long courseId, LocalDateTime checkedDate){
         return attendanceRepository.searchUpdateList(courseId, checkedDate);
     }
 
-    public List<Attendance> searchMyAttend(AtSearchCondition condition) {
-        return attendanceRepository.searchMyAttend(condition);
+    public List<Attendance> searchMyAttendances(AtSearchCondition condition) {
+        return attendanceRepository.searchMyAttendances(condition);
     }
 
     @Transactional
     public void updateAttendance(List<AttendanceTypeDto> attendanceTypeDtos){
+
+        LocalDateTime modifiedDate = LocalDateTime.now();
 
         for (AttendanceTypeDto attendanceTypeDto : attendanceTypeDtos) {
             Optional<Attendance> attendanceOptional = attendanceRepository.findById(attendanceTypeDto.getAttendanceId());
@@ -90,14 +94,8 @@ public class AttendanceService {
             if(attendanceOptional.isPresent())
                 attendance = attendanceOptional.get();
 
-            attendance.updateAttendanceType(AttendanceType.valueOf(attendanceTypeDto.getAttendanceType()));
+            attendance.updateAttendanceType(AttendanceType.valueOf(attendanceTypeDto.getAttendanceType()), modifiedDate);
 
         }
-//        attendance.updateAttendanceType(attendanceType);
-
-
-
     }
-
-
 }

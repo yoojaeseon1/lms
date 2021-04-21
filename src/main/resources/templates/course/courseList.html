@@ -12,46 +12,67 @@
 
   <title>Ramayana - HTML5 Template</title>
 
-  <!-- Bootstrap core CSS -->
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-  <!--
-  Ramayana CSS Template
-  https://templatemo.com/tm-529-ramayana
-  -->
-
-  <!-- Additional CSS Files -->
   <link rel="stylesheet" href="/assets/css/fontawesome.css">
   <link rel="stylesheet" href="/assets/css/templatemo-style.css">
   <link rel="stylesheet" href="/assets/css/owl.css">
-  <!--<link rel="stylesheet" href="/assets/css/course.css">-->
 
 </head>
 
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
 
-  <!-- Main -->
   <div id="main">
     <div class="inner">
-
-      <!-- Header -->
       <header id="header">
         <div class="logo">
           <a href="index.html">LMS System</a>
         </div>
       </header>
+      <th:block layout:fragment="script">
+        <script type="text/javascript">
 
-      <!-- Tables -->
+          function enrollCourse(courseId) {
+
+
+            let enrollForm = {
+              courseId : courseId
+            };
+
+            $.ajax({
+              type: "post",
+              url: "/student/enroll-course",
+              data: JSON.stringify(enrollForm),
+              contentType: "application/json",
+              dataType: "text",
+              success: function(data) {
+
+                if(data == "ok")
+                  alert("수강 신청이 완료되었습니다.");
+                else
+                  alert("최대 수강인원을 초과했습니다.");
+
+                location.href = "/student/enroll-courses";
+              },
+              error: function(request, status, error) {
+                console.log("request : " + request);
+                console.log("status : " + status);
+                console.log("error : " + error);
+              }
+            });
+
+          }
+
+        </script>
+      </th:block>
       <section class="tables">
         <div class="container-fluid">
           <div class="row">
             <div class="col-md-12">
               <div class="section-heading">
                 <h2>수강 신청</h2>
-                <form action="" method="get">
+                <form action="/student/enroll-courses" method="get">
                   <table>
                     <tr>
                       <th>
@@ -72,10 +93,8 @@
                       <th>
                         수강신청 가능 여부
                         <select name="acceptType">
-                          <!--<option th:value="${false}">전체</option>
-                          <option th:value="${true}">가능</option>-->
                           <option th:value="${null}">전체</option>
-                          <option th:value="${T(com.yoo.lms.domain.enumType.CourseAcceptType).ACCEPTED}">가능</option>
+                          <option th:value="${T(com.yoo.lms.domain.enumType.AcceptType).ACCEPTED}">가능</option>
                         </select>
                       </th>
                       <button type="submit">검색</button>
@@ -83,34 +102,34 @@
                   </table>
                 </form>
               </div>
-              <div class="default-table">
+              <div class="enroll-course-table">
                 <table id="courseListTable">
                   <thead>
-                  <tr>
-                    <th>과목 명</th>
-                    <th>강사 명</th>
-                    <th>시작일</th>
-                    <th>종료일</th>
-                    <th>현재 수강 인원</th>
-                    <th>최대 수강 인원</th>
-                    <th>신청</th>
-                  </tr>
+                    <tr>
+                      <th>과목 명</th>
+                      <th>강사 명</th>
+                      <th>시작일</th>
+                      <th>종료일</th>
+                      <th>현재 수강 인원</th>
+                      <th>최대 수강 인원</th>
+                      <th>신청</th>
+                    </tr>
                   </thead>
                   <tbody>
                   <tr>
                   <tr th:each="course : ${courses}">
-                    <form action="enrollCourse" method="post">
-                    <td th:text="${course.name}"></td>
-                    <td th:text="${course.teacher.name}"></td>
-                    <td th:text="${course.startDate}"></td>
-                    <td th:text="${course.endDate}"></td>
-                    <td th:text="${course.currentNumStudent}"></td>
-                    <td th:text="${course.maxNumStudent}"></td>
-                    <td>
-                      <button th:if="${#strings.equals(course.getAcceptType().toString(), 'ACCEPTED') and course.currentNumStudent < course.maxNumStudent}" type="submit">신청</button>
-                    </td>
-                      <input type="hidden" id="courseId" name="courseId" th:value="${course.id}">
-                    </form>
+                      <td th:text="${course.name}"></td>
+                      <td th:text="${course.teacher.name}"></td>
+                      <td th:text="${course.startDate}"></td>
+                      <td th:text="${course.endDate}"></td>
+                      <td th:text="${course.currentNumStudent}"></td>
+                      <td th:text="${course.maxNumStudent}"></td>
+
+                      <td>
+                        <button th:if="${#strings.equals(course.getAcceptType().toString(), 'ACCEPTED')
+                                          and course.currentNumStudent < course.maxNumStudent
+                                          and courseIds.contains(course.id) == false}" type="submit" th:onclick="|javascript:enrollCourse('${course.id}')|">신청</button>
+                      </td>
                   </tr>
                   </tbody>
                 </table>
@@ -122,14 +141,11 @@
     </div>
   </div>
 
-  <!-- Sidebar -->
   <div id="sidebar" th:include="layout/sideBar.html">
 
   </div>
 </div>
 
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 

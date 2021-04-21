@@ -8,6 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+
+/**
+ * 강사의 출석 등록 / 수정 용
+ */
 
 @Getter
 @NoArgsConstructor
@@ -16,7 +22,7 @@ public class AttendanceListDto {
     private Long attendanceId;
 
     // 기존 출석 정보
-    private LocalDate checkedDate;
+    private LocalDateTime checkedDate;
 
     // 출석체크 목록(등록용)
     private String studentId;
@@ -32,6 +38,9 @@ public class AttendanceListDto {
     // 출석체크 목록(수정용)
     private AttendanceType attendanceType;
 
+
+    // 생성자들 여기서는 안쓰지만 Q생성자에서 쓰기 때문에 있어야 한다.
+
     /**
      * 출석 등록
      * @param studentId controller 전송
@@ -46,12 +55,12 @@ public class AttendanceListDto {
     }
 
     /**
-     * 출석 수정(view-> controller로 전송할 때 attendanceId가 필요하므로 추가했음) 
+     * 출석 수정(view-> controller로 전송할 때 attendanceId가 필요하므로 추가했음)
      * @param attendanceId view -> controller 전송
      * @param studentName view 출력
      * @param birthDate view 출력
      * @param attendanceType view 출력 + controller 전송
-     */    
+     */
     @QueryProjection
     public AttendanceListDto(Long attendanceId,String studentName, LocalDate birthDate, AttendanceType attendanceType) {
         this.attendanceId = attendanceId;
@@ -62,7 +71,7 @@ public class AttendanceListDto {
     }
 
     @QueryProjection
-    public AttendanceListDto(LocalDate checkedDate) {
+    public AttendanceListDto(LocalDateTime checkedDate) {
         this.checkedDate = checkedDate;
     }
 

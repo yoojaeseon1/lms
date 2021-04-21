@@ -27,15 +27,12 @@ public class PageMaker {
     private int pageSize; // 한 페이지 당 데이터 개수
     private int numDisplayPage; // 페이지 번호의 개수(밑에 10개의 페이지를 이동가능한 버튼의 개수)
 
-    private BoardSearchCriteria searchCriteria;
-
-    public PageMaker(int currentPage, long totalCount, BoardSearchCriteria searchCriteria) {
+    public PageMaker(int currentPage, long totalCount) {
         this.currentPage = currentPage;
         this.numTotalContent = totalCount;
         this.pageSize = 10;
         this.numDisplayPage = 10;
         this.numTotalPage = (int) (Math.ceil(totalCount / (double) pageSize));
-        this.searchCriteria = searchCriteria;
         calcData();
     }
 
@@ -53,31 +50,4 @@ public class PageMaker {
         next = endPage * pageSize >= numTotalContent ? false : true;
     }
 
-
-    public String makeSearch(int page) {
-
-        UriComponents uriComponents = null;
-
-        uriComponents = UriComponentsBuilder
-                .newInstance()
-                .queryParam("page", currentPage)
-                .queryParam("searchType", searchCriteria.getSearchType())
-                .queryParam("keyword", searchCriteria.getKeyword())
-                .build();
-
-        return uriComponents.toString();
-
-    }
-
-
-    private String encoding(String keyword) {
-        if (keyword == null || keyword.trim().length() == 0)
-            return "";
-
-        try {
-            return URLEncoder.encode(keyword, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return "";
-        }
-    }
 }

@@ -12,15 +12,7 @@
 
     <title>Ramayana - HTML5 Template</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
-    <!--
-    Ramayana CSS Template
-    https://templatemo.com/tm-529-ramayana
-    -->
-
-    <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/assets/css/templatemo-style.css">
     <link rel="stylesheet" href="/assets/css/owl.css">
@@ -59,8 +51,6 @@
                 }
             };
 
-            // let joinForm = JSON.stringify($("#joinForm").val());
-            console.log("execute ajax");
             $.ajax({
                 type: "put",
                 url: "/myPage/infomation",
@@ -69,7 +59,6 @@
                 dataType: "text",
                 success: function(data) {
                     alert("회원 정보 변경이 완료되었습니다.");
-                    // console.log("success : " + data);
                     location.href = "/";
                 },
                 error: function(request, status, error) {
@@ -86,20 +75,15 @@
 
 <body class="is-preload">
 
-<!-- Wrapper -->
 <div id="wrapper">
-
-    <!-- Main -->
     <div id="main">
         <div class="inner">
-
-            <!-- Header -->
             <header id="header">
                 <div class="logo">
                     <a href="index.html">LMS System</a>
                 </div>
             </header>
-            <div>회원 정보 변경</div>
+            <div>개인 정보 변경</div>
             <table class="table table-hover">
                 <tr>
                     <th>비밀번호</th>
@@ -112,36 +96,35 @@
                 <tr>
                     <th>이름</th>
                     <td>
-                        <div th:text="${member.getName()}"></div>
+                        <div th:text="${member.name}"></div>
                     </td>
                 </tr>
                 <tr>
                     <th>생년월일</th>
                     <td>
-                        <div th:text="${member.getBirthDate()}">
+                        <div th:text="${member.birthDate}">
                     </td>
                 </tr>
                 <tr>
                     <th>이메일</th>
-                    <td><input id="email" th:value="${member.getEmail()}"/></td>
+                    <td><input id="email" th:value="${member.email}"/></td>
                 </tr>
                 <tr>
                     <th>우편번호</th>
                     <td>
                         <input type="hidden" id="confmKey" name="confmKey" value=""  >
-                        <input type="text" id="postNumber" readonly style="width:100px" th:value="${member.getAddress().getPostNumber()}">
+                        <input type="text" id="postNumber" readonly style="width:100px" th:value="${member.address.postNumber}">
                         <input type="button"  value="주소검색" onclick="goPopup();">
                     </td>
                 </tr>
                 <tr>
                     <th>도로명주소</th>
-                    <td><input type="text" id="roadAddress" style="width:85%" th:value="${member.getAddress().getRoadAddress()}"></td>
+                    <td><input type="text" id="roadAddress" style="width:85%" th:value="${member.address.roadAddress}"></td>
                 </tr>
                 <tr>
                     <th>상세주소</th>
                     <td>
-                        <input type="text" id="detailAddress" style="width:80%" th:value="${member.getAddress().getDetailAddress()}">
-                        <!--                <input type="text" id="roadAddrPart2"  style="width:40%" value="">-->
+                        <input type="text" id="detailAddress" style="width:80%" th:value="${member.address.detailAddress}">
                     </td>
                 </tr>
             </table>
@@ -152,67 +135,12 @@
         </div>
     </div>
 
-    <!-- Sidebar -->
-    <div id="sidebar">
-
-        <div class="inner">
-
-            <!-- Search Box -->
-            <!-- 수강 / 강의 중인 과목 selectBox 넣자 -->
-            <section id="search" class="alt">
-                <form method="get" action="#">
-                    <li>
-                        <span class="opener">Dropdown One</span>
-                        <ul>
-                            <li><a href="#">First Sub Menu</a></li>
-                            <li><a href="#">Second Sub Menu</a></li>
-                            <li><a href="#">Third Sub Menu</a></li>
-                        </ul>
-                    </li>
-                </form>
-            </section>
-
-            <!-- Menu -->
-            <nav id="menu">
-                <ul>
-                    <li><a href="index.html">Homepage</a></li>
-                    <li><a href="simple_page.html">Simple Page</a></li>
-                    <li><a href="shortcodes.html">Shortcodes</a></li>
-                    <li>
-                        <span class="opener">Dropdown One</span>
-                        <ul>
-                            <li><a href="#">First Sub Menu</a></li>
-                            <li><a href="#">Second Sub Menu</a></li>
-                            <li><a href="#">Third Sub Menu</a></li>
-                        </ul>
-                    </li>
-                    <li>
-                        <span class="opener">Dropdown Two</span>
-                        <ul>
-                            <li><a href="#">Sub Menu #1</a></li>
-                            <li><a href="#">Sub Menu #2</a></li>
-                            <li><a href="#">Sub Menu #3</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="https://www.google.com">External Link</a></li>
-                </ul>
-            </nav>
-
-            <!-- Footer -->
-            <footer id="footer">
-                <p class="copyright">Copyright &copy; 2019 Company Name
-                    <br>Designed by <a rel="nofollow" href="https://www.facebook.com/templatemo">Template Mo</a></p>
-            </footer>
-
-        </div>
-    </div>
+    <div id="sidebar" th:include="layout/sideBar.html">
 </div>
 
-<!-- Scripts -->
-<!-- Bootstrap core JavaScript -->
+
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
 <script src="/assets/js/browser.min.js"></script>
 <script src="/assets/js/breakpoints.min.js"></script>
 <script src="/assets/js/transition.js"></script>

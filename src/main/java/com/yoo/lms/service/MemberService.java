@@ -17,22 +17,19 @@ import javax.persistence.EntityManager;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
-
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final EntityManager em;
     private final JavaMailSender javaMailSender;
-    private int tempPWLength;
-
-    @Autowired
-    public MemberService(MemberRepository memberRepository, EntityManager em, JavaMailSender javaMailSender) {
-        this.memberRepository = memberRepository;
-        this.em = em;
-        this.javaMailSender = javaMailSender;
-        this.tempPWLength = 10;
-    }
+    private int tempPWLength = 10;
+    private final char[] charArr =
+            { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
     @Transactional
     public void joinStduent(Student student){
@@ -54,40 +51,20 @@ public class MemberService {
 
     public boolean checkDuplicationID(String id) {
 
-        MemberSearchCondition searchCondition = new MemberSearchCondition(id, null, null, null);
-//        MemberSearchCondition searchCondition = new MemberSearchCondition(id);
-//        MemberSearchCondition searchCondition = new MemberSearchCondition();
-
-        Member findMember = memberRepository.searchMember(searchCondition);
-
-        if(findMember == null)
-            return false;
-        else
-            return true;
+        return memberRepository.isExistId(id);
 
     }
 
-    public Optional<MemberType> searchMemberType(MemberSearchCondition searchCondition) {
+    public MemberType searchMemberType(MemberSearchCondition searchCondition) {
         return memberRepository.searchMemberType(searchCondition);
     }
 
-
-    public Member login(MemberSearchCondition searchCondition) {
-
-//        MemberSearchCondition searchCondition = new MemberSearchCondition(id, password, null, null);
-//        MemberSearchCondition searchCondition = new MemberSearchCondition(id);
-//        MemberSearchCondition searchCondition = new MemberSearchCondition();
-
-        return memberRepository.searchMember(searchCondition);
-
-
+    public Member findById(String memberId) {
+        return memberRepository.findById(memberId).get();
     }
 
-    public String findID(MemberSearchCondition searchCondition) {
 
-//        MemberSearchCondition searchCondition = new MemberSearchCondition(null, null, name, email);
-//        MemberSearchCondition searchCondition = new MemberSearchCondition(name);
-//        MemberSearchCondition searchCondition = new MemberSearchCondition();
+    public String findID(MemberSearchCondition searchCondition) {
 
         Member findMember = memberRepository.searchMember(searchCondition);
 
@@ -102,9 +79,6 @@ public class MemberService {
 
     @Transactional
     public boolean updateTempPW(MemberSearchCondition searchCondition) {
-//        MemberSearchCondition searchCondition = new MemberSearchCondition(id, null, name, email);
-//        MemberSearchCondition searchCondition = new MemberSearchCondition(id);
-//        MemberSearchCondition searchCondition = new MemberSearchCondition();
 
         Member findMember = memberRepository.searchMember(searchCondition);
 
@@ -116,7 +90,6 @@ public class MemberService {
             String tempPassword = createTempPW();
             
             // 이메일로 전송
-
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 
             simpleMailMessage.setTo(findMember.getEmail());
@@ -150,7 +123,6 @@ public class MemberService {
     public void updateInfo(String id, Member member){
 
         Member findMember = memberRepository.findById(id).get();
-
         findMember.updateInfo(member);
 
     }
@@ -159,14 +131,6 @@ public class MemberService {
 
 
     private String createTempPW() {
-
-        char[] charArr
-                = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
-                'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-                'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-                'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
-
 
         StringBuilder tempPassword = new StringBuilder();
 

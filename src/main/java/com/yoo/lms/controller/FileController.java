@@ -23,14 +23,13 @@ public class FileController {
 
     @ResponseBody
     @GetMapping("/download")
-    public ResponseEntity<Resource> download(@RequestParam("filePath") String filePath,
-                                             @RequestParam("fileName") String fileName){
-        log.info("filePath : " + filePath);
+    public ResponseEntity<Resource> download(@RequestParam String filePath,
+                                             @RequestParam String fileName){
+
         File target = new File(filePath+fileName);
         String originalFileName = new String(fileName.substring(fileName.indexOf("_")+1)
                 .getBytes(StandardCharsets.UTF_8));
 
-        log.info("originalFileName : " + originalFileName);
         HttpHeaders header = new HttpHeaders();
         Resource resource = null;
 
