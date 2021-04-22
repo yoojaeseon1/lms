@@ -1,22 +1,9 @@
 let wasCheckedId = false;
-// const now = new Date(convertDate(new Date()));
 const now = convertDate(new Date());
-
-// 이메일 형식
-
 const emailRegex = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
-
-
-// 영어 소문자 + 대문자 + 특수문자 조합, 길이 : 8~12
 const passwordRegex = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,12}$/;
-
-
-// 영어 소문자 또는 영어소문자+숫자 조합, 길이 : 4~10
 const idRegex = /^[0-9a-z]{4,10}$/;
-
-
 const nameRegex = /^[가-힣]{2,4}|[a-zA-Z]{2,10}\s[a-zA-Z]{2,10}$/;
-
 
 function checkId() {
 
@@ -32,11 +19,9 @@ function checkId() {
         return;
     }
 
-    console.log("id : " + id);
-
     $.ajax({
         type: "get",
-        url: "/join/checkDuplicationId",
+        url: "/join/check-duplication-id",
         data: "id="+id,
         dataType: "text",
         success: function(data) {

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 public class AddressApiController {
 
     @GetMapping("/juso-popup")
-    public String jusoPopup(@RequestParam String confmKey){
+    public String jusoPopup(){
 
         return "/jusoPopup";
     }
