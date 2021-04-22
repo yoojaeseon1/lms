@@ -181,8 +181,8 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom {
         return endDate == null ? null : course.endDate.loe(endDate);
     }
 
-    private BooleanExpression courseIdNotIn(List<Long> studentIds) {
-        return studentIds.size() == 0 ? null : course.id.notIn(studentIds);
+    private BooleanExpression courseIdNotIn(List<Long> courseIds) {
+        return courseIds.size() == 0 ? null : course.id.notIn(courseIds);
     }
 
 }

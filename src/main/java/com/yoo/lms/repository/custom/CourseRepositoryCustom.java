@@ -17,7 +17,6 @@ public interface CourseRepositoryCustom {
 
     List<CourseListDto> findCListDtosByTeacher(String teacherId);
 
-//    boolean existCourseName(Long courseId, String teacherId);
     boolean existCourseName(CourseSearchCondition condition);
 
     List<Long> findCourseIds(String studentId);
