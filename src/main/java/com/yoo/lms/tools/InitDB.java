@@ -23,7 +23,7 @@ public class InitDB {
 
     @PostConstruct
     public void init() {
-//        initService.dbInit1();
+        initService.dbInit1();
 //        initService.dbInit2();
     }
 
@@ -110,7 +110,7 @@ public class InitDB {
 
 
 
-//            em.flush();
+            em.flush();
 
             // create course
 
